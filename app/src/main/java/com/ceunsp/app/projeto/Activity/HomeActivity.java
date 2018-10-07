@@ -1,5 +1,6 @@
 package com.ceunsp.app.projeto.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -84,6 +85,8 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_schedule) {
+            Intent intentSchedule = new Intent(getApplicationContext(), ScheduleActivity.class);
+            startActivity(intentSchedule);
 
         } else if (id == R.id.nav_annotation) {
 
