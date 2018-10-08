@@ -24,7 +24,15 @@
             android:name=".Activity.HomeActivity"
             android:label="@string/title_activity_home"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activity.ScheduleActivity"/>
+        <activity
+            android:name=".Activity.Calendar.MainActivity"
+            android:label="@string/title_activity_schedule_add_event"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Activity.Calendar.CalendarAddEvent" />
+        <activity
+            android:name=".main_tab2"
+            android:label="@string/title_activity_main_tab2"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

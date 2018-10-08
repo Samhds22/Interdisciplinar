@@ -14,6 +14,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.ceunsp.app.projeto.Activity.Calendar.CompactCalendarTab;
+import com.ceunsp.app.projeto.Activity.Calendar.MainActivity;
 import com.ceunsp.app.projeto.R;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -85,7 +87,7 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_schedule) {
-            Intent intentSchedule = new Intent(getApplicationContext(), ScheduleActivity.class);
+            Intent intentSchedule = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intentSchedule);
 
         } else if (id == R.id.nav_annotation) {
