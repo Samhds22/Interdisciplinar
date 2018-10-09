@@ -9,7 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.SplashScreenActivity">
+
+        <activity
+            android:name=".Activity.SplashScreenActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,21 +22,27 @@
         </activity>
         <activity
             android:name=".Activity.LoginActivity"
-            android:label="@string/title_activity_login" />
-        <activity android:name=".Activity.RegisterActivity" />
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Activity.RegisterActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Activity.HomeActivity"
             android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+	        android:screenOrientation="portrait"/>
         <activity
             android:name=".Activity.Calendar.MainActivity"
-            android:label="@string/title_activity_schedule_add_event"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activity.Calendar.CalendarAddEvent" />
         <activity
-            android:name=".main_tab2"
+            android:name=".Activity.Calendar.CalendarEventBody"
+            android:screenOrientation="portrait"/>
+       <!-- <activity
+            android:name=".main_tab"
             android:label="@string/title_activity_main_tab2"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>-->
     </application>
 
 </manifest>

@@ -12,14 +12,83 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <AutoCompleteTextView
-                android:id="@+id/email_cadastro"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="email"
-                android:inputType="textEmailAddress"
-                android:maxLines="1"
-                android:singleLine="true"/>
+        <EditText
+            android:id="@+id/nome_Edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:background="@drawable/border_rounded_main_fields"
+
+            android:hint="@string/Nome"
+            android:padding="8dp"
+            android:inputType="" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/idade_Edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:background="@drawable/border_rounded_main_fields"
+            android:hint= "@string/Idade"
+            android:padding="8dp"
+            android:inputType="numberDecimal"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <Spinner
+            android:id="@+id/faculdade_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:autofillHints="@string/Curso"
+            android:background="@drawable/border_rounded_main_fields"
+            android:padding="8dp" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Spinner
+            android:id="@+id/curso_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/border_rounded_main_fields"
+            android:hint="@string/Curso"
+            android:padding="8dp" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <AutoCompleteTextView
+            android:id="@+id/email_cadastro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:background="@drawable/border_rounded_main_fields"
+            android:hint="@string/Email"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
+            android:padding="8dp"
+            android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -31,14 +100,16 @@
                 android:id="@+id/password_cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="senha"
+                android:layout_margin="4dp"
+                android:background="@drawable/border_rounded_main_fields"
+                android:hint="@string/Senha"
                 android:imeActionId="6"
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
                 android:maxLines="1"
-                android:singleLine="true"
-                />
+                android:padding="8dp"
+                android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -46,6 +117,7 @@
         android:id="@+id/salvar_cadastro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="salvar" />
+        android:background="@drawable/border_rounded_button"
+        android:text="@string/Botao" />
 
 </LinearLayout>

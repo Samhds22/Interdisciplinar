@@ -6,8 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +19,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.ceunsp.app.projeto.Model.Prova;
 import com.ceunsp.app.projeto.R;
@@ -104,7 +101,7 @@ public class CompactCalendarTab extends Fragment {
             public void onDayClick(Date dateClicked) {
                 selectedDate = dateClicked;
                 toolbar.setTitle(dateFormatForMonth.format(dateClicked));
-                List<Event> bookingsFromMap = compactCalendarView.getEvents(dateClicked);
+                List<Events> bookingsFromMap = compactCalendarView.getEvents(dateClicked);
                 Log.d(TAG, "inside onclick " + dateFormatForDisplaying.format(dateClicked));
                 if (bookingsFromMap != null) {
                     Log.d(TAG, bookingsFromMap.toString());
@@ -158,7 +155,7 @@ public class CompactCalendarTab extends Fragment {
                 }else{
                     timeInMilliseconds = System.currentTimeMillis();
                 }
-                Intent intentAddEvent = new Intent(mainTabView.getContext(), CalendarAddEvent.class);
+                Intent intentAddEvent = new Intent(mainTabView.getContext(), CalendarEventBody.class);
                 intentAddEvent.putExtra("data", timeInMilliseconds);
                 startActivity(intentAddEvent);
 
@@ -168,7 +165,8 @@ public class CompactCalendarTab extends Fragment {
         bookingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(mainTabView.getContext(), "Deu certo", Toast.LENGTH_LONG).show();
+                Intent intentEditEvent = new Intent(getContext(), CalendarEventBody.class);
+                //intentEditEvent.putExtra();
             }
         });
 
