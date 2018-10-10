@@ -1,10 +1,19 @@
-package com.ceunsp.app.projeto.Model;
+package com.ceunsp.app.projeto.Activity.Calendar.Model;
 
-public class Prova {
+public class EventData {
+
+    private int id;
     private String type;
     private String title;
-    private Long timeInMillis;
     private String annotation;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getType() {
         return type;
@@ -20,14 +29,6 @@ public class Prova {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public Long getTimeInMillis() {
-        return timeInMillis;
-    }
-
-    public void setTimeInMillis(Long timeInMillis) {
-        this.timeInMillis = timeInMillis;
     }
 
     public String getAnnotation() {

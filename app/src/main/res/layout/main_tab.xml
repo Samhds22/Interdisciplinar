@@ -78,13 +78,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Button" />
-    </LinearLayout>
 
+    </LinearLayout>
+    <include layout="@layout/calendar_fab" />
     <ListView
         android:id="@+id/bookings_listview"
         android:layout_below="@+id/calendar_control_buttons_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+
     </ListView>
 
 

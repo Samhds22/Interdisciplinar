@@ -19,8 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-
-import com.ceunsp.app.projeto.Model.Prova;
+import com.ceunsp.app.projeto.Activity.Calendar.Model.EventData;
 import com.ceunsp.app.projeto.R;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
@@ -28,9 +27,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +48,8 @@ public class CompactCalendarTab extends Fragment {
     private ActionBar toolbar;
     private Date selectedDate;
     private Long timeInMilliseconds;
-    private final DatabaseReference classCalendarNodeRef = FirebaseDatabase.getInstance().getReference("ClassCalendar");
+    private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("ClassCalendar");
+    private List<EventData> eventDataList = new ArrayList<EventData>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -101,17 +99,19 @@ public class CompactCalendarTab extends Fragment {
             public void onDayClick(Date dateClicked) {
                 selectedDate = dateClicked;
                 toolbar.setTitle(dateFormatForMonth.format(dateClicked));
-                List<Events> bookingsFromMap = compactCalendarView.getEvents(dateClicked);
+                List<Event> bookingsFromMap = compactCalendarView.getEvents(dateClicked);
                 Log.d(TAG, "inside onclick " + dateFormatForDisplaying.format(dateClicked));
                 if (bookingsFromMap != null) {
                     Log.d(TAG, bookingsFromMap.toString());
                     mutableBookings.clear();
+                    int index = 0;
                     for (Event booking : bookingsFromMap) {
-                        mutableBookings.add((String) booking.getData());
+                        EventData eventData = eventDataList.get(index);
+                        mutableBookings.add((String) eventData.getTitle());
+                        index++;
+                        adapter.notifyDataSetChanged();
                     }
-                    adapter.notifyDataSetChanged();
                 }
-
             }
 
             @Override
@@ -120,22 +120,22 @@ public class CompactCalendarTab extends Fragment {
             }
         });
 
-        Query classCalendarNodeQry = classCalendarNodeRef.orderByChild("type").equalTo("Prova");
-        classCalendarNodeQry.addValueEventListener(new ValueEventListener() {
+
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     compactCalendarView.removeAllEvents();
                     for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                        Prova prova = postSnapshot.getValue(Prova.class);
-                        String title = prova.getTitle();
-                        Long timeinMillis = prova.getTimeInMillis();
-                        Event event = new Event(R.color.colorAccent, timeinMillis, title);
+                        Long time = (Long) postSnapshot.child("Event").child("timeInMillis").getValue();
+                        EventData eventData = postSnapshot.child("Event").child("data").getValue(EventData.class);
+                        String title = eventData.getTitle();
+                        String teste = "";
+
+                        eventDataList.add(eventData);
+                        Event event = new Event(R.color.colorAccent, time, eventData);
                         loadEvents(event);
                     }
-                    //String title = (String) dataSnapshot.child("001").child("title").getValue();
-                    // Long timeinMillis = (Long) dataSnapshot.child("001").child("timeInMillis").getValue();
-
                 }
             }
 
@@ -156,7 +156,8 @@ public class CompactCalendarTab extends Fragment {
                     timeInMilliseconds = System.currentTimeMillis();
                 }
                 Intent intentAddEvent = new Intent(mainTabView.getContext(), CalendarEventBody.class);
-                intentAddEvent.putExtra("data", timeInMilliseconds);
+                intentAddEvent.putExtra("date", timeInMilliseconds);
+                intentAddEvent.putExtra("id", (eventDataList.size() + 1));
                 startActivity(intentAddEvent);
 
             }
@@ -166,7 +167,7 @@ public class CompactCalendarTab extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intentEditEvent = new Intent(getContext(), CalendarEventBody.class);
-                //intentEditEvent.putExtra();
+                EventData eventData = eventDataList.get(position);
             }
         });
 
