@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -63,6 +64,7 @@ public class CompactCalendarTab extends Fragment {
         final Button slideCalendarBut = mainTabView.findViewById(R.id.slide_calendar);
         final Button showCalendarWithAnimationBut = mainTabView.findViewById(R.id.show_with_animation_calendar);
         final Button addEventButtom = mainTabView.findViewById(R.id.add_event_button);
+        final FloatingActionButton fab = mainTabView.findViewById(R.id.fab_calendar_activity);
 
         final ArrayAdapter adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, mutableBookings);
         bookingsListView.setAdapter(adapter);
@@ -88,6 +90,24 @@ public class CompactCalendarTab extends Fragment {
 
         // show Sunday as first day of month
         // compactCalendarView.setShouldShowMondayAsFirstDay(false);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedDate != null) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(selectedDate);
+                    timeInMilliseconds = calendar.getTimeInMillis();
+                }else{
+                    timeInMilliseconds = System.currentTimeMillis();
+                }
+                Intent intentAddEvent = new Intent(mainTabView.getContext(), CalendarEventBody.class);
+                intentAddEvent.putExtra("date", timeInMilliseconds);
+                intentAddEvent.putExtra("id", (eventDataList.size() + 1));
+                startActivity(intentAddEvent);
+            }
+        });
+
 
         //set initial title
         toolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
