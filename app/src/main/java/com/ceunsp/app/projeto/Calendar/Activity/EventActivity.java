@@ -1,27 +1,22 @@
-package com.ceunsp.app.projeto.Activity.Calendar;
+package com.ceunsp.app.projeto.Calendar.Activity;
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
-import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
-import com.ceunsp.app.projeto.Activity.Calendar.Model.EventData;
+import com.ceunsp.app.projeto.Calendar.Model.EventData;
 import com.ceunsp.app.projeto.R;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
-public class CalendarEventBody extends AppCompatActivity {
+public class EventActivity extends AppCompatActivity {
 
     private EditText dateEventEdit, timeEventEdit, titleEventEdit;
     private Button saveButton;
@@ -34,7 +29,7 @@ public class CalendarEventBody extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar_event_body);
+        setContentView(R.layout.activity_event_add);
         dateEventEdit = findViewById(R.id.date_event_edit);
         timeEventEdit = findViewById(R.id.time_event_edit);
         titleEventEdit = findViewById(R.id.title_event_edit);
@@ -63,7 +58,7 @@ public class CalendarEventBody extends AppCompatActivity {
 //                dateEventEdit.setOnClickListener(new View.OnClickListener() {
 //                    @Override
 //                    public void onClick(View v) {
-//                        new DatePickerDialog(CalendarEventBody.this, date, calendar
+//                        new DatePickerDialog(EventActivity.this, date, calendar
 //                                .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
 //                                calendar.get(Calendar.DAY_OF_MONTH)).show();
 //                    }
@@ -93,7 +88,7 @@ public class CalendarEventBody extends AppCompatActivity {
 //                timeEventEdit.setOnClickListener(new View.OnClickListener() {
 //                    @Override
 //                    public void onClick(View v) {
-//                        new TimePickerDialog(CalendarEventBody.this, time, calendar
+//                        new TimePickerDialog(EventActivity.this, time, calendar
 //                                .get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE) , true).show();
 //                    }
 //                });
@@ -108,15 +103,11 @@ public class CalendarEventBody extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String eventTitle = titleEventEdit.getText().toString();
 
                 if ((!eventTitle.isEmpty()) && (DateTimeInMillis != null)) {
 
                     DatabaseReference pushKey = ref.push();
-
-
-
                     EventData eventData = new EventData();
                     eventData.setId(1);
                     eventData.setType("Prova");

@@ -1,4 +1,4 @@
-package com.ceunsp.app.projeto.Activity.Calendar;
+package com.ceunsp.app.projeto.Calendar.Activity;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -20,7 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import com.ceunsp.app.projeto.Activity.Calendar.Model.EventData;
+import com.ceunsp.app.projeto.Calendar.Model.EventData;
 import com.ceunsp.app.projeto.R;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
@@ -38,7 +38,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-public class CompactCalendarTab extends Fragment {
+public class CalendarActivity extends Fragment {
 
     private static final String TAG = "MainActivity";
     private Calendar currentCalender = Calendar.getInstance(Locale.getDefault());
@@ -51,45 +51,29 @@ public class CompactCalendarTab extends Fragment {
     private Long timeInMilliseconds;
     private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("ClassCalendar");
     private List<EventData> eventDataList = new ArrayList<EventData>();
+    final List<String> mutableBookings = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View mainTabView = inflater.inflate(R.layout.main_tab,container,false);
-
-        final List<String> mutableBookings = new ArrayList<>();
-
         final ListView bookingsListView = mainTabView.findViewById(R.id.bookings_listview);
         final Button showPreviousMonthBut = mainTabView.findViewById(R.id.prev_button);
         final Button showNextMonthBut = mainTabView.findViewById(R.id.next_button);
         final Button slideCalendarBut = mainTabView.findViewById(R.id.slide_calendar);
         final Button showCalendarWithAnimationBut = mainTabView.findViewById(R.id.show_with_animation_calendar);
-        final Button addEventButtom = mainTabView.findViewById(R.id.add_event_button);
         final FloatingActionButton fab = mainTabView.findViewById(R.id.fab_calendar_activity);
-
         final ArrayAdapter adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, mutableBookings);
         bookingsListView.setAdapter(adapter);
+
 
         compactCalendarView = mainTabView.findViewById(R.id.compactcalendar_view);
         compactCalendarView.setUseThreeLetterAbbreviation(false);
         compactCalendarView.setFirstDayOfWeek(Calendar.MONDAY);
         compactCalendarView.setIsRtl(false);
         compactCalendarView.displayOtherMonthDays(false);
-        loadEventsForYear(2017);
         compactCalendarView.invalidate();
 
         logEventsByMonth(compactCalendarView);
-
-        // below line will display Sunday as the first day of the week
-        // compactCalendarView.setShouldShowMondayAsFirstDay(false);
-
-        // disable scrolling calendar
-        // compactCalendarView.shouldScrollMonth(false);
-
-        // show days from other months as greyed out days
-        // compactCalendarView.displayOtherMonthDays(true);
-
-        // show Sunday as first day of month
-        // compactCalendarView.setShouldShowMondayAsFirstDay(false);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +85,7 @@ public class CompactCalendarTab extends Fragment {
                 }else{
                     timeInMilliseconds = System.currentTimeMillis();
                 }
-                Intent intentAddEvent = new Intent(mainTabView.getContext(), CalendarEventBody.class);
+                Intent intentAddEvent = new Intent(mainTabView.getContext(), EventActivity.class);
                 intentAddEvent.putExtra("date", timeInMilliseconds);
                 intentAddEvent.putExtra("id", (eventDataList.size() + 1));
                 startActivity(intentAddEvent);
@@ -115,22 +99,31 @@ public class CompactCalendarTab extends Fragment {
 
         //set title on calendar scroll
         compactCalendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
+            int index = 0;
             @Override
             public void onDayClick(Date dateClicked) {
                 selectedDate = dateClicked;
+                RefreshListView(dateClicked);
+            }
+            public void RefreshListView(Date dateClicked){
                 toolbar.setTitle(dateFormatForMonth.format(dateClicked));
                 List<Event> bookingsFromMap = compactCalendarView.getEvents(dateClicked);
-                Log.d(TAG, "inside onclick " + dateFormatForDisplaying.format(dateClicked));
+
+                eventDataList.clear();
+                for (int index = 0; index < bookingsFromMap.size(); index++){
+                    Event event = bookingsFromMap.get(index);
+                    EventData eventData = (EventData) event.getData();
+                    eventDataList.add(eventData);
+                }
+
                 if (bookingsFromMap != null) {
                     Log.d(TAG, bookingsFromMap.toString());
                     mutableBookings.clear();
-                    int index = 0;
-                    for (Event booking : bookingsFromMap) {
-                        EventData eventData = eventDataList.get(index);
+
+                    for (EventData eventData : eventDataList) {
                         mutableBookings.add((String) eventData.getTitle());
-                        index++;
-                        adapter.notifyDataSetChanged();
                     }
+                    adapter.notifyDataSetChanged();
                 }
             }
 
@@ -140,11 +133,11 @@ public class CompactCalendarTab extends Fragment {
             }
         });
 
-
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
+                    eventDataList.clear();
                     compactCalendarView.removeAllEvents();
                     for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                         Long time = (Long) postSnapshot.child("Event").child("timeInMillis").getValue();
@@ -152,7 +145,6 @@ public class CompactCalendarTab extends Fragment {
                         String title = eventData.getTitle();
                         String teste = "";
 
-                        eventDataList.add(eventData);
                         Event event = new Event(R.color.colorAccent, time, eventData);
                         loadEvents(event);
                     }
@@ -160,37 +152,15 @@ public class CompactCalendarTab extends Fragment {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        addEventButtom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (selectedDate != null) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(selectedDate);
-                    timeInMilliseconds = calendar.getTimeInMillis();
-                }else{
-                    timeInMilliseconds = System.currentTimeMillis();
-                }
-                Intent intentAddEvent = new Intent(mainTabView.getContext(), CalendarEventBody.class);
-                intentAddEvent.putExtra("date", timeInMilliseconds);
-                intentAddEvent.putExtra("id", (eventDataList.size() + 1));
-                startActivity(intentAddEvent);
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
 
         bookingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intentEditEvent = new Intent(getContext(), CalendarEventBody.class);
-                EventData eventData = eventDataList.get(position);
+                Intent intentEditEvent = new Intent(getContext(), EventActivity.class);
             }
         });
-
 
         showPreviousMonthBut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -221,8 +191,6 @@ public class CompactCalendarTab extends Fragment {
             public void onClosed() {
             }
         });
-
-
 
         return mainTabView;
     }
@@ -288,12 +256,6 @@ public class CompactCalendarTab extends Fragment {
     private void loadEvents(Event event) {
         compactCalendarView.addEvent(event);
         }
-
-
-    private void loadEventsForYear(int year) {
-        addEvents(Calendar.DECEMBER, year);
-        addEvents(Calendar.AUGUST, year);
-    }
 
     private void logEventsByMonth(CompactCalendarView compactCalendarView) {
         currentCalender.setTime(new Date());

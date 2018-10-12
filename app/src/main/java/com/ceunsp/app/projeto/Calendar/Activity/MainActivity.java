@@ -1,25 +1,15 @@
-package com.ceunsp.app.projeto.Activity.Calendar;
+package com.ceunsp.app.projeto.Calendar.Activity;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.EventLog;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 
+import com.ceunsp.app.projeto.Calendar.Helper.SlidingTabLayout;
+import com.ceunsp.app.projeto.Calendar.Helper.ViewPagerAdapter;
 import com.ceunsp.app.projeto.R;
-import com.github.sundeepk.compactcalendarview.CompactCalendarView;
-import com.github.sundeepk.compactcalendarview.domain.Event;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -28,8 +18,8 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager pager;
     private ViewPagerAdapter adapter;
     private SlidingTabLayout tabs;
-    private CharSequence titles[]= {"Home","Events"};
-    private int numberOfTabs = 2;
+    private CharSequence titles[]= {""}; //{"Home","Events"};
+    private int numberOfTabs = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setElevation(0);
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(), titles, numberOfTabs);
@@ -55,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
             public int getIndicatorColor(int position) {
-                return getResources().getColor(R.color.colorPrimary);
+                return getResources().getColor(R.color.calendar_background);
             }
         });
 

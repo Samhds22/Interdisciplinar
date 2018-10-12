@@ -21,7 +21,7 @@
         app:compactCalendarShouldSelectFirstDayOfMonthOnScroll="true"
         app:compactCalendarTargetHeight="250dp"
         app:compactCalendarTextColor="#fff"
-        app:compactCalendarTextSize="18sp" />
+        app:compactCalendarTextSize="20sp" />
 
     <Button
         android:layout_below="@+id/compactcalendar_view"
@@ -71,13 +71,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             />
-
-        <Button
-            android:id="@+id/add_event_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Button" />
 
     </LinearLayout>
     <include layout="@layout/calendar_fab" />

@@ -9,9 +9,10 @@
     <string name="action_sign_in">Entrar</string>
     <string name="action_sign_in_short">Cadastre-se</string>
     <string name="error_invalid_email">Este é um email inválido</string>
-    <string name="error_invalid_password">Senha muito curta</string>
+    <string name="error_invalid_password">Senha inválida.</string>
+    <string name="error_invalid_name">Não pode conter numeros ou caracteres especiais</string>
     <string name="error_incorrect_password">Senha incorreta!</string>
-    <string name="error_field_required">Esse campo é obrigatório!</string>
+    <string name="error_field_required">Necessário informar este campo</string>
     <string name="permission_rationale">"Necessria a permissão aos seus contatos."
     </string>
     <string name="title_activity_home">Home</string>
@@ -25,26 +26,28 @@
     <string name="item_menu2">Anotações</string>
     <string name="item_menu3">Sobre</string>
     <string name="item_menu4">Sair</string>
-    <string-array name="Faculdades">
+    <string-array name="colleges">
         <item>Faculdade</item>
         <item>Ceunsp Itu</item>
         <item>Ceunsp Salto</item>
     </string-array>
-    <string-array name="Cursos">
+    <string-array name="courses">
         <item>Analise de Sistemas</item>
         <item>Design Grafico</item>
         <item>Ciencias da Computação</item>
     </string-array>
-    <string name="Nome">"Nome"</string>
-    <string name="Idade">"Idade"</string>
-    <string name="Faculdade">"Faculdade"</string>
-    <string name="Curso">"Curso"</string>
-    <string name="Botao">Salvar"</string>
-    <string name="Email">"Email"</string>
-    <string name="Senha">"Senha"</string>
+    <string name="name">"Nome"</string>
+    <string name="last_name">"Sobrenome"</string>
+    <string name="nickname">"Apelido"</string>
+    <string name="age">"Idade"</string>
+    <string name="college">"Faculdade"</string>
+    <string name="course">"Curso"</string>
+    <string name="email">"Email"</string>
+    <string name="password">"Crie uma senha"</string>
+    <string name="password_confirm">"Digite novamente"</string>
     <string name="title_event">Insira um título</string>
     <string name="date_event">Data</string>
-    <string name="save_button_event">Salvar</string>
+    <string name="save_button">Salvar</string>
     <string name="title_activity_main_tab2">Novo evento</string>
     <string name="title_activity_schedule_add_event">Teste</string>
     <string name="not_have_Account">Ainda não é cadastrado!?</string>

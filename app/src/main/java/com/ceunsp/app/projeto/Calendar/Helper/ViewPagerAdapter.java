@@ -1,8 +1,10 @@
-package com.ceunsp.app.projeto.Activity.Calendar;
+package com.ceunsp.app.projeto.Calendar.Helper;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+
+import com.ceunsp.app.projeto.Calendar.Activity.CalendarActivity;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -18,8 +20,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            CompactCalendarTab compactCalendarTab = new CompactCalendarTab();
-            return compactCalendarTab;
+            CalendarActivity calendarActivity = new CalendarActivity();
+            return calendarActivity;
         } else {
             Tab2 tab2 = new Tab2();
             return tab2;

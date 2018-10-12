@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.Calendar.CalendarEventBody"
+    tools:context=".Calendar.Activity.EventActivity"
     tools:layout_editor_absoluteY="81dp"
     android:orientation="vertical">
 
@@ -43,7 +43,7 @@
             android:id="@+id/save_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/save_button_event"
+            android:text="@string/save_button"
             android:background="@drawable/border_rounded_button"
             android:layout_marginLeft="100dp"
             android:layout_marginRight="100dp"/>

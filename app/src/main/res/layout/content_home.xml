@@ -8,10 +8,6 @@
     tools:context=".Activity.HomeActivity"
     tools:showIn="@layout/app_bar_home">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/add_proof_button"
-        android:text=""/>
+
 
 </android.support.constraint.ConstraintLayout>

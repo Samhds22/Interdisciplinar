@@ -34,10 +34,10 @@
             android:theme="@style/AppTheme.NoActionBar"
 	        android:screenOrientation="portrait"/>
         <activity
-            android:name=".Activity.Calendar.MainActivity"
+            android:name=".Calendar.Activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Activity.Calendar.CalendarEventBody"
+            android:name=".Calendar.Activity.EventActivity"
             android:screenOrientation="portrait"/>
        <!-- <activity
             android:name=".main_tab"
