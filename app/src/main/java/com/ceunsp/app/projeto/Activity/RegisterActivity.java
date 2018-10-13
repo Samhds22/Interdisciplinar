@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,9 +27,9 @@ public class RegisterActivity extends AppCompatActivity {
 
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-    private EditText emailEdit, passwordEdit, nameEdit, ageEdit;
-    private Button saveButton;
+    private EditText nameEdit, lastNameEdit, nicknameEdit, dtBirthEdit, emailEdit, passwordEdit, pwConfirmEdit;
     private Spinner collegeSpinner, courseSpinner;
+    private Button saveButton;
     private String array_spinner[];
 
     @Override
@@ -37,58 +38,68 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         nameEdit        = findViewById(R.id.name_edit);
-        ageEdit         = findViewById(R.id.age_edit);
+        lastNameEdit    = findViewById(R.id.last_name_edit);
+        nicknameEdit    = findViewById(R.id.nickname);
+        dtBirthEdit     = findViewById(R.id.date_of_birth);
         collegeSpinner  = findViewById(R.id.college_spinner);
         courseSpinner   = findViewById(R.id.course_spinner);
         emailEdit       = findViewById(R.id.email_edit);
         passwordEdit    = findViewById(R.id.password_edit);
+        pwConfirmEdit   = findViewById(R.id.password_confirm_edit);
         saveButton      = findViewById(R.id.save_button);
 
         getSupportActionBar().setTitle("Novo usuário");
 
         LoadSpinner();
 
-        /* Cadastro do usuario no Firebase Authentication */
+
+
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if (AttempRegister()){
-                    auth.createUserWithEmailAndPassword(emailEdit.getText().toString(), passwordEdit.getText().toString())
-                            .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()){
+                final String email      = emailEdit.getText().toString();
+                final String password   = passwordEdit.getText().toString();
+                final String name       = nameEdit.getText().toString();
+                final String lastName   = lastNameEdit.getText().toString();
+                final String nickname   = nicknameEdit.getText().toString();
+                final String dateOfBith = dtBirthEdit.getText().toString();
+                final String college    = collegeSpinner.getSelectedItem().toString();
+                final String course     = courseSpinner.getSelectedItem().toString();
 
-                                        String userID = auth.getCurrentUser().getUid();
-                                        User user = new User();
-                                        user.setName(nameEdit.getText().toString());
-                                        ref.child(userID).setValue(user);
-                                        auth.signOut();
-                                        finish();
+                auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegisterActivity.this
+                        , new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
 
-                                    }else{
+                                    String userID = auth.getCurrentUser().getUid();
+                                    User user = new User(name, lastName, nickname
+                                            ,dateOfBith, college, course, "",0);
 
-                                    }
+                                    ref.child(userID).setValue(user);
+                                    auth.signOut();
+                                    finish();
                                 }
-                            });
-                }
+                            }
+                });
             }
         });
-
     }
 
+    /*public boolean AttempRegister(String name, String lastname, String nickname
+                                 ,String dateOfBirth, String college, String course
+                                 ,String email, String password, String pwConfirm){
 
-    //Validações dos campos obrigatórios
-    public boolean AttempRegister(){
-
-        emailEdit.setError(null);
+            nameEdit.setError(null);
+        lastNameEdit.setError(null);
+        nicknameEdit.setError(null);
+         dtBirthEdit.setError(null);
+           emailEdit.setError(null);
         passwordEdit.setError(null);
-        nameEdit.setError(null);
 
-        String emailText    = emailEdit.getText().toString();
-        String passwordText = passwordEdit.getText().toString();
-        String nameText     = nameEdit.getText().toString();
+
+
         boolean cancel      = false;
         View focusView      = null;
 
@@ -131,7 +142,7 @@ public class RegisterActivity extends AppCompatActivity {
         } else {
             return true;
         }
-    }
+    }*/
 
     public final static boolean isValidPassword(String target) {
         return Pattern.compile("^(?=.*\\d)(?=.*[a-zA-Z])[a-zA-Z0-9]{4,12}$").matcher(target).matches();
@@ -147,7 +158,8 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public final static boolean isValidNickName(String target) {
-        return Pattern.compile("^(?=.*[a-zA-Z\\d])[a-zA-Z0-9가-힣]{2,12}$|^[가-힣]$").matcher(target).matches();
+        return target.length() > 4;
+        //return Pattern.compile("^(?=.*[a-zA-Z\\d])[a-zA-Z0-9가-힣]{2,12}$|^[가-힣]$").matcher(target).matches();
     }
 
     private void LoadSpinner(){

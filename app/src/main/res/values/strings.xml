@@ -39,7 +39,7 @@
     <string name="name">"Nome"</string>
     <string name="last_name">"Sobrenome"</string>
     <string name="nickname">"Apelido"</string>
-    <string name="age">"Idade"</string>
+    <string name="date_of_birth">"Dt. nasc."</string>
     <string name="college">"Faculdade"</string>
     <string name="course">"Curso"</string>
     <string name="email">"Email"</string>
@@ -55,4 +55,8 @@
     <string name="add_event">Adicionar evento</string>
     <string name="add_job">Adicionar trabalho</string>
     <string name="add_note">Adicionar anotação</string>
+    <string name="title_activity_class_register">ClassRegisterActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

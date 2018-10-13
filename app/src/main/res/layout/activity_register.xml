@@ -19,23 +19,25 @@
                 android:id="@+id/name_edit"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:layout_margin="6dp"
+                android:layout_margin="5dp"
                 android:background="@drawable/border_rounded_main_fields"
                 android:hint="@string/name"
-                android:paddingLeft="15dp"
+                android:paddingLeft="12dp"
                 android:inputType=""
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:singleLine="true"/>
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:id="@+id/last_name_edit"
-                android:layout_margin="6dp"
+                android:layout_margin="5dp"
                 android:background="@drawable/border_rounded_main_fields"
                 android:hint="@string/last_name"
-                android:paddingLeft="15dp"
+                android:paddingLeft="12dp"
                 android:layout_weight="1"
-                android:inputType=""/>
+                android:inputType=""
+                android:singleLine="true"/>
 
         </LinearLayout>
 
@@ -47,23 +49,25 @@
                 android:id="@+id/nickname"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:layout_margin="6dp"
+                android:layout_margin="5dp"
                 android:background="@drawable/border_rounded_main_fields"
                 android:hint= "@string/nickname"
-                android:paddingLeft="15dp"
-                android:inputType="numberDecimal"
-                android:layout_weight="1"/>
+                android:paddingLeft="12dp"
+                android:inputType=""
+                android:layout_weight="1.4"
+                android:singleLine="true"/>
 
             <EditText
-                android:id="@+id/age_edit"
+                android:id="@+id/date_of_birth"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:layout_margin="6dp"
+                android:layout_margin="5dp"
                 android:background="@drawable/border_rounded_main_fields"
-                android:hint= "@string/age"
-                android:paddingLeft="15dp"
-                android:inputType="numberDecimal"
-                android:layout_weight="2"/>
+                android:hint= "@string/date_of_birth"
+                android:paddingLeft="12dp"
+                android:inputType="date"
+                android:layout_weight="2"
+                android:singleLine="true"/>
 
         </LinearLayout>
 
@@ -76,21 +80,21 @@
                 android:id="@+id/college_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:layout_margin="6dp"
+                android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:autofillHints="@string/course"
                 android:background="@drawable/border_rounded_main_fields"
-                android:paddingLeft="15dp"/>
+                android:paddingLeft="12dp"/>
 
             <Spinner
                 android:id="@+id/course_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:layout_margin="6dp"
+                android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/border_rounded_main_fields"
                 android:hint="@string/course"
-                android:paddingLeft="15dp"/>
+                android:paddingLeft="12dp"/>
         </android.support.design.widget.TextInputLayout>
 
 
@@ -98,12 +102,12 @@
             android:id="@+id/email_edit"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:layout_margin="6dp"
+            android:layout_margin="5dp"
             android:background="@drawable/border_rounded_main_fields"
             android:hint="@string/email"
             android:inputType="textEmailAddress"
             android:maxLines="1"
-            android:paddingLeft="15dp"
+            android:paddingLeft="12dp"
             android:singleLine="true"/>
 
         <LinearLayout
@@ -116,7 +120,7 @@
                 android:id="@+id/password_edit"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:layout_margin="6dp"
+                android:layout_margin="5dp"
                 android:background="@drawable/border_rounded_main_fields"
                 android:hint="@string/password"
                 android:imeActionId="6"
@@ -124,15 +128,15 @@
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
                 android:maxLines="1"
-                android:paddingLeft="15dp"
+                android:paddingLeft="12dp"
                 android:singleLine="true"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
 
             <EditText
                 android:id="@+id/password_confirm_edit"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:layout_margin="6dp"
+                android:layout_margin="5dp"
                 android:background="@drawable/border_rounded_main_fields"
                 android:hint="@string/password_confirm"
                 android:imeActionId="6"
@@ -140,17 +144,10 @@
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
                 android:maxLines="1"
-                android:paddingLeft="15dp"
+                android:paddingLeft="12dp"
                 android:singleLine="true"
                 android:layout_weight="1"/>
 
         </LinearLayout>
-        <Button
-            android:layout_marginTop="30dp"
-            android:id="@+id/save_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/border_rounded_button"
-            android:text="@string/save_button"
-            android:layout_gravity="center"/>
+    <include layout="@layout/content_register"/>
 </LinearLayout>

@@ -9,7 +9,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".Activity.SplashScreenActivity"
             android:screenOrientation="portrait"
@@ -23,26 +22,37 @@
         <activity
             android:name=".Activity.LoginActivity"
             android:label="@string/title_activity_login"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activity.RegisterActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.HomeActivity"
             android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme.NoActionBar"
-	        android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Calendar.Activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Calendar.Activity.EventActivity"
-            android:screenOrientation="portrait"/>
-       <!-- <activity
+            android:screenOrientation="portrait" />
+        <!--
+            <activity
             android:name=".main_tab"
             android:label="@string/title_activity_main_tab2"
-            android:theme="@style/AppTheme.NoActionBar"></activity>-->
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        -->
+        <activity
+            android:name=".Activity.CollegeClassActivity"
+            android:label="@string/title_activity_class_register"
+            android:parentActivityName=".Activity.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ceunsp.app.projeto.Activity.HomeActivity" />
+        </activity>
     </application>
 
 </manifest>

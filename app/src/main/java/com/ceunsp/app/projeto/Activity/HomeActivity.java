@@ -2,6 +2,7 @@ package com.ceunsp.app.projeto.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -14,14 +15,25 @@ import android.view.MenuItem;
 import com.ceunsp.app.projeto.Calendar.Activity.MainActivity;
 import com.ceunsp.app.projeto.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -75,8 +87,35 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_schedule) {
-            Intent intentSchedule = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intentSchedule);
+
+            final String[] collegeClass = new String[1];
+
+            String userID = auth.getCurrentUser().getUid();
+            ref.child(userID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()){
+
+                        collegeClass[0] = dataSnapshot.child("collegeClass").getValue().toString();
+
+                        if (collegeClass[0].equals("")){
+
+                            Intent intentNewClass = new Intent(getApplicationContext(), CollegeClassActivity.class);
+                            startActivity(intentNewClass);
+
+                        }else {
+
+                            Intent intentCalendar = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intentCalendar);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
 
         } else if (id == R.id.nav_annotation) {
 
