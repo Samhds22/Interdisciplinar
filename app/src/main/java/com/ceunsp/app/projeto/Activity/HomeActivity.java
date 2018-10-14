@@ -100,7 +100,7 @@ public class HomeActivity extends AppCompatActivity
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()){
 
-                        collegeClass[0] = dataSnapshot.child("collegeClass").getValue().toString();
+                        collegeClass[0] = dataSnapshot.child("collegeClassID").getValue().toString();
 
                         if (collegeClass[0].equals("")){
 

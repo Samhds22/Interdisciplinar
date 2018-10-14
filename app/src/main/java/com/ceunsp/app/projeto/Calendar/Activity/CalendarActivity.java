@@ -24,6 +24,7 @@ import com.ceunsp.app.projeto.Calendar.Model.EventData;
 import com.ceunsp.app.projeto.R;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,8 +51,10 @@ public class CalendarActivity extends Fragment {
     private Date selectedDate;
     private Long timeInMilliseconds;
     private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("ClassCalendar");
+    private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private List<EventData> eventDataList = new ArrayList<EventData>();
     final List<String> mutableBookings = new ArrayList<>();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -87,7 +90,6 @@ public class CalendarActivity extends Fragment {
                 }
                 Intent intentAddEvent = new Intent(mainTabView.getContext(), EventActivity.class);
                 intentAddEvent.putExtra("date", timeInMilliseconds);
-                intentAddEvent.putExtra("id", (eventDataList.size() + 1));
                 startActivity(intentAddEvent);
             }
         });
@@ -132,7 +134,7 @@ public class CalendarActivity extends Fragment {
                 toolbar.setTitle(dateFormatForMonth.format(firstDayOfNewMonth));
             }
         });
-
+        
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

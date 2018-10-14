@@ -8,36 +8,86 @@
     tools:layout_editor_absoluteY="81dp"
     android:orientation="vertical">
 
+
     <EditText
         android:id="@+id/title_event_edit"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:hint="@string/title_event"
-        android:textSize="20dp"
+        android:textSize="25sp"
         android:textColor="@color/colorWhite"
         android:background="#c62918"
-        android:paddingLeft="15dp"
-        android:layout_marginBottom="20dp" />
+        android:paddingLeft="20dp"
+        android:paddingStart="20dp"
+        android:paddingRight="0dp"
+        android:paddingEnd="0dp"
+        android:layout_marginBottom="20dp"
+        android:textColorHint="@color/colorWhite"/>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:layout_margin="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+
+            <EditText
+                android:id="@+id/date_event_edit"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:hint="@string/date_event"
+                android:background="@drawable/border_rounded_main_fields"
+                android:layout_weight="1"
+                android:inputType="date"
+                android:layout_margin="5dp"
+                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="0dp"
+                android:paddingRight="0dp"/>
+
+            <EditText
+                android:id="@+id/time_event_edit"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:background="@drawable/border_rounded_main_fields"
+                android:hint="@string/hour"
+                android:layout_weight="1"
+                android:inputType="datetime"
+                android:layout_margin="5dp"
+                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="0dp"
+                android:paddingRight="0dp"/>
+
+        </LinearLayout>
+
+        <Spinner
+            android:id="@+id/type_spinner"
+            android:layout_width="match_parent"
+            android:layout_margin="20dp"
+            android:layout_height="42dp"
+            android:background="@drawable/border_rounded_main_fields"/>
+
 
         <EditText
-            android:id="@+id/date_event_edit"
+            android:id="@+id/annotation_edit"
             android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:hint="@string/date_event"
-            android:background="@drawable/border_rounded_other_fields"/>
-
-        <EditText
-            android:id="@+id/time_event_edit"
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:background="@drawable/border_rounded_other_fields"
-            android:hint="hint" />
+            android:layout_height="150dp"
+            android:ems="10"
+            android:inputType="textMultiLine"
+            android:background="@drawable/border_rounded_main_fields"
+            android:hint="@string/annotation"
+            android:paddingLeft="10dp"
+            android:paddingStart="25dp"
+            android:paddingEnd="0dp"
+            android:paddingRight="0dp"
+            android:paddingBottom="90dp"/>
 
         <Button
             android:id="@+id/save_button"
@@ -46,7 +96,10 @@
             android:text="@string/save_button"
             android:background="@drawable/border_rounded_button"
             android:layout_marginLeft="100dp"
-            android:layout_marginRight="100dp"/>
-    </LinearLayout>
+            android:layout_marginRight="100dp"
+            android:layout_marginTop="30dp"
+            android:textColor="@color/colorWhite"/>
 
+    </LinearLayout>
 </LinearLayout>
+

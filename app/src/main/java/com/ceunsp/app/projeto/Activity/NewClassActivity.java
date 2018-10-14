@@ -68,11 +68,13 @@ public class NewClassActivity extends AppCompatActivity {
                         DatabaseReference pushKey = collegeClassRef.push();
 
                         Students students = new Students(userID);
+
                         CollegeClass collegeClass = new CollegeClass(college, course, className, userName, creationDate, students);
+
                         pushKey.setValue(collegeClass);
 
                         DatabaseReference userQry = ref.child("Users").child(userID);
-                        userQry.child("collegeClass").setValue(className);
+                        userQry.child("collegeClassID").setValue(pushKey.getKey());
                         userQry.child("half").setValue(1); //alterar
 
                         finish();

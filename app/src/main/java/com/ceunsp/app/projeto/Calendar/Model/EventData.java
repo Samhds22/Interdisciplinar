@@ -2,18 +2,10 @@ package com.ceunsp.app.projeto.Calendar.Model;
 
 public class EventData {
 
-    private int id;
     private String type;
     private String title;
     private String annotation;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getType() {
         return type;
