@@ -1,6 +1,8 @@
 package com.ceunsp.app.projeto.Activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -11,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.ceunsp.app.projeto.Calendar.Activity.MainActivity;
 import com.ceunsp.app.projeto.R;
@@ -90,6 +93,7 @@ public class HomeActivity extends AppCompatActivity
 
             final String[] collegeClass = new String[1];
 
+        if (CheckConnection()){
             String userID = auth.getCurrentUser().getUid();
             ref.child(userID).addValueEventListener(new ValueEventListener() {
                 @Override
@@ -113,9 +117,11 @@ public class HomeActivity extends AppCompatActivity
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
                 }
             });
+        } else {
+            Toast.makeText(getApplicationContext(),"Sem conexão", Toast.LENGTH_LONG).show();
+        }
 
         } else if (id == R.id.nav_annotation) {
 
@@ -129,5 +135,18 @@ public class HomeActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public  boolean CheckConnection() {
+        boolean conected;
+        ConnectivityManager conectivtyManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (conectivtyManager.getActiveNetworkInfo() != null
+                && conectivtyManager.getActiveNetworkInfo().isAvailable()
+                && conectivtyManager.getActiveNetworkInfo().isConnected()) {
+            conected = true;
+        } else {
+            conected = false;
+        }
+        return conected;
     }
 }

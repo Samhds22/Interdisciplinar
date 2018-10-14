@@ -53,6 +53,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ceunsp.app.projeto.Activity.HomeActivity" />
         </activity>
+        <activity android:name=".Activity.NewClassActivity" />
+        <activity
+            android:name=".Activity.ClassActivity"
+            android:label="@string/title_activity_class"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
