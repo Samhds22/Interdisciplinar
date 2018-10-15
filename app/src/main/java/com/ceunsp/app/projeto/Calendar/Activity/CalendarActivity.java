@@ -45,15 +45,17 @@ public class CalendarActivity extends Fragment {
     private Calendar currentCalender = Calendar.getInstance(Locale.getDefault());
     private SimpleDateFormat dateFormatForDisplaying = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a", Locale.getDefault());
     private SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("MMM - yyyy", Locale.getDefault());
-    private boolean shouldShow = false;
+    private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+    private final FirebaseAuth auth = FirebaseAuth.getInstance();
+    private String userID = auth.getCurrentUser().getUid();
+    final List<String> mutableBookings = new ArrayList<>();
+    private List<EventData> eventDataList = new ArrayList<EventData>();
     private CompactCalendarView compactCalendarView;
+    private Long timeInMilliseconds;
+    private boolean shouldShow = false;
     private ActionBar toolbar;
     private Date selectedDate;
-    private Long timeInMilliseconds;
-    private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("ClassCalendar");
-    private final FirebaseAuth auth = FirebaseAuth.getInstance();
-    private List<EventData> eventDataList = new ArrayList<EventData>();
-    final List<String> mutableBookings = new ArrayList<>();
+    private String userClassID;
 
 
     @Override
@@ -90,6 +92,8 @@ public class CalendarActivity extends Fragment {
                 }
                 Intent intentAddEvent = new Intent(mainTabView.getContext(), EventActivity.class);
                 intentAddEvent.putExtra("date", timeInMilliseconds);
+                intentAddEvent.putExtra("userClassID", userClassID);
+                intentAddEvent.putExtra("userID", userID);
                 startActivity(intentAddEvent);
             }
         });
@@ -134,28 +138,47 @@ public class CalendarActivity extends Fragment {
                 toolbar.setTitle(dateFormatForMonth.format(firstDayOfNewMonth));
             }
         });
-        
-        ref.addValueEventListener(new ValueEventListener() {
+
+        DatabaseReference userRef = ref.child("Users");
+        userRef.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    eventDataList.clear();
-                    compactCalendarView.removeAllEvents();
-                    for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                        Long time = (Long) postSnapshot.child("Event").child("timeInMillis").getValue();
-                        EventData eventData = postSnapshot.child("Event").child("data").getValue(EventData.class);
-                        String title = eventData.getTitle();
-                        String teste = "";
 
-                        Event event = new Event(R.color.colorAccent, time, eventData);
-                        loadEvents(event);
+                userClassID = dataSnapshot.child("collegeClassID").getValue().toString();
+
+                DatabaseReference classCalendarRef = ref.child("ClassCalendar").child(userClassID);
+                classCalendarRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+
+                            eventDataList.clear();
+                            compactCalendarView.removeAllEvents();
+
+                            for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+
+                                Long time = (Long) postSnapshot.child("Event").child("timeInMillis").getValue();
+                                EventData eventData = postSnapshot.child("Event").child("data").getValue(EventData.class);
+
+                                Event event = new Event(R.color.colorAccent, time, eventData);
+                                loadEvents(event);
+                            }
+                        }
                     }
-                }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) { }
+                });
+
+
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
         });
+
 
         bookingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

@@ -75,7 +75,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                                     String userID = auth.getCurrentUser().getUid();
                                     User user = new User(name, lastName, nickname
-                                            ,dateOfBith, college, course, "",0);
+                                            ,dateOfBith, college, course, "");
 
                                     ref.child(userID).setValue(user);
                                     auth.signOut();

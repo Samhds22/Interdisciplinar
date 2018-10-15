@@ -1,26 +1,22 @@
 package com.ceunsp.app.projeto.Activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.ceunsp.app.projeto.Adapter.CollegeClassAdapter;
+import com.ceunsp.app.projeto.Helpers.CollegeClassAdapter;
+import com.ceunsp.app.projeto.Helpers.RecyclerItemClickListener;
 import com.ceunsp.app.projeto.Model.CollegeClass;
-import com.ceunsp.app.projeto.Model.User;
 import com.ceunsp.app.projeto.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -75,8 +71,8 @@ public class CollegeClassActivity extends AppCompatActivity {
                     course  = dataSnapshot.child("course").getValue().toString();
 
 
-                    String collegeAux = CleanUpStrings(college);
-                    String courseAux   = CleanUpStrings(course);
+                    final String collegeAux = CleanUpStrings(college);
+                    final String courseAux   = CleanUpStrings(course);
 
                     collegeClassQry = ref.child("CollegeClass").child(collegeAux).child(courseAux);
                     collegeClassQry.addValueEventListener(new ValueEventListener() {
@@ -85,11 +81,13 @@ public class CollegeClassActivity extends AppCompatActivity {
                             collegeClassList.clear();
                             for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
                                 if (dataSnapshot.exists()){
-                                    String className = postSnapshot.child("className").getValue().toString();
-                                    String creator = postSnapshot.child("creator").getValue().toString();
-                                    String creationDate = postSnapshot.child("creationDate").getValue().toString();
 
-                                    CollegeClass collegeClass = new CollegeClass(className, creator, creationDate);
+                                    String creationDate = (String) postSnapshot.child("creationDate").getValue();
+                                    String className    = (String) postSnapshot.child("className").getValue();
+                                    String creator      = (String) postSnapshot.child("creator").getValue();
+                                    String classID      = (String) postSnapshot.child("classID").getValue();
+
+                                    CollegeClass collegeClass = new CollegeClass(className, creator, creationDate, classID);
                                     collegeClassList.add(collegeClass);
 
                                     RecyclerView recyclerView = findViewById(R.id.class_recyclerView);
@@ -99,6 +97,33 @@ public class CollegeClassActivity extends AppCompatActivity {
                                     recyclerView.setLayoutManager(layoutManager);
                                     recyclerView.setHasFixedSize(true);
                                     recyclerView.setAdapter(adapter);
+
+                                    recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplication(),
+                                            recyclerView,
+                                            new RecyclerItemClickListener.OnItemClickListener() {
+                                                @Override
+                                                public void onItemClick(View view, int position) {
+
+                                                    CollegeClass cClass = collegeClassList.get(position);
+                                                    String classID = cClass.getClassID();
+
+                                                    Intent intentJoin = new Intent(getApplicationContext(), JoinClassActivity.class);
+                                                    intentJoin.putExtra("classID", classID);
+                                                    intentJoin.putExtra("college", collegeAux);
+                                                    intentJoin.putExtra("course", courseAux);
+                                                    startActivity(intentJoin);
+                                                }
+
+                                                @Override
+                                                public void onLongItemClick(View view, int position) {
+
+                                                }
+
+                                                @Override
+                                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                                                }
+                                            }));
 
                                 }
                             }
@@ -121,5 +146,6 @@ public class CollegeClassActivity extends AppCompatActivity {
         str = str.replace(" ", "");
         return str;
     }
+
 
 }

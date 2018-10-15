@@ -5,18 +5,17 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     private int half;
-    private String name, lastName, nickname, dateOfBirth, college, course, collegeClass;
+    private String name, lastName, nickname, dateOfBirth, college, course, collegeClassID;
 
     public User(String name, String lastName, String nickname, String dateOfBirth
-               ,String college, String course, String collegeClass, int half) {
+               ,String college, String course, String collegeClassID) {
         this.name = name;
         this.lastName = lastName;
         this.nickname = nickname;
         this.dateOfBirth = dateOfBirth;
         this.college = college;
         this.course = course;
-        this.collegeClass = collegeClass;
-        this.half = half;
+        this.collegeClassID = collegeClassID;
     }
 
     public String getDateOfBirth() {
@@ -75,11 +74,11 @@ public class User implements Serializable {
         this.course = course;
     }
 
-    public String getCollegeClass() {
-        return collegeClass;
+    public String getCollegeClassID() {
+        return collegeClassID;
     }
 
-    public void setCollegeClass(String collegeClass) {
-        this.collegeClass = collegeClass;
+    public void setCollegeClassID(String collegeClass) {
+        this.collegeClassID = collegeClassID;
     }
 }

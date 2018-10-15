@@ -18,8 +18,8 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager pager;
     private ViewPagerAdapter adapter;
     private SlidingTabLayout tabs;
-    private CharSequence titles[]= {""}; //{"Home","Events"};
-    private int numberOfTabs = 1;
+    private CharSequence titles[]= {"Agenda","Histórico"};
+    private int numberOfTabs = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

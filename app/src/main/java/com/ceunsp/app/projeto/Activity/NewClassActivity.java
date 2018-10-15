@@ -61,21 +61,22 @@ public class NewClassActivity extends AppCompatActivity {
 
                         String userName = dataSnapshot.child("name").getValue().toString();
                         className = classNameEdit.getText().toString();
-                        String creationDate = GetDate();
+                        String creationDate = GetCurrentDate();
                         CleanUpStrings(college, course);
 
                         DatabaseReference collegeClassRef = ref.child("CollegeClass").child(college).child(course);
                         DatabaseReference pushKey = collegeClassRef.push();
 
-                        Students students = new Students(userID);
+                        Students students = new Students();
+                        students.setUserID(userID);
 
-                        CollegeClass collegeClass = new CollegeClass(college, course, className, userName, creationDate, students);
+                        CollegeClass collegeClass = new CollegeClass(college, course, className, userName, creationDate, students, pushKey.getKey());
 
                         pushKey.setValue(collegeClass);
 
-                        DatabaseReference userQry = ref.child("Users").child(userID);
-                        userQry.child("collegeClassID").setValue(pushKey.getKey());
-                        userQry.child("half").setValue(1); //alterar
+                        DatabaseReference userRef = ref.child("Users").child(userID);
+                        userRef.child("collegeClassID").setValue(pushKey.getKey());
+                        userRef.child("half").setValue(1); //alterar
 
                         finish();
                     }
@@ -98,7 +99,7 @@ public class NewClassActivity extends AppCompatActivity {
         course  = str2;
     }
 
-    public String GetDate(){
+    public String GetCurrentDate(){
 
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("pt","BR"));

@@ -57,6 +57,10 @@
         <activity
             android:name=".Activity.ClassActivity"
             android:label="@string/title_activity_class"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Activity.JoinClassActivity"
+            android:label="@string/title_activity_join_class"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

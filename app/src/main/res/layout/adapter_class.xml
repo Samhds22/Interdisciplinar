@@ -50,7 +50,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/see_students_button"
                 style="?attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
                 android:text="Alunos" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/enter_class_button"
                 style="?attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

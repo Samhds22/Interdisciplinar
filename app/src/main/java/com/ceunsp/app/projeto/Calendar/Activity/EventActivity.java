@@ -25,12 +25,13 @@ import java.util.Locale;
 public class EventActivity extends AppCompatActivity {
 
     private EditText dateEventEdit, timeEventEdit, titleEventEdit, annotationEdit;
+    final TimePicker timePicker = null;
     private Button saveButton;
     private Calendar calendar;
-    final TimePicker timePicker = null;
+    private String userClassID;
+    private String userID;
 
     private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("ClassCalendar");
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +52,8 @@ public class EventActivity extends AppCompatActivity {
         if (!bundle.isEmpty()){
             dateEventEdit.setText(LoadDate(bundle));
             RetrieveDate(bundle);
+            userClassID = bundle.getString("userClassID");
+            userID = bundle.getString("userID");
         }
 
         dateEventEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -125,13 +128,14 @@ public class EventActivity extends AppCompatActivity {
 
                 if (!eventTitle.isEmpty()){
 
+                    DatabaseReference pushKey = ref.child(userClassID).push();
 
-
-                    DatabaseReference pushKey = ref.push();
                     EventData eventData = new EventData();
                     eventData.setType("Prova");
                     eventData.setTitle(eventTitle);
                     eventData.setAnnotation(annotation);
+                    eventData.setCreatorID(userID);
+                    eventData.setCreationDate(GetCurrentDate());
 
                     Event event = new Event(R.color.colorAccent, calendar.getTimeInMillis(), eventData);
                     pushKey.child("Event").setValue(event);
@@ -163,6 +167,14 @@ public class EventActivity extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("pt","BR"));
             String convertedDate = sdf.format(date);
             return convertedDate;
+    }
+
+    public String GetCurrentDate(){
+
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("pt","BR"));
+        String date = sdf.format(calendar.getTime());
+        return date;
     }
 }
 

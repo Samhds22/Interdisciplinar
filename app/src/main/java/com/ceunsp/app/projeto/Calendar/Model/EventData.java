@@ -5,6 +5,8 @@ public class EventData {
     private String type;
     private String title;
     private String annotation;
+    private String creatorID;
+    private String creationDate;
 
 
     public String getType() {
@@ -29,5 +31,21 @@ public class EventData {
 
     public void setAnnotation(String annotation) {
         this.annotation = annotation;
+    }
+
+    public String getCreatorID() {
+        return creatorID;
+    }
+
+    public void setCreatorID(String creatorID) {
+        this.creatorID = creatorID;
+    }
+
+    public String getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(String creationDate) {
+        this.creationDate = creationDate;
     }
 }
