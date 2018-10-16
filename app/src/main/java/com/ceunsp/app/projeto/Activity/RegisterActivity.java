@@ -1,5 +1,7 @@
 package com.ceunsp.app.projeto.Activity;
 
+import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -8,12 +10,15 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.ceunsp.app.projeto.Calendar.Activity.EventActivity;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Model.User;
 import com.ceunsp.app.projeto.R;
@@ -27,6 +32,9 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -37,11 +45,12 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText nameEdit, lastNameEdit, nicknameEdit, dtBirthEdit,
             emailEdit, passwordEdit, pwConfirmEdit;
     private String email, password, name, lastName, nickname,
-            dateOfBith, college, course, userType, userID;
+            dateOfBith, userType, userID;
     private int PICK_IMAGE_REQUEST = 1;
     private CircleImageView photoImage;
-    private Spinner collegeSpinner, courseSpinner, userTypeSpinner;
+    private Spinner userTypeSpinner;
     private Button saveButton;
+    private Calendar calendar = Calendar.getInstance();
 
 
     @Override
@@ -54,8 +63,6 @@ public class RegisterActivity extends AppCompatActivity {
         lastNameEdit    = findViewById(R.id.last_name_edit);
         nicknameEdit    = findViewById(R.id.nickname);
         dtBirthEdit     = findViewById(R.id.date_of_birth);
-        collegeSpinner  = findViewById(R.id.college_spinner);
-        courseSpinner   = findViewById(R.id.course_spinner);
         userTypeSpinner = findViewById(R.id.user_type_spinner);
         emailEdit       = findViewById(R.id.email_edit);
         passwordEdit    = findViewById(R.id.password_edit);
@@ -63,7 +70,45 @@ public class RegisterActivity extends AppCompatActivity {
         saveButton      = findViewById(R.id.save_button);
         photoImage      = findViewById(R.id.photo_image);
 
-        LoadSpinners();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        LoadSpinner();
+
+        dtBirthEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        calendar.set(Calendar.YEAR, year);
+                        calendar.set(Calendar.MONTH, monthOfYear);
+                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        updateLabel();
+                    }
+                };
+                dtBirthEdit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        hideKeyboard();
+                        new DatePickerDialog(RegisterActivity.this, date, calendar
+                                .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                                calendar.get(Calendar.DAY_OF_MONTH)).show();
+
+                    }
+                });
+                if (dtBirthEdit.hasFocus()) {
+                    dtBirthEdit.performClick();
+                    hideKeyboard();
+                }
+            }
+            private void updateLabel(){
+                String myFormat = "dd/MM/yyyy"; //In which you need put here
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("pt","BR"));
+
+                dtBirthEdit.setText(sdf.format(calendar.getTime()));
+                hideKeyboard();
+            }
+        });
+
 
         photoImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,8 +130,6 @@ public class RegisterActivity extends AppCompatActivity {
                 lastName   = lastNameEdit.getText().toString();
                 nickname   = nicknameEdit.getText().toString();
                 dateOfBith = dtBirthEdit.getText().toString();
-                college    = collegeSpinner.getSelectedItem().toString();
-                course     = courseSpinner.getSelectedItem().toString();
                 userType   = userTypeSpinner.getSelectedItem().toString();
 
                 createUser(email, password);
@@ -170,19 +213,7 @@ public class RegisterActivity extends AppCompatActivity {
         //return Pattern.compile("^(?=.*[a-zA-Z\\d])[a-zA-Z0-9가-힣]{2,12}$|^[가-힣]$").matcher(target).matches();
     }
 
-    private void LoadSpinners(){
-        String []collegeData = getResources().getStringArray(R.array.colleges);
-        ArrayAdapter<String> adapterCollege =
-                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,collegeData);
-        adapterCollege.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        collegeSpinner.setAdapter(adapterCollege);
-
-        String []coursesData = getResources().getStringArray(R.array.courses);
-        ArrayAdapter<String> adapterCourse =
-                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,coursesData);
-        adapterCourse.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        courseSpinner.setAdapter(adapterCourse);
-
+    private void LoadSpinner(){
         String []userType = getResources().getStringArray(R.array.user_type);
         ArrayAdapter<String> adapterUserType =
                 new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,userType);
@@ -243,7 +274,7 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
 
                             User user = new User(name, lastName, nickname
-                                    ,dateOfBith, college, course, "", userType);
+                                    ,dateOfBith, "", "", "", userType);
 
                                 userID = firebaseHelper.getUserID();
                                 firebaseHelper.getReference().child("Users")
@@ -256,5 +287,9 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+    public void hideKeyboard(){
+        ((InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+                .hideSoftInputFromWindow(dtBirthEdit.getWindowToken(), 0);
     }
 }

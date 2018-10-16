@@ -33,6 +33,5 @@ public class FirebaseHelper {
         return storageReference;
     }
 
-
 }
 

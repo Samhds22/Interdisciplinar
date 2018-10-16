@@ -92,26 +92,6 @@
             android:layout_height="wrap_content">
 
             <Spinner
-                android:id="@+id/college_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
-                android:autofillHints="@string/course"
-                android:background="@drawable/border_rounded_main_fields"
-                android:paddingLeft="12dp"/>
-
-            <Spinner
-                android:id="@+id/course_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
-                android:background="@drawable/border_rounded_main_fields"
-                android:hint="@string/course"
-                android:paddingLeft="12dp"/>
-
-            <Spinner
                 android:id="@+id/user_type_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"

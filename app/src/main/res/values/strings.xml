@@ -28,18 +28,17 @@
     <string name="item_menu3">Sobre</string>
     <string name="item_menu4">Sair</string>
     <string-array name="colleges">
-        <item>Selecione sua faculdade...</item>
+        <item>Selecione sua faculdade</item>
         <item>Ceunsp Itu</item>
         <item>Ceunsp Salto</item>
     </string-array>
     <string-array name="courses">
-        <item>Selecione seu curso...</item>
+        <item>Selecione seu curso</item>
         <item>Analise de Sistemas</item>
         <item>Design Grafico</item>
         <item>Ciencias da Computação</item>
     </string-array>
     <string-array name="user_type">
-        <item>Sou...</item>
         <item>Aluno</item>
         <item>Professor</item>
     </string-array>
@@ -69,4 +68,9 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_class">ClassActivity</string>
     <string name="title_activity_join_class">JoinClassActivity</string>
+    <string name="title_activity_teacher_classes">TeacherClassesActivity</string>
+    <string name="text_question_activity">Vamos concluir seu cadastro!</string>
+    <string name="text_question_activity2">Selecione abaixo a sua instituição de ensino e curso</string>
+    <string name="proceed">Pronto!</string>
+    <string name="class_name">Insira um nome</string>
 </resources>

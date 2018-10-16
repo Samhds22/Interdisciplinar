@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.ceunsp.app.projeto.Calendar.Activity.MainActivity;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
+import com.ceunsp.app.projeto.Model.TeacherClasses;
 import com.ceunsp.app.projeto.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -56,8 +57,6 @@ public class HomeActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
         }
     }
 
@@ -95,26 +94,25 @@ public class HomeActivity extends AppCompatActivity
 
         if (CheckConnection()){
 
-            String userID = firebaseHelper.getUserID();
+            final String userID = firebaseHelper.getUserID();
 
-            final String[] collegeClass = new String[1];
+            DatabaseReference userRef = firebaseHelper.getReference().child("Users").child(userID);
 
-            firebaseHelper.getReference().child("Users").child(userID).addValueEventListener(new ValueEventListener() {
+            userRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()){
 
-                        collegeClass[0] = dataSnapshot.child("collegeClassID").getValue().toString();
+                        String userType = (String) dataSnapshot.child("userType").getValue();
 
-                        if (collegeClass[0].equals("")){
+                        if (userType.equals("Aluno")){
+                            loadStudentClass(dataSnapshot, userType);
 
-                            Intent intentNewClass = new Intent(getApplicationContext(), CollegeClassActivity.class);
-                            startActivity(intentNewClass);
+                        } else if (userType.equals("Professor")){
 
-                        }else {
-
-                            Intent intentCalendar = new Intent(getApplicationContext(), MainActivity.class);
-                            startActivity(intentCalendar);
+                            Intent teacherIntent;
+                            teacherIntent = new Intent(getApplicationContext(), TeacherClassesActivity.class);
+                            startActivity(teacherIntent);
                         }
                     }
                 }
@@ -123,6 +121,7 @@ public class HomeActivity extends AppCompatActivity
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
             });
+
         } else {
             Toast.makeText(getApplicationContext(),"Sem conexão", Toast.LENGTH_LONG).show();
         }
@@ -132,10 +131,10 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_info) {
 
         } else if (id == R.id.nav_exit) {
-            FirebaseAuth user = FirebaseAuth.getInstance();
-            user.signOut();
+            firebaseHelper.getAuth().signOut();
             finish();
         }
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -153,4 +152,17 @@ public class HomeActivity extends AppCompatActivity
         }
         return conected;
     }
+
+    public void loadStudentClass(DataSnapshot dataSnapshot, String userType){
+
+        String collegeClassID = (String) dataSnapshot.child("collegeClassID").getValue();
+        if (collegeClassID.equals("")){
+            Intent intentNewClass = new Intent(getApplicationContext(), CollegeClassActivity.class);
+            startActivity(intentNewClass);
+        }else {
+            Intent intentCalendar = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intentCalendar);
+        }
+    }
 }
+
