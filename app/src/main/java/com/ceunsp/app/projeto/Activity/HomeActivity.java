@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.ceunsp.app.projeto.Calendar.Activity.MainActivity;
+import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -27,8 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private FirebaseAuth auth = FirebaseAuth.getInstance();
-    private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
+    private final FirebaseHelper firebaseHelper = new FirebaseHelper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,11 +91,15 @@ public class HomeActivity extends AppCompatActivity
 
         if (id == R.id.nav_schedule) {
 
-            final String[] collegeClass = new String[1];
+//            final String[] collegeClass = new String[1];
 
         if (CheckConnection()){
-            String userID = auth.getCurrentUser().getUid();
-            ref.child(userID).addValueEventListener(new ValueEventListener() {
+
+            String userID = firebaseHelper.getUserID();
+
+            final String[] collegeClass = new String[1];
+
+            firebaseHelper.getReference().child("Users").child(userID).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()){

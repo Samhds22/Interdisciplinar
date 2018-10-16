@@ -28,14 +28,20 @@
     <string name="item_menu3">Sobre</string>
     <string name="item_menu4">Sair</string>
     <string-array name="colleges">
-        <item>Faculdade</item>
+        <item>Selecione sua faculdade...</item>
         <item>Ceunsp Itu</item>
         <item>Ceunsp Salto</item>
     </string-array>
     <string-array name="courses">
+        <item>Selecione seu curso...</item>
         <item>Analise de Sistemas</item>
         <item>Design Grafico</item>
         <item>Ciencias da Computação</item>
+    </string-array>
+    <string-array name="user_type">
+        <item>Sou...</item>
+        <item>Aluno</item>
+        <item>Professor</item>
     </string-array>
     <string name="name">"Nome"</string>
     <string name="last_name">"Sobrenome"</string>
@@ -60,8 +66,6 @@
     <string name="no_class_selected">Você ainda não faz parte de nenhuma turma, escolha uma das salas abaixo ou clique em ""+"" para criar uma nova turma</string>
     <string name="annotation">Faça aqui suas anotações</string>
     <string name="hour">hora</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_class">ClassActivity</string>
     <string name="title_activity_join_class">JoinClassActivity</string>

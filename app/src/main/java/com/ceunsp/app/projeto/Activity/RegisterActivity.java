@@ -1,41 +1,54 @@
 package com.ceunsp.app.projeto.Activity;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Model.User;
 import com.ceunsp.app.projeto.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.regex.Pattern;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private final FirebaseAuth auth = FirebaseAuth.getInstance();
-    private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-    private EditText nameEdit, lastNameEdit, nicknameEdit, dtBirthEdit, emailEdit, passwordEdit, pwConfirmEdit;
-    private Spinner collegeSpinner, courseSpinner;
+    final FirebaseHelper firebaseHelper = new FirebaseHelper();
+    private EditText nameEdit, lastNameEdit, nicknameEdit, dtBirthEdit,
+            emailEdit, passwordEdit, pwConfirmEdit;
+    private String email, password, name, lastName, nickname,
+            dateOfBith, college, course, userType, userID;
+    private int PICK_IMAGE_REQUEST = 1;
+    private CircleImageView photoImage;
+    private Spinner collegeSpinner, courseSpinner, userTypeSpinner;
     private Button saveButton;
-    private String array_spinner[];
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        getSupportActionBar().setTitle("Novo usuário");
 
         nameEdit        = findViewById(R.id.name_edit);
         lastNameEdit    = findViewById(R.id.last_name_edit);
@@ -43,46 +56,41 @@ public class RegisterActivity extends AppCompatActivity {
         dtBirthEdit     = findViewById(R.id.date_of_birth);
         collegeSpinner  = findViewById(R.id.college_spinner);
         courseSpinner   = findViewById(R.id.course_spinner);
+        userTypeSpinner = findViewById(R.id.user_type_spinner);
         emailEdit       = findViewById(R.id.email_edit);
         passwordEdit    = findViewById(R.id.password_edit);
         pwConfirmEdit   = findViewById(R.id.password_confirm_edit);
         saveButton      = findViewById(R.id.save_button);
+        photoImage      = findViewById(R.id.photo_image);
 
-        getSupportActionBar().setTitle("Novo usuário");
+        LoadSpinners();
 
-        LoadSpinner();
-
-
+        photoImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+            }
+        });
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                final String email      = emailEdit.getText().toString();
-                final String password   = passwordEdit.getText().toString();
-                final String name       = nameEdit.getText().toString();
-                final String lastName   = lastNameEdit.getText().toString();
-                final String nickname   = nicknameEdit.getText().toString();
-                final String dateOfBith = dtBirthEdit.getText().toString();
-                final String college    = collegeSpinner.getSelectedItem().toString();
-                final String course     = courseSpinner.getSelectedItem().toString();
+                email      = emailEdit.getText().toString();
+                password   = passwordEdit.getText().toString();
+                name       = nameEdit.getText().toString();
+                lastName   = lastNameEdit.getText().toString();
+                nickname   = nicknameEdit.getText().toString();
+                dateOfBith = dtBirthEdit.getText().toString();
+                college    = collegeSpinner.getSelectedItem().toString();
+                course     = courseSpinner.getSelectedItem().toString();
+                userType   = userTypeSpinner.getSelectedItem().toString();
 
-                auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegisterActivity.this
-                        , new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
+                createUser(email, password);
 
-                                    String userID = auth.getCurrentUser().getUid();
-                                    User user = new User(name, lastName, nickname
-                                            ,dateOfBith, college, course, "");
-
-                                    ref.child(userID).setValue(user);
-                                    auth.signOut();
-                                    finish();
-                                }
-                            }
-                });
             }
         });
     }
@@ -162,17 +170,91 @@ public class RegisterActivity extends AppCompatActivity {
         //return Pattern.compile("^(?=.*[a-zA-Z\\d])[a-zA-Z0-9가-힣]{2,12}$|^[가-힣]$").matcher(target).matches();
     }
 
-    private void LoadSpinner(){
+    private void LoadSpinners(){
         String []collegeData = getResources().getStringArray(R.array.colleges);
-        ArrayAdapter<String> adapter =
+        ArrayAdapter<String> adapterCollege =
                 new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,collegeData);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        collegeSpinner.setAdapter(adapter);
+        adapterCollege.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        collegeSpinner.setAdapter(adapterCollege);
 
         String []coursesData = getResources().getStringArray(R.array.courses);
-        ArrayAdapter<String> adapter2 =
+        ArrayAdapter<String> adapterCourse =
                 new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,coursesData);
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        courseSpinner.setAdapter(adapter2);
+        adapterCourse.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        courseSpinner.setAdapter(adapterCourse);
+
+        String []userType = getResources().getStringArray(R.array.user_type);
+        ArrayAdapter<String> adapterUserType =
+                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,userType);
+        adapterUserType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        userTypeSpinner.setAdapter(adapterUserType);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri uri = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                photoImage.setImageBitmap(bitmap);
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void SaveImage(StorageReference reference){
+
+        photoImage.setDrawingCacheEnabled(true);
+        photoImage.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        photoImage.layout(0, 0, photoImage.getMeasuredWidth(), photoImage.getMeasuredHeight());
+        photoImage.buildDrawingCache();
+        Bitmap bitmapImage = Bitmap.createBitmap(photoImage.getDrawingCache());
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        byte[] byteData = outputStream.toByteArray();
+
+        UploadTask uploadTask = reference.putBytes(byteData);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Toast.makeText(getApplicationContext(), "Falha ao salvar imagem do perfil.",
+                        Toast.LENGTH_LONG).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(getApplicationContext(), "ok", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void createUser(String userEmail, String userPassword){
+        firebaseHelper.getAuth().createUserWithEmailAndPassword(userEmail, userPassword)
+                .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+
+                            User user = new User(name, lastName, nickname
+                                    ,dateOfBith, college, course, "", userType);
+
+                                userID = firebaseHelper.getUserID();
+                                firebaseHelper.getReference().child("Users")
+                                        .child(userID).setValue(user);
+
+
+                            SaveImage(firebaseHelper.getStorage().child("image-profile." + userID));
+                            firebaseHelper.getAuth().signOut();
+                            finish();
+                        }
+                    }
+                });
     }
 }

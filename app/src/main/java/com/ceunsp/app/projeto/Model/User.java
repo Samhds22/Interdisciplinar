@@ -4,11 +4,10 @@ import java.io.Serializable;
 
 public class User implements Serializable {
 
-    private int half;
-    private String name, lastName, nickname, dateOfBirth, college, course, collegeClassID;
+    private String name, lastName, nickname, dateOfBirth, college, course, collegeClassID, userType;
 
     public User(String name, String lastName, String nickname, String dateOfBirth
-               ,String college, String course, String collegeClassID) {
+               , String college, String course, String collegeClassID, String userType){
         this.name = name;
         this.lastName = lastName;
         this.nickname = nickname;
@@ -16,22 +15,7 @@ public class User implements Serializable {
         this.college = college;
         this.course = course;
         this.collegeClassID = collegeClassID;
-    }
-
-    public String getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public int getHalf() {
-        return half;
-    }
-
-    public void setHalf(int half) {
-        this.half = half;
+        this.userType = userType;
     }
 
     public String getName() {
@@ -58,6 +42,14 @@ public class User implements Serializable {
         this.nickname = nickname;
     }
 
+    public String getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
     public String getCollege() {
         return college;
     }
@@ -78,7 +70,15 @@ public class User implements Serializable {
         return collegeClassID;
     }
 
-    public void setCollegeClassID(String collegeClass) {
+    public void setCollegeClassID(String collegeClassID) {
         this.collegeClassID = collegeClassID;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
     }
 }
