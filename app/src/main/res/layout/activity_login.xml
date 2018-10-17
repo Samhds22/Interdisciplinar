@@ -28,7 +28,7 @@
             android:layout_gravity="center">
 
             <ImageView
-                android:id="@+id/Logo_ImageView"
+                android:id="@+id/logo_ImageView"
                 android:layout_width="match_parent"
                 android:layout_height="124dp"
                 app:srcCompat="@drawable/splash_logo"
@@ -47,6 +47,17 @@
                 android:singleLine="true"
                 android:paddingLeft="20dp"
                 android:paddingRight="10dp"/>
+
+            <ProgressBar
+                android:id="@+id/login_progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="47dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_gravity="center"/>
 
             <EditText
                 android:id="@+id/password_edit"
@@ -77,6 +88,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/info_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/not_have_Account"
@@ -92,8 +104,6 @@
                 android:layout_marginRight="35dp"
                 android:text="Crie sua conta agora"
                 style="?attr/buttonBarButtonStyle"/>
-
-
 
         </LinearLayout>
     </ScrollView>

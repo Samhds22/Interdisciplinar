@@ -2,6 +2,7 @@ package com.ceunsp.app.projeto.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -45,6 +46,7 @@ public class HomeActivity extends AppCompatActivity
 
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
     final StorageReference storage = firebaseHelper.getStorage();
+    private static final String PREFERENCES = "Preferences";
     final String userID = firebaseHelper.getUserID();
     public TextView userNicknameTextView, userEmailTextView;
     public ImageView userImageView;
@@ -143,6 +145,9 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_info) {
 
         } else if (id == R.id.nav_exit) {
+            SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, 0 );
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            removeAllPreferences(editor);
             firebaseHelper.getAuth().signOut();
             finish();
         }
@@ -175,6 +180,17 @@ public class HomeActivity extends AppCompatActivity
             Intent intentCalendar = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intentCalendar);
         }
+    }
+
+    public void removeAllPreferences(SharedPreferences.Editor editor){
+        editor.remove("userID");
+        editor.remove("name");
+        editor.remove("lastName");
+        editor.remove("nickname");
+        editor.remove("dateOfBirth");
+        editor.remove("userType");
+        editor.apply();
+        editor.commit();
     }
 
     public void loadUserDrawer(){

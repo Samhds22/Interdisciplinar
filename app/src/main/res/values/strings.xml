@@ -73,4 +73,5 @@
     <string name="text_question_activity2">Selecione abaixo a sua instituição de ensino e curso</string>
     <string name="proceed">Pronto!</string>
     <string name="class_name">Insira um nome</string>
+    <string name="wait">Aguarde...</string>
 </resources>

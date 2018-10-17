@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -44,16 +45,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class RegisterActivity extends AppCompatActivity {
 
     final FirebaseHelper firebaseHelper = new FirebaseHelper();
-    private EditText nameEdit, lastNameEdit, nicknameEdit, dtBirthEdit,
-            emailEdit, passwordEdit, pwConfirmEdit;
-    private String email, password, pwConfirm, name, lastName, nickname,
-            dateOfBith, userType, userID;
-    private int PICK_IMAGE_REQUEST = 1;
+    private EditText nameEdit, lastNameEdit, nicknameEdit, dtBirthEdit;
+    private EditText emailEdit, passwordEdit, pwConfirmEdit;
+    private String  userID;
     private CircleImageView photoImage;
     private Spinner userTypeSpinner;
-    private Button saveButton;
     private Calendar calendar = Calendar.getInstance();
-    private SharedPreferences sharedPreferences;
+    private static final String PREFERENCES = "Preferences";
+    private final int PICK_IMAGE_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
         emailEdit       = findViewById(R.id.email_edit);
         passwordEdit    = findViewById(R.id.password_edit);
         pwConfirmEdit   = findViewById(R.id.password_confirm_edit);
-        saveButton      = findViewById(R.id.save_button);
+
         photoImage      = findViewById(R.id.photo_image);
 
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -122,32 +121,34 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+        Button saveButton = findViewById(R.id.save_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                email      = emailEdit.getText().toString();
-                password   = passwordEdit.getText().toString();
-                name       = nameEdit.getText().toString();
-                lastName   = lastNameEdit.getText().toString();
-                nickname   = nicknameEdit.getText().toString();
-                dateOfBith = dtBirthEdit.getText().toString();
-                userType   = userTypeSpinner.getSelectedItem().toString();
-                pwConfirm  = pwConfirmEdit.getText().toString();
+                String email      = emailEdit.getText().toString();
+                String password   = passwordEdit.getText().toString();
+                String name       = nameEdit.getText().toString();
+                String lastName   = lastNameEdit.getText().toString();
+                String nickname   = nicknameEdit.getText().toString();
+                String dateOfBith = dtBirthEdit.getText().toString();
+                String userType   = userTypeSpinner.getSelectedItem().toString();
+                String pwConfirm  = pwConfirmEdit.getText().toString();
 
-
-//                if (AttempRegister(name, lastName, nickname, dateOfBith, email, password, pwConfirm)){
-                    createUser(email, password);
-//                }
-
-
+                if (checkConnection()){
+                    if (AttempRegister(name, lastName, nickname, dateOfBith, email, password, pwConfirm)) {
+                        createUser(email, password, name, lastName, nickname, dateOfBith, userType);
+                    }
+                } else{
+                    Toast.makeText(getApplicationContext(), "Sem conexão", Toast.LENGTH_LONG)
+                            .show();
+                }
             }
         });
     }
 
-   /* public boolean AttempRegister(String name, String lastname, String nickname
-                                 ,String dateOfBirth,String email, String password,
-                                  String pwConfirm){
+    public boolean AttempRegister(String name, String lastname, String nickname,String dateOfBirth,
+                                  String email, String password, String pwConfirm){
 
             nameEdit.setError(null);
         lastNameEdit.setError(null);
@@ -159,7 +160,6 @@ public class RegisterActivity extends AppCompatActivity {
         boolean cancel = false;
         View focusView = null;
 
-        // Verifica se é um email válido.
         if (TextUtils.isEmpty(email)) {
             emailEdit.setError(getString(R.string.error_field_required));
             focusView = emailEdit;
@@ -170,23 +170,21 @@ public class RegisterActivity extends AppCompatActivity {
             cancel = true;
         }
 
-        //Verifica se o nome é valido
-        if (TextUtils.isEmpty(nameText)) {
+        if (TextUtils.isEmpty(name)) {
             nameEdit.setError(getString(R.string.error_field_required));
             focusView = nameEdit;
             cancel = true;
-        } else if (!isValidName(nameText)){
+        } else if (!isValidName(name)){
             nameEdit.setError(getString(R.string.error_invalid_name));
             focusView = nameEdit;
             cancel = true;
         }
 
-        // Verifica se a senha é valida
-        if (TextUtils.isEmpty(passwordText)){
+        if (TextUtils.isEmpty(password)){
             passwordEdit.setError(getString(R.string.error_field_required));
             focusView = passwordEdit;
             cancel = true;
-        } else if (!isValidPassword(passwordText)){
+        } else if (!isValidPassword(password)){
             passwordEdit.setError(getString(R.string.error_invalid_password));
             focusView = passwordEdit;
             cancel = true;
@@ -198,24 +196,23 @@ public class RegisterActivity extends AppCompatActivity {
         } else {
             return true;
         }
-    }*/
+    }
 
-    public final static boolean isValidPassword(String target) {
-        return Pattern.compile("^(?=.*\\d)(?=.*[a-zA-Z])[a-zA-Z0-9]{4,12}$").matcher(target).matches();
+    public static boolean isValidPassword(String target) {
+        return target.length() >= 6;
     }
 
     private boolean isValidEmail(String email) {
-
-        boolean result = email.contains("@") && email.contains(".");
-        return result ;
+        boolean resultExpression = email.contains("@") && email.contains(".");
+        return resultExpression ;
     }
 
-    public final static boolean isValidName(String target) {
+    public static boolean isValidName(String target) {
         return Pattern.compile("^(?=.*[a-zA-Z가-힣])[a-zA-Z가-힣]{1,}$").matcher(target).matches();
 
     }
 
-    public final static boolean isValidNickName(String target) {
+    public static boolean isValidNickName(String target) {
         return target.length() > 4;
         //return Pattern.compile("^(?=.*[a-zA-Z\\d])[a-zA-Z0-9가-힣]{2,12}$|^[가-힣]$").matcher(target).matches();
     }
@@ -237,7 +234,6 @@ public class RegisterActivity extends AppCompatActivity {
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 photoImage.setImageBitmap(bitmap);
-
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -273,8 +269,10 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    public void createUser(String userEmail, String userPassword){
-        firebaseHelper.getAuth().createUserWithEmailAndPassword(userEmail, userPassword)
+    public void createUser(String email, String password , final String name, final String lastName,
+                           final String nickname, final String dateOfBith, final String userType){
+
+        firebaseHelper.getAuth().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -283,20 +281,50 @@ public class RegisterActivity extends AppCompatActivity {
                             User user = new User(name, lastName, nickname
                                     ,dateOfBith, "", "", "", userType);
 
-                                userID = firebaseHelper.getUserID();
-                                firebaseHelper.getReference().child("Users")
-                                        .child(userID).setValue(user);
-
-
+                            userID = firebaseHelper.getUserID();
+                            firebaseHelper.getReference().child("Users").child(userID).setValue(user);
                             SaveImage(firebaseHelper.getStorage().child("image-profile." + userID));
-                            firebaseHelper.getAuth().signOut();
+                            saveInPreferences(userID, name, lastName, nickname, dateOfBith, userType);
+
                             finish();
                         }
                     }
                 });
     }
+
+    public void saveInPreferences(String userID, String name, String lastName,
+                                  String nickname, String dateOfBirth, String userType ){
+
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString("userID" , userID);
+        editor.putString("name", name);
+        editor.putString("lastName", lastName);
+        editor.putString("nickname", nickname);
+        editor.putString("dateOfBirth", dateOfBirth);
+        editor.putString("userType", userType);
+        editor.putString("college", "");
+        editor.putString("course", "");
+        editor.apply();
+        editor.commit();
+    }
+
     public void hideKeyboard(){
         ((InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE))
                 .hideSoftInputFromWindow(dtBirthEdit.getWindowToken(), 0);
+    }
+
+    public  boolean checkConnection() {
+        boolean conected;
+        ConnectivityManager conectivtyManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (conectivtyManager.getActiveNetworkInfo() != null
+                && conectivtyManager.getActiveNetworkInfo().isAvailable()
+                && conectivtyManager.getActiveNetworkInfo().isConnected()) {
+            conected = true;
+        } else {
+            conected = false;
+        }
+        return conected;
     }
 }

@@ -1,6 +1,7 @@
 package com.ceunsp.app.projeto.Activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,13 +18,13 @@ import com.google.firebase.database.DatabaseReference;
 public class QuestionActivity extends AppCompatActivity {
 
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
+    private static final String PREFERENCES = "Preferences";
     private String userId = firebaseHelper.getUserID();
     private Spinner collegeSpinner, courseSpinner;
-    private String college, course;
     private Button proceedButton;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
         getSupportActionBar().setTitle("Só mais um pouco...");
@@ -37,14 +38,14 @@ public class QuestionActivity extends AppCompatActivity {
         proceedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                college = collegeSpinner.getSelectedItem().toString();
-                course  = courseSpinner.getSelectedItem().toString();
                 String info = "";
-
                 if (collegeSpinner.getSelectedItemId() != 0 && courseSpinner.getSelectedItemId() != 0){
-                    saveUserData();
+                    String college = collegeSpinner.getSelectedItem().toString();
+                    String course  = courseSpinner.getSelectedItem().toString();
+                    saveUserData(college, course);
+                    saveInPreferences(college, course);
                     nextActivity();
+
                 }else
                     info = "Preencha os dados solicitados antes de continuar!";
                     Snackbar.make(v, info , Snackbar.LENGTH_LONG).show();
@@ -60,6 +61,11 @@ public class QuestionActivity extends AppCompatActivity {
         super.onStart();
     }
 
+    @Override
+    public void onBackPressed() {
+
+    }
+
     private void LoadSpinners() {
         String[] collegeData = getResources().getStringArray(R.array.colleges);
         ArrayAdapter<String> adapterCollege =
@@ -73,13 +79,24 @@ public class QuestionActivity extends AppCompatActivity {
         adapterCourse.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         courseSpinner.setAdapter(adapterCourse);
     }
-    public void saveUserData(){
+    public void saveUserData(String college, String course){
         DatabaseReference userRef = firebaseHelper.getReference().child("Users").child(userId);
         userRef.child("college").setValue(college);
         userRef.child("course").setValue(course);
     }
+
+    public void saveInPreferences(String college, String course){
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("college", college);
+        editor.putString("course", course);
+        editor.apply();
+        editor.commit();
+    }
+
     public void nextActivity(){
         Intent intentHome = new Intent(getApplicationContext(), HomeActivity.class);
         startActivity(intentHome);
+        finish();
     }
 }

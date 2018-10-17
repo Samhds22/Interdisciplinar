@@ -3,6 +3,7 @@ package com.ceunsp.app.projeto.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +15,9 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
@@ -31,24 +35,32 @@ import com.google.firebase.database.ValueEventListener;
 public class LoginActivity extends AppCompatActivity {
 
     private View view;
-    private EditText email, password;
+    private EditText emailEdit, passwordEdit;
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
-    private FirebaseAuth auth = FirebaseAuth.getInstance();
-
+    private FirebaseAuth auth = firebaseHelper.getAuth();
+    private static final String PREFERENCES = "Preferences";
+    private Button singInButton, registerButton;
+    private SharedPreferences preferences;
+    private ProgressBar progressBar;
+    private ImageView logoImageView;
+    private TextView infoTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        progressBar = findViewById(R.id.login_progressBar);
+        progressBar.setVisibility(View.GONE);
 
-        email    = findViewById(R.id.email_edit);
-        password = findViewById(R.id.password_edit);
+        logoImageView  = findViewById(R.id.logo_ImageView);
+        singInButton   = findViewById(R.id.sign_in_button);
+        registerButton = findViewById(R.id.reg_button);
+        emailEdit      = findViewById(R.id.email_edit);
+        passwordEdit   = findViewById(R.id.password_edit);
+        infoTextView   = findViewById(R.id.info_textView);
 
-        Button singIn = findViewById(R.id.sign_in_button);
-        Button register = findViewById(R.id.reg_button);
-
-        singIn.setOnClickListener(new OnClickListener() {
+        singInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 view = v;
@@ -56,7 +68,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        register.setOnClickListener(new OnClickListener() {
+
+        registerButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intentRegistration = new Intent(getApplicationContext(), RegisterActivity.class);
@@ -67,34 +80,37 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+
+        activeProgressBar(false);
+
         if (auth.getCurrentUser() != null) {
-           nextActivity();
+            nextActivity();
         }
         super.onStart();
     }
 
     private void attemptLogin() {
 
-        email.setError(null);
-        password.setError(null);
-        String emailText = email.getText().toString();
-        String passwordText = password.getText().toString();
+        emailEdit.setError(null);
+        passwordEdit.setError(null);
+        String emailText = emailEdit.getText().toString();
+        String passwordText = passwordEdit.getText().toString();
         boolean cancel = false;
         View focusView = null;
 
         if (!TextUtils.isEmpty(passwordText) && !isPasswordValid(passwordText)) {
-            password.setError(getString(R.string.error_invalid_password));
-            focusView = password;
+            passwordEdit.setError(getString(R.string.error_invalid_password));
+            focusView = passwordEdit;
             cancel = true;
         }
 
         if (TextUtils.isEmpty(emailText)) {
-            email.setError(getString(R.string.error_field_required));
-            focusView = email;
+            emailEdit.setError(getString(R.string.error_field_required));
+            focusView = emailEdit;
             cancel = true;
         } else if (!isEmailValid(emailText)) {
-            email.setError(getString(R.string.error_invalid_email));
-            focusView = email;
+            emailEdit.setError(getString(R.string.error_invalid_email));
+            focusView = emailEdit;
             cancel = true;
         }
 
@@ -104,23 +120,38 @@ public class LoginActivity extends AppCompatActivity {
         } else {
 
             if (checkConnection()){
-                ValidateUser(emailText, passwordText);
+                activeProgressBar(true);
+                singIn(emailText, passwordText);
             } else{
-                Toast.makeText(getApplicationContext(), "Sem conexão", Toast.LENGTH_LONG);
+                Toast.makeText(getApplicationContext(), "Sem conexão", Toast.LENGTH_LONG).show();
             }
-
         }
     }
 
-    private void ValidateUser(String email, String password){
+    private void singIn(String email, String password){
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()){
+
+                            DatabaseReference userRef = firebaseHelper.getReference().child("Users")
+                                    .child(firebaseHelper.getUserID());
+
+                            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    saveInPreferences(dataSnapshot);
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                }
+                            });
+
                             nextActivity();
 
                         }else{
+                            activeProgressBar(false);
                             Snackbar.make(view, "Ocorreu um erro ao realizar o login",
                                     Snackbar.LENGTH_LONG).show();
                         }
@@ -137,36 +168,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void nextActivity(){
-        String userId = auth.getCurrentUser().getUid();
+        preferences = getSharedPreferences(PREFERENCES, 0);
+        String type = preferences.getString("userType", "");
+        if (preferences.getString("userType", "").equals("Aluno")){
+            openStudentActivity();
 
-        DatabaseReference userRef = firebaseHelper.getReference().child("Users").child(userId);
-
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                String userType = (String) dataSnapshot.child("userType").getValue();
-                String college  = (String) dataSnapshot.child("college").getValue();
-                String course   = (String) dataSnapshot.child("course").getValue();
-
-
-                if ((userType.equals("Aluno"))&& (college.equals("")) && (course.equals(""))){
-
-                    Intent intentQuestion = new Intent(getApplicationContext(), QuestionActivity.class);
-                    startActivity(intentQuestion);
-
-                } else{
-
-                    Intent intentHome = new Intent(getApplicationContext(), HomeActivity.class);
-                    startActivity(intentHome);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        } else{
+            Intent intentHome = new Intent(getApplicationContext(), HomeActivity.class);
+            startActivity(intentHome);
+        }
     }
 
     public  boolean checkConnection() {
@@ -180,6 +190,52 @@ public class LoginActivity extends AppCompatActivity {
             conected = false;
         }
         return conected;
+    }
+
+    public void openStudentActivity(){
+        String college = preferences.getString("college", "");
+        String course  = preferences.getString("course", "");
+        if (college.isEmpty() || course.isEmpty()){
+            Intent intentQuestion = new Intent(getApplicationContext(), QuestionActivity.class);
+            startActivity(intentQuestion);
+        } else{
+            Intent intentHome = new Intent(getApplicationContext(), HomeActivity.class);
+            startActivity(intentHome);
+        }
+    }
+    public void activeProgressBar(boolean answer){
+        if (answer) {
+            logoImageView.setVisibility(View.GONE);
+            registerButton.setVisibility(View.GONE);
+            singInButton.setVisibility(View.GONE);
+            emailEdit.setVisibility(View.GONE);
+            passwordEdit.setVisibility(View.GONE);
+            infoTextView.setText(R.string.wait);
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+            logoImageView.setVisibility(View.VISIBLE);
+            registerButton.setVisibility(View.VISIBLE);
+            singInButton.setVisibility(View.VISIBLE);
+            emailEdit.setVisibility(View.VISIBLE);
+            passwordEdit.setVisibility(View.VISIBLE);
+            infoTextView.setText(R.string.not_have_Account);
+        }
+    }
+
+    public void saveInPreferences(DataSnapshot dataSnapshot){
+
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString("userID", (String) dataSnapshot.child("userID").getValue());
+        editor.putString("name", (String) dataSnapshot.child("name").getValue());
+        editor.putString("lastName", (String) dataSnapshot.child("lastName").getValue());
+        editor.putString("nickname", (String) dataSnapshot.child("nickname").getValue());
+        editor.putString("dateOfBirth", (String) dataSnapshot.child("dateOfBirth").getValue());
+        editor.putString("userType", (String) dataSnapshot.child("userType").getValue());
+        editor.apply();
+        editor.commit();
     }
 }
 
