@@ -34,7 +34,7 @@ public class CollegeClassActivity extends AppCompatActivity {
     private DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private String userID = auth.getCurrentUser().getUid();
-    List<CollegeClass> collegeClassList = new ArrayList<CollegeClass>();
+    private List<CollegeClass> collegeClassList = new ArrayList<CollegeClass>();
     private Query collegeClassQry;
     //private ListView listView;
     private String college, course;

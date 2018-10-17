@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
+import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Model.CollegeClass;
 import com.ceunsp.app.projeto.Model.Students;
 import com.ceunsp.app.projeto.R;
@@ -23,9 +24,12 @@ import java.util.List;
 
 public class JoinClassActivity extends AppCompatActivity {
 
-    private DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-    private String classID, college, course, userID, userName;
+    private final FirebaseHelper firebaseHelper = new FirebaseHelper();
+    private final String userId = firebaseHelper.getUserID();
+    private final DatabaseReference userRef = firebaseHelper.getReference().child(userId);
+    private final DatabaseReference classRef = firebaseHelper.getReference().child("CollegeClass");
     private List<String> usersList = new ArrayList<String>();
+    private String college, course, classID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +38,19 @@ public class JoinClassActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Bundle bundle = getIntent().getExtras();
-        classID = bundle.getString("classID");
-        college = bundle.getString("college");
-        course  = bundle.getString("course");
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                college = (String) dataSnapshot.child("college").getValue();
+                course  = (String) dataSnapshot.child("course").getValue();
+                classID = (String) dataSnapshot.child("collegeClassID").getValue();
+            }
 
-        LoadStudents();
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -48,40 +59,8 @@ public class JoinClassActivity extends AppCompatActivity {
 
             }
         });
+
+
+
     }
-
-    public void LoadStudents(){
-
-        DatabaseReference classRef = ref.child("CollegeClass").child(college).child(course)
-                .child(classID).child("students");
-        classRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
-
-                    userID = (String) postSnapshot.getValue();
-
-                    DatabaseReference userRef = ref.child("Users").child(userID);
-                    userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                            userName = dataSnapshot.child("name").getValue()
-                                    + " " + dataSnapshot.child("lastName").getValue();
-                            usersList.add(userName);
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                        }
-                    });
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
 }

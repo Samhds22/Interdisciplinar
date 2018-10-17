@@ -63,7 +63,8 @@
             android:label="@string/title_activity_join_class"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Activity.TeacherClassesActivity" />
-        <activity android:name=".Activity.QuestionActivity"></activity>
+        <activity android:name=".Activity.QuestionActivity" />
+        <activity android:name=".Activity.SearchClasses"></activity>
     </application>
 
 </manifest>

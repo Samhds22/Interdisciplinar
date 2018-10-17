@@ -3,12 +3,14 @@ package com.ceunsp.app.projeto.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -44,14 +46,14 @@ public class RegisterActivity extends AppCompatActivity {
     final FirebaseHelper firebaseHelper = new FirebaseHelper();
     private EditText nameEdit, lastNameEdit, nicknameEdit, dtBirthEdit,
             emailEdit, passwordEdit, pwConfirmEdit;
-    private String email, password, name, lastName, nickname,
+    private String email, password, pwConfirm, name, lastName, nickname,
             dateOfBith, userType, userID;
     private int PICK_IMAGE_REQUEST = 1;
     private CircleImageView photoImage;
     private Spinner userTypeSpinner;
     private Button saveButton;
     private Calendar calendar = Calendar.getInstance();
-
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,16 +133,21 @@ public class RegisterActivity extends AppCompatActivity {
                 nickname   = nicknameEdit.getText().toString();
                 dateOfBith = dtBirthEdit.getText().toString();
                 userType   = userTypeSpinner.getSelectedItem().toString();
+                pwConfirm  = pwConfirmEdit.getText().toString();
 
-                createUser(email, password);
+
+//                if (AttempRegister(name, lastName, nickname, dateOfBith, email, password, pwConfirm)){
+                    createUser(email, password);
+//                }
+
 
             }
         });
     }
 
-    /*public boolean AttempRegister(String name, String lastname, String nickname
-                                 ,String dateOfBirth, String college, String course
-                                 ,String email, String password, String pwConfirm){
+   /* public boolean AttempRegister(String name, String lastname, String nickname
+                                 ,String dateOfBirth,String email, String password,
+                                  String pwConfirm){
 
             nameEdit.setError(null);
         lastNameEdit.setError(null);
@@ -149,17 +156,15 @@ public class RegisterActivity extends AppCompatActivity {
            emailEdit.setError(null);
         passwordEdit.setError(null);
 
-
-
-        boolean cancel      = false;
-        View focusView      = null;
+        boolean cancel = false;
+        View focusView = null;
 
         // Verifica se é um email válido.
-        if (TextUtils.isEmpty(emailText)) {
+        if (TextUtils.isEmpty(email)) {
             emailEdit.setError(getString(R.string.error_field_required));
             focusView = emailEdit;
             cancel = true;
-        } else if (!isValidEmail(emailText)) {
+        } else if (!isValidEmail(email)) {
             emailEdit.setError(getString(R.string.error_invalid_email));
             focusView = emailEdit;
             cancel = true;
@@ -200,7 +205,9 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean isValidEmail(String email) {
-        return email.contains("@");
+
+        boolean result = email.contains("@") && email.contains(".");
+        return result ;
     }
 
     public final static boolean isValidName(String target) {

@@ -15,6 +15,7 @@ import java.util.List;
 public class CollegeClassAdapter extends RecyclerView.Adapter<CollegeClassAdapter.MyViewHolder> {
 
     private List<CollegeClass> collegeClassesList;
+
     public CollegeClassAdapter(List<CollegeClass> list){
         this.collegeClassesList = list;
     }

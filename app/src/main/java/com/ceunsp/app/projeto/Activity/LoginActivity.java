@@ -150,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                 String course   = (String) dataSnapshot.child("course").getValue();
 
 
-                if ((userType.equals("Aluno"))&& (college.equals("")) || (course.equals(""))){
+                if ((userType.equals("Aluno"))&& (college.equals("")) && (course.equals(""))){
 
                     Intent intentQuestion = new Intent(getApplicationContext(), QuestionActivity.class);
                     startActivity(intentQuestion);

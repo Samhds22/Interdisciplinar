@@ -2,6 +2,8 @@ package com.ceunsp.app.projeto.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,34 +15,52 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ceunsp.app.projeto.Calendar.Activity.MainActivity;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Model.TeacherClasses;
 import com.ceunsp.app.projeto.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
+import java.io.IOException;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
+    final StorageReference storage = firebaseHelper.getStorage();
+    final String userID = firebaseHelper.getUserID();
+    public TextView userNicknameTextView, userEmailTextView;
+    public ImageView userImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        userNicknameTextView = findViewById(R.id.user_nickname_TextView);
+        userEmailTextView    = findViewById(R.id.user_email_TextView);
+        userImageView        = findViewById(R.id.user_imageView);
 
-
+        loadUserDrawer();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -62,19 +82,15 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -89,38 +105,34 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_schedule) {
+            if (CheckConnection()){
 
-//            final String[] collegeClass = new String[1];
+                DatabaseReference userRef = firebaseHelper.getReference().child("Users").child(userID);
 
-        if (CheckConnection()){
+                userRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
 
-            final String userID = firebaseHelper.getUserID();
+                            String userType = (String) dataSnapshot.child("userType").getValue();
 
-            DatabaseReference userRef = firebaseHelper.getReference().child("Users").child(userID);
+                            if (userType.equals("Aluno")){
+                                loadStudentClass(dataSnapshot, userType);
 
-            userRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()){
+                            } else if (userType.equals("Professor")){
 
-                        String userType = (String) dataSnapshot.child("userType").getValue();
-
-                        if (userType.equals("Aluno")){
-                            loadStudentClass(dataSnapshot, userType);
-
-                        } else if (userType.equals("Professor")){
-
-                            Intent teacherIntent;
-                            teacherIntent = new Intent(getApplicationContext(), TeacherClassesActivity.class);
-                            startActivity(teacherIntent);
+                                Intent teacherIntent;
+                                teacherIntent = new Intent(getApplicationContext(),
+                                        TeacherClassesActivity.class);
+                                startActivity(teacherIntent);
+                            }
                         }
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
 
         } else {
             Toast.makeText(getApplicationContext(),"Sem conexão", Toast.LENGTH_LONG).show();
@@ -163,6 +175,10 @@ public class HomeActivity extends AppCompatActivity
             Intent intentCalendar = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intentCalendar);
         }
+    }
+
+    public void loadUserDrawer(){
+
     }
 }
 
