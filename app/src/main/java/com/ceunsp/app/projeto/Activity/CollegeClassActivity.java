@@ -1,20 +1,17 @@
 package com.ceunsp.app.projeto.Activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
-import com.ceunsp.app.projeto.Helpers.CollegeClassAdapter;
+import com.ceunsp.app.projeto.Helpers.ClassAdapter;
 import com.ceunsp.app.projeto.Helpers.RecyclerItemClickListener;
 import com.ceunsp.app.projeto.Model.CollegeClass;
 import com.ceunsp.app.projeto.R;
@@ -36,14 +33,13 @@ public class CollegeClassActivity extends AppCompatActivity {
     private String userID = auth.getCurrentUser().getUid();
     private List<CollegeClass> collegeClassList = new ArrayList<CollegeClass>();
     private Query collegeClassQry;
-    //private ListView listView;
     private String college, course;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_college_class);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Escolha uma turma");
 
@@ -70,9 +66,8 @@ public class CollegeClassActivity extends AppCompatActivity {
                     college = dataSnapshot.child("college").getValue().toString();
                     course  = dataSnapshot.child("course").getValue().toString();
 
-
                     final String collegeAux = CleanUpStrings(college);
-                    final String courseAux   = CleanUpStrings(course);
+                    final String courseAux  = CleanUpStrings(course);
 
                     collegeClassQry = ref.child("CollegeClass").child(collegeAux).child(courseAux);
                     collegeClassQry.addValueEventListener(new ValueEventListener() {
@@ -91,7 +86,7 @@ public class CollegeClassActivity extends AppCompatActivity {
                                     collegeClassList.add(collegeClass);
 
                                     RecyclerView recyclerView = findViewById(R.id.class_recyclerView);
-                                    CollegeClassAdapter adapter = new CollegeClassAdapter(collegeClassList);
+                                    ClassAdapter adapter = new ClassAdapter(collegeClassList);
 
                                     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(CollegeClassActivity.this);
                                     recyclerView.setLayoutManager(layoutManager);
@@ -109,8 +104,6 @@ public class CollegeClassActivity extends AppCompatActivity {
 
                                                     Intent intentJoin = new Intent(getApplicationContext(), JoinClassActivity.class);
                                                     intentJoin.putExtra("classID", classID);
-                                                    intentJoin.putExtra("college", collegeAux);
-                                                    intentJoin.putExtra("course", courseAux);
                                                     startActivity(intentJoin);
                                                 }
 

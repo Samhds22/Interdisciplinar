@@ -18,6 +18,12 @@ public class User implements Serializable {
         this.userType = userType;
     }
 
+    public User(String name, String lastName, String userType) {
+        this.name = name;
+        this.lastName = lastName;
+        this.userType = userType;
+    }
+
     public String getName() {
         return name;
     }

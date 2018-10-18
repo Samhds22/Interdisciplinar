@@ -12,11 +12,11 @@ import com.ceunsp.app.projeto.R;
 
 import java.util.List;
 
-public class CollegeClassAdapter extends RecyclerView.Adapter<CollegeClassAdapter.MyViewHolder> {
+public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder> {
 
     private List<CollegeClass> collegeClassesList;
 
-    public CollegeClassAdapter(List<CollegeClass> list){
+    public ClassAdapter(List<CollegeClass> list){
         this.collegeClassesList = list;
     }
 

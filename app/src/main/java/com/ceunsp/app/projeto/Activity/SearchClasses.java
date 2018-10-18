@@ -10,7 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import com.ceunsp.app.projeto.Helpers.CollegeClassAdapter;
+import com.ceunsp.app.projeto.Helpers.ClassAdapter;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Model.CollegeClass;
 import com.ceunsp.app.projeto.R;
@@ -100,7 +100,7 @@ public class SearchClasses extends AppCompatActivity {
         collegeClassList.add(collegeClass);
 
         RecyclerView recyclerView = findViewById(R.id.class_recyclerView);
-        CollegeClassAdapter adapter = new CollegeClassAdapter(collegeClassList);
+        ClassAdapter adapter = new ClassAdapter(collegeClassList);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(SearchClasses.this);
         recyclerView.setLayoutManager(layoutManager);
