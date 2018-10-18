@@ -1,20 +1,16 @@
 package com.ceunsp.app.projeto.Model;
 
-import java.util.Date;
-
 public class CollegeClass {
     String college, course, className, creator, creationDate, classID;
-    Students students;
 
 
     public CollegeClass(String college, String course, String className,
-                        String creator, String creationDate, Students students, String classID) {
+                        String creator, String creationDate, String classID) {
         this.college = college;
         this.course = course;
         this.className = className;
         this.creator = creator;
         this.creationDate = creationDate;
-        this.students = students;
         this.classID = classID;
     }
 
@@ -55,14 +51,6 @@ public class CollegeClass {
 
     public void setCreator(String creator) {
         this.creator = creator;
-    }
-
-    public Object getStudents() {
-        return students;
-    }
-
-    public void setStudents(Students students) {
-        this.students = students;
     }
 
     public String getCreationDate() {

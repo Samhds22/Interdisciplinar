@@ -12,6 +12,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 import com.ceunsp.app.projeto.Calendar.Model.EventData;
+import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.R;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,6 +25,7 @@ import java.util.Locale;
 
 public class EventActivity extends AppCompatActivity {
 
+    private FirebaseHelper firebaseHelper = new FirebaseHelper();
     private EditText dateEventEdit, timeEventEdit, titleEventEdit, annotationEdit;
     final TimePicker timePicker = null;
     private Button saveButton;
@@ -42,18 +44,17 @@ public class EventActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         dateEventEdit  = findViewById(R.id.date_event_edit);
-        timeEventEdit  = findViewById(R.id.time_event_edit);
         titleEventEdit = findViewById(R.id.title_event_edit);
         annotationEdit = findViewById(R.id.annotation_edit);
         saveButton     = findViewById(R.id.save_button);
         calendar       = Calendar.getInstance();
+        userID         = firebaseHelper.getUserID();
 
         final Bundle bundle = getIntent().getExtras();
         if (!bundle.isEmpty()){
             dateEventEdit.setText(LoadDate(bundle));
             RetrieveDate(bundle);
             userClassID = bundle.getString("userClassID");
-            userID = bundle.getString("userID");
         }
 
         dateEventEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -88,37 +89,6 @@ public class EventActivity extends AppCompatActivity {
             }
         });
 
-
-        timeEventEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                final TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        calendar.set(Calendar.HOUR, hourOfDay);
-                        calendar.set(Calendar.MINUTE, minute);
-                        updateLabel();
-                    }
-                };
-                timeEventEdit.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        new TimePickerDialog(EventActivity.this, time, calendar
-                                .get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE) , true).show();
-                    }
-                });
-                if (timeEventEdit.hasFocus()) {
-                    timeEventEdit.performClick();
-                }
-            }
-            private void updateLabel(){
-                String selectedTime = calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE);
-                timeEventEdit.setText(selectedTime);
-            }
-        });
-        timeEventEdit.performClick();
-
-
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,6 +106,7 @@ public class EventActivity extends AppCompatActivity {
                     eventData.setAnnotation(annotation);
                     eventData.setCreatorID(userID);
                     eventData.setCreationDate(GetCurrentDate());
+                    eventData.setEventKey(pushKey.getKey());
 
                     Event event = new Event(R.color.colorAccent, calendar.getTimeInMillis(), eventData);
                     pushKey.child("Event").setValue(event);

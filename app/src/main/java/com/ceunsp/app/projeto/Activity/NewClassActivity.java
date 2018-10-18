@@ -14,14 +14,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class NewClassActivity extends AppCompatActivity {
 
@@ -67,16 +66,11 @@ public class NewClassActivity extends AppCompatActivity {
                         DatabaseReference collegeClassRef = ref.child("CollegeClass").child(college).child(course);
                         DatabaseReference pushKey = collegeClassRef.push();
 
-                        Students students = new Students();
-                        students.setUserID(userID);
-
-                        CollegeClass collegeClass = new CollegeClass(college, course, className, userName, creationDate, students, pushKey.getKey());
-
+                        CollegeClass collegeClass = new CollegeClass(college, course, className, userName, creationDate, pushKey.getKey());
                         pushKey.setValue(collegeClass);
 
                         DatabaseReference userRef = ref.child("Users").child(userID);
                         userRef.child("collegeClassID").setValue(pushKey.getKey());
-                        userRef.child("half").setValue(1); //alterar
 
                         finish();
                     }
@@ -86,8 +80,6 @@ public class NewClassActivity extends AppCompatActivity {
 
                     }
                 });
-
-
             }
         });
     }

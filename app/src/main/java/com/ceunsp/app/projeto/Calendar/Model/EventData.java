@@ -7,7 +7,15 @@ public class EventData {
     private String annotation;
     private String creatorID;
     private String creationDate;
+    private String eventKey;
 
+    public String getEventKey() {
+        return eventKey;
+    }
+
+    public void setEventKey(String eventKey) {
+        this.eventKey = eventKey;
+    }
 
     public String getType() {
         return type;

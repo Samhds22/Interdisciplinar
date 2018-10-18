@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import com.ceunsp.app.projeto.Calendar.Model.EventData;
+import com.ceunsp.app.projeto.Model.User;
 import com.ceunsp.app.projeto.R;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
@@ -64,7 +65,6 @@ public class CalendarActivity extends Fragment {
         final ListView bookingsListView = mainTabView.findViewById(R.id.bookings_listview);
         final Button showPreviousMonthBut = mainTabView.findViewById(R.id.prev_button);
         final Button showNextMonthBut = mainTabView.findViewById(R.id.next_button);
-        final Button slideCalendarBut = mainTabView.findViewById(R.id.slide_calendar);
         final Button showCalendarWithAnimationBut = mainTabView.findViewById(R.id.show_with_animation_calendar);
         final FloatingActionButton fab = mainTabView.findViewById(R.id.fab_calendar_activity);
         final ArrayAdapter adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, mutableBookings);
@@ -79,6 +79,24 @@ public class CalendarActivity extends Fragment {
         compactCalendarView.invalidate();
 
         logEventsByMonth(compactCalendarView);
+
+        final View.OnClickListener exposeCalendarListener = getCalendarExposeLis();
+        showCalendarWithAnimationBut.setOnClickListener(exposeCalendarListener);
+
+        compactCalendarView.setAnimationListener(new CompactCalendarView.CompactCalendarAnimationListener() {
+            @Override
+            public void onOpened() {
+                showNextMonthBut.setVisibility(View.VISIBLE);
+                showPreviousMonthBut.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onClosed() {
+                showNextMonthBut.setVisibility(View.INVISIBLE);
+                showPreviousMonthBut.setVisibility(View.INVISIBLE);
+            }
+        });
+
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,6 +201,8 @@ public class CalendarActivity extends Fragment {
         bookingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                EventData eventData = eventDataList.get(position);
+                String eventKey = eventData.getEventKey();
                 Intent intentEditEvent = new Intent(getContext(), EventActivity.class);
             }
         });
@@ -202,20 +222,7 @@ public class CalendarActivity extends Fragment {
         });
 
         final View.OnClickListener showCalendarOnClickLis = getCalendarShowLis();
-        slideCalendarBut.setOnClickListener(showCalendarOnClickLis);
 
-        final View.OnClickListener exposeCalendarListener = getCalendarExposeLis();
-        showCalendarWithAnimationBut.setOnClickListener(exposeCalendarListener);
-
-        compactCalendarView.setAnimationListener(new CompactCalendarView.CompactCalendarAnimationListener() {
-            @Override
-            public void onOpened() {
-            }
-
-            @Override
-            public void onClosed() {
-            }
-        });
 
         return mainTabView;
     }

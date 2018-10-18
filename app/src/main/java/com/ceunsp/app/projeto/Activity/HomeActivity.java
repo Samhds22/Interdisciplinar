@@ -6,8 +6,10 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -46,39 +48,56 @@ public class HomeActivity extends AppCompatActivity
 
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
     final StorageReference storage = firebaseHelper.getStorage();
-    private static final String PREFERENCES = "Preferences";
-    final String userID = firebaseHelper.getUserID();
     public TextView userNicknameTextView, userEmailTextView;
+    private static final String PREFERENCES = "Preferences";
+    private final String userID = firebaseHelper.getUserID();
+    private SharedPreferences preferences;
     public ImageView userImageView;
+    private boolean exit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        userNicknameTextView = findViewById(R.id.user_nickname_TextView);
-        userEmailTextView    = findViewById(R.id.user_email_TextView);
-        userImageView        = findViewById(R.id.user_imageView);
-
-        loadUserDrawer();
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        userNicknameTextView = findViewById(R.id.user_nickname_TextView);
+        userEmailTextView    = findViewById(R.id.user_email_TextView);
+        userImageView        = findViewById(R.id.user_imageView);
+
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        exit = false;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+            exit = false;
+
+        } else {
+            if (exit) {
+                this.finishAffinity();
+            } else {
+                Toast.makeText(getApplicationContext(), "Pressione novamente para encerrar.",
+                        Toast.LENGTH_LONG).show();
+                exit = true;
+            }
         }
     }
 
@@ -103,42 +122,18 @@ public class HomeActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_schedule) {
-            if (CheckConnection()){
 
-                DatabaseReference userRef = firebaseHelper.getReference().child("Users").child(userID);
+            preferences = getSharedPreferences(PREFERENCES, 0);
 
-                userRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-
-                            String userType = (String) dataSnapshot.child("userType").getValue();
-
-                            if (userType.equals("Aluno")){
-                                loadStudentClass(dataSnapshot, userType);
-
-                            } else if (userType.equals("Professor")){
-
-                                Intent teacherIntent;
-                                teacherIntent = new Intent(getApplicationContext(),
-                                        TeacherClassesActivity.class);
-                                startActivity(teacherIntent);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                    }
-                });
-
-        } else {
-            Toast.makeText(getApplicationContext(),"Sem conexão", Toast.LENGTH_LONG).show();
-        }
+            if (preferences.getString("userType", "").equals("Aluno")) {
+                loadStudentClass(preferences);
+            }else if (preferences.getString("userType", "").equals("Professor")) {
+                Intent teacherIntent = new Intent(getApplicationContext(), TeacherClassesActivity.class);
+                startActivity(teacherIntent);
+            }
 
         } else if (id == R.id.nav_annotation) {
 
@@ -157,23 +152,9 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
-    public  boolean CheckConnection() {
-        boolean conected;
-        ConnectivityManager conectivtyManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (conectivtyManager.getActiveNetworkInfo() != null
-                && conectivtyManager.getActiveNetworkInfo().isAvailable()
-                && conectivtyManager.getActiveNetworkInfo().isConnected()) {
-            conected = true;
-        } else {
-            conected = false;
-        }
-        return conected;
-    }
+    public void loadStudentClass(SharedPreferences preferences){
 
-    public void loadStudentClass(DataSnapshot dataSnapshot, String userType){
-
-        String collegeClassID = (String) dataSnapshot.child("collegeClassID").getValue();
-        if (collegeClassID.equals("")){
+        if (preferences.getString("collegeClassID", "").equals("")){
             Intent intentNewClass = new Intent(getApplicationContext(), CollegeClassActivity.class);
             startActivity(intentNewClass);
         }else {
@@ -191,10 +172,6 @@ public class HomeActivity extends AppCompatActivity
         editor.remove("userType");
         editor.apply();
         editor.commit();
-    }
-
-    public void loadUserDrawer(){
-
     }
 }
 

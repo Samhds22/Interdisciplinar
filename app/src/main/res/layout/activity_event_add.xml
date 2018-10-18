@@ -52,11 +52,11 @@
                 android:paddingRight="0dp"/>
 
             <EditText
-                android:id="@+id/time_event_edit"
+                android:id="@+id/subject_edit"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
                 android:background="@drawable/border_rounded_main_fields"
-                android:hint="@string/hour"
+                android:hint="@string/subject"
                 android:layout_weight="1"
                 android:inputType="datetime"
                 android:layout_margin="5dp"
@@ -69,10 +69,10 @@
 
         <Spinner
             android:id="@+id/type_spinner"
-            android:layout_width="match_parent"
-            android:layout_margin="20dp"
+            android:layout_width="307dp"
             android:layout_height="42dp"
-            android:background="@drawable/border_rounded_main_fields"/>
+            android:layout_margin="20dp"
+            android:background="@drawable/border_rounded_main_fields" />
 
 
         <EditText
