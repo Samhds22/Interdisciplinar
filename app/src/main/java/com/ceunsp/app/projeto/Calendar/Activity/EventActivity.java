@@ -7,9 +7,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TimePicker;
 import com.ceunsp.app.projeto.Calendar.Model.EventData;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
@@ -27,7 +29,6 @@ public class EventActivity extends AppCompatActivity {
 
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
     private EditText dateEventEdit, timeEventEdit, titleEventEdit, annotationEdit;
-    final TimePicker timePicker = null;
     private Button saveButton;
     private Calendar calendar;
     private String userClassID;
@@ -56,6 +57,8 @@ public class EventActivity extends AppCompatActivity {
             RetrieveDate(bundle);
             userClassID = bundle.getString("userClassID");
         }
+
+        loadSpinner();
 
         dateEventEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -146,6 +149,17 @@ public class EventActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("pt","BR"));
         String date = sdf.format(calendar.getTime());
         return date;
+    }
+
+    public void loadSpinner(){
+
+        Spinner typeSpinner = findViewById(R.id.type_spinner);
+
+        String[] eventType = getResources().getStringArray(R.array.event_type);
+        ArrayAdapter<String> adapterCollege =
+                new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, eventType);
+        adapterCollege.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        typeSpinner.setAdapter(adapterCollege);
     }
 }
 

@@ -3,8 +3,8 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".MainActivity">
     <item android:id="@+id/action_settings"
-          android:icon="@drawable/ic_add_24dp"
-          android:title="Adicionar"
+          android:icon="@drawable/ic_exit_24dp"
+          android:title=""
           android:orderInCategory="100"
-          app:showAsAction="always"/>
+          app:showAsAction="always" />
 </menu>

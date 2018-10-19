@@ -7,9 +7,11 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -20,8 +22,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-
-import com.ceunsp.app.projeto.Calendar.Activity.EventActivity;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Model.User;
 import com.ceunsp.app.projeto.R;
@@ -32,14 +32,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Pattern;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -54,11 +53,12 @@ public class RegisterActivity extends AppCompatActivity {
     private static final String PREFERENCES = "Preferences";
     private final int PICK_IMAGE_REQUEST = 1;
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        getSupportActionBar().setTitle("Novo usuário");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Novo usuário");
 
         nameEdit        = findViewById(R.id.name_edit);
         lastNameEdit    = findViewById(R.id.last_name_edit);
@@ -131,13 +131,13 @@ public class RegisterActivity extends AppCompatActivity {
                 String name       = nameEdit.getText().toString();
                 String lastName   = lastNameEdit.getText().toString();
                 String nickname   = nicknameEdit.getText().toString();
-                String dateOfBith = dtBirthEdit.getText().toString();
+                String dateOfBirth = dtBirthEdit.getText().toString();
                 String userType   = userTypeSpinner.getSelectedItem().toString();
                 String pwConfirm  = pwConfirmEdit.getText().toString();
 
                 if (checkConnection()){
-                    if (AttempRegister(name, lastName, nickname, dateOfBith, email, password, pwConfirm)) {
-                        createUser(email, password, name, lastName, nickname, dateOfBith, userType);
+                    if (tryToRegister(name, lastName, nickname, dateOfBirth, email, password, pwConfirm)) {
+                        createUser(email, password, name, lastName, nickname, dateOfBirth, userType);
                     }
                 } else{
                     Toast.makeText(getApplicationContext(), "Sem conexão", Toast.LENGTH_LONG)
@@ -147,8 +147,8 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    public boolean AttempRegister(String name, String lastname, String nickname,String dateOfBirth,
-                                  String email, String password, String pwConfirm){
+    public boolean tryToRegister(String name, String lastname, String nickname, String dateOfBirth,
+                                 String email, String password, String pwConfirm){
 
             nameEdit.setError(null);
         lastNameEdit.setError(null);
@@ -203,8 +203,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean isValidEmail(String email) {
-        boolean resultExpression = email.contains("@") && email.contains(".");
-        return resultExpression ;
+        return email.contains("@") && email.contains(".");
     }
 
     public static boolean isValidName(String target) {
@@ -278,14 +277,12 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 
-                            User user = new User(name, lastName, nickname
-                                    ,dateOfBith, "", "", "", userType);
+                            User user = new User(name, lastName, nickname,dateOfBith, userType);
 
                             userID = firebaseHelper.getUserID();
                             firebaseHelper.getReference().child("Users").child(userID).setValue(user);
                             SaveImage(firebaseHelper.getStorage().child("image-profile." + userID));
                             saveInPreferences(userID, name, lastName, nickname, dateOfBith, userType);
-
                             finish();
                         }
                     }
@@ -304,27 +301,28 @@ public class RegisterActivity extends AppCompatActivity {
         editor.putString("nickname", nickname);
         editor.putString("dateOfBirth", dateOfBirth);
         editor.putString("userType", userType);
-        editor.putString("college", "");
-        editor.putString("course", "");
         editor.apply();
         editor.commit();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void hideKeyboard(){
-        ((InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+        ((InputMethodManager) Objects.requireNonNull(getApplicationContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE)))
                 .hideSoftInputFromWindow(dtBirthEdit.getWindowToken(), 0);
     }
 
     public  boolean checkConnection() {
-        boolean conected;
-        ConnectivityManager conectivtyManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (conectivtyManager.getActiveNetworkInfo() != null
-                && conectivtyManager.getActiveNetworkInfo().isAvailable()
-                && conectivtyManager.getActiveNetworkInfo().isConnected()) {
-            conected = true;
+        boolean connected;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert connectivityManager != null;
+        if (connectivityManager.getActiveNetworkInfo() != null
+                && connectivityManager.getActiveNetworkInfo().isAvailable()
+                && connectivityManager.getActiveNetworkInfo().isConnected()) {
+            connected = true;
         } else {
-            conected = false;
+            connected = false;
         }
-        return conected;
+        return connected;
     }
 }

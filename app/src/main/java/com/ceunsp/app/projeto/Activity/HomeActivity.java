@@ -1,11 +1,7 @@
 package com.ceunsp.app.projeto.Activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,37 +17,17 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.ceunsp.app.projeto.Calendar.Activity.MainActivity;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
-import com.ceunsp.app.projeto.Model.TeacherClasses;
 import com.ceunsp.app.projeto.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
-import java.io.IOException;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
-    final StorageReference storage = firebaseHelper.getStorage();
     public TextView userNicknameTextView, userEmailTextView;
     private static final String PREFERENCES = "Preferences";
-    private final String userID = firebaseHelper.getUserID();
-    private SharedPreferences preferences;
     public ImageView userImageView;
     private boolean exit = false;
 
@@ -59,14 +35,14 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         userNicknameTextView = findViewById(R.id.user_nickname_TextView);
@@ -84,7 +60,7 @@ public class HomeActivity extends AppCompatActivity
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -121,12 +97,12 @@ public class HomeActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.nav_schedule) {
 
-            preferences = getSharedPreferences(PREFERENCES, 0);
+            SharedPreferences preferences = getSharedPreferences(PREFERENCES, 0);
 
             if (preferences.getString("userType", "").equals("Aluno")) {
                 loadStudentClass(preferences);
@@ -147,14 +123,14 @@ public class HomeActivity extends AppCompatActivity
             finish();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
     public void loadStudentClass(SharedPreferences preferences){
 
-        if (preferences.getString("collegeClassID", "").equals("")){
+        if (preferences.getString("classID", "").equals("")){
             Intent intentNewClass = new Intent(getApplicationContext(), CollegeClassActivity.class);
             startActivity(intentNewClass);
         }else {
@@ -164,12 +140,16 @@ public class HomeActivity extends AppCompatActivity
     }
 
     public void removeAllPreferences(SharedPreferences.Editor editor){
+
         editor.remove("userID");
         editor.remove("name");
         editor.remove("lastName");
         editor.remove("nickname");
         editor.remove("dateOfBirth");
         editor.remove("userType");
+        editor.remove("classID");
+        editor.remove("course");
+        editor.remove("college");
         editor.apply();
         editor.commit();
     }

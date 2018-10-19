@@ -1,75 +1,76 @@
 package com.ceunsp.app.projeto.Activity;
 
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Helpers.UsersAdapter;
-import com.ceunsp.app.projeto.Model.CollegeClass;
 import com.ceunsp.app.projeto.Model.User;
 import com.ceunsp.app.projeto.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class JoinClassActivity extends AppCompatActivity {
 
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
     private final DatabaseReference ref = firebaseHelper.getReference();
     private final String userID = firebaseHelper.getUserID();
-    private List<User> studentsList = new ArrayList<User>();
+    private List<User> studentsList = new ArrayList<>();
     private static final String PREFERENCES = "Preferences";
     private SharedPreferences preferences;
     private String userType, classID;
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_class);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         Bundle bundle = getIntent().getExtras();
-        if (!bundle.isEmpty()){
+        if (bundle != null){
             retrieveClassID(bundle);
         }
 
         preferences = getSharedPreferences(PREFERENCES, 0);
         userType = preferences.getString("userType", "");
 
-        if (userType.equals("Aluno")){
+        DatabaseReference studentsRef = ref.child("Users");
+        studentsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
 
-            String college = cleanUpStrings(preferences.getString("college", ""));
-            String course  = cleanUpStrings(preferences.getString("course", ""));
+                    String classId = (String) postSnapshot.child("Student").child("classID").getValue();
 
-            DatabaseReference studentsRef = ref.child("Users");
-            studentsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
-                        String collegeClassID = (String) postSnapshot.child("collegeClassID").getValue();
+                    assert classId != null;
+                    if (classId.equals(classID)){
 
-                        if (collegeClassID.equals(classID)){
-                            String name     = (String) postSnapshot.child("name").getValue();
-                            String lastName = (String) postSnapshot.child("lastName").getValue();
-                            String userType = (String) postSnapshot.child("userType").getValue();
-                            User user = new User(name, lastName, userType);
-                            studentsList.add(user);
+                        String lastName = (String) postSnapshot.child("lastName").getValue();
+                        String userType = (String) postSnapshot.child("userType").getValue();
+                        String name     = (String) postSnapshot.child("name").getValue();
 
-                            fillRecyclerView();
+                        User user = new User(name, lastName, userType);
+                        studentsList.add(user);
+
+                        fillRecyclerView();
+
                         }
                     }
                 }
@@ -78,30 +79,26 @@ public class JoinClassActivity extends AppCompatActivity {
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
             });
-        }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 if (userType.equals("Aluno")){
 
-                    DatabaseReference userRef = ref.child("Users").child(userID);
-                    userRef.child("collegeClassID").setValue(classID);
+                    DatabaseReference studentRef = ref.child("Users").child(userID);
+                    studentRef.child("Student").child("classID").setValue(classID);
                     saveInPreferences();
                     finish();
                 }
             }
         });
     }
+
     public void retrieveClassID(Bundle bundle){
         classID = bundle.getString("classID");
-    }
-
-    public String cleanUpStrings(String str) {
-        str = str.replace(" ", "");
-        return str;
     }
 
     public void fillRecyclerView(){
@@ -115,7 +112,7 @@ public class JoinClassActivity extends AppCompatActivity {
 
     public void saveInPreferences(){
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("collegeClassID", classID);
+        editor.putString("classID", classID);
         editor.apply();
         editor.commit();
     }

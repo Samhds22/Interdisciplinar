@@ -1,5 +1,6 @@
 package com.ceunsp.app.projeto.Activity;
 
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,8 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Model.CollegeClass;
-import com.ceunsp.app.projeto.Model.Students;
 import com.ceunsp.app.projeto.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -18,68 +19,56 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 public class NewClassActivity extends AppCompatActivity {
 
-    private DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-    private EditText collegeEdit, courseEdit, classNameEdit;
-    private String userID, college, course, className;
-    private Button saveButton;
+    private final FirebaseHelper firebaseHelper = new FirebaseHelper();
+    private final DatabaseReference ref = firebaseHelper.getReference();
+    private final String userID = firebaseHelper.getUserID();
+    private String userName, college, course, className, creationDate;
+    private static final String PREFERENCES = "Preferences";
+    private SharedPreferences preferences;
+    private EditText classNameEdit;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_class);
-
-        Bundle bundle = getIntent().getExtras();
-
-        collegeEdit   = findViewById(R.id.college_edit);
-        courseEdit    = findViewById(R.id.course_edit);
+        preferences = getSharedPreferences(PREFERENCES, 0 );
         classNameEdit = findViewById(R.id.class_name_edit);
-        saveButton    = findViewById(R.id.save_class_button);
 
-        userID  = bundle.getString("UID");
-        college = bundle.getString("college");
-        course  = bundle.getString("course");
+        EditText collegeEdit = findViewById(R.id.college_edit);
+        college  = preferences.getString("college", "");
+        EditText courseEdit = findViewById(R.id.course_edit);
+        course   = preferences.getString("course", "");
 
         collegeEdit.setText(college);
         courseEdit.setText(course);
 
+        Button saveButton = findViewById(R.id.save_class_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                DatabaseReference userRef = ref.child("Users").child(userID);
-                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                userName     = preferences.getString("name", "");
+                className    = classNameEdit.getText().toString();
+                creationDate = GetCurrentDate();
+                CleanUpStrings(college, course);
 
-                        String userName = dataSnapshot.child("name").getValue().toString();
-                        className = classNameEdit.getText().toString();
-                        String creationDate = GetCurrentDate();
-                        CleanUpStrings(college, course);
+                DatabaseReference classRef = ref.child("CollegeClass").child(college).child(course);
+                DatabaseReference pushKey = classRef.push();
+                String classID = pushKey.getKey();
 
-                        DatabaseReference collegeClassRef = ref.child("CollegeClass").child(college).child(course);
-                        DatabaseReference pushKey = collegeClassRef.push();
+                CollegeClass collegeClass = new CollegeClass(college, course,
+                        className, userName, creationDate, classID);
+                pushKey.setValue(collegeClass);
 
-                        CollegeClass collegeClass = new CollegeClass(college, course, className, userName, creationDate, pushKey.getKey());
-                        pushKey.setValue(collegeClass);
-
-                        DatabaseReference userRef = ref.child("Users").child(userID);
-                        userRef.child("collegeClassID").setValue(pushKey.getKey());
-
-                        finish();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                DatabaseReference userRef = ref.child("Users").child(userID).child("Student");
+                userRef.child("classID").setValue(classID);
+                saveInPreferences(classID);
+                finish();
             }
         });
     }
@@ -98,5 +87,13 @@ public class NewClassActivity extends AppCompatActivity {
         String date = sdf.format(calendar.getTime());
 
         return date;
+    }
+
+    public void saveInPreferences(String classID){
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.remove("classID");
+        editor.putString("classID", classID);
+        editor.apply();
+        editor.commit();
     }
 }

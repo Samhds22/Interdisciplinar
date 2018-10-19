@@ -52,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         progressBar = findViewById(R.id.login_progressBar);
         progressBar.setVisibility(View.GONE);
+        preferences = getSharedPreferences(PREFERENCES, 0);
 
         logoImageView  = findViewById(R.id.logo_ImageView);
         singInButton   = findViewById(R.id.sign_in_button);
@@ -141,14 +142,16 @@ public class LoginActivity extends AppCompatActivity {
                             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    saveInPreferences(dataSnapshot);
+
+                                    SharedPreferences.Editor editor = preferences.edit();
+                                    saveUserPreferences(editor, dataSnapshot);
+                                    saveStudentPreferences(editor ,dataSnapshot.child("Student"));
+                                    nextActivity();
                                 }
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
                                 }
                             });
-
-                            nextActivity();
 
                         }else{
                             activeProgressBar(false);
@@ -168,12 +171,26 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void nextActivity(){
-        preferences = getSharedPreferences(PREFERENCES, 0);
-        String type = preferences.getString("userType", "");
-        if (preferences.getString("userType", "").equals("Aluno")){
-            openStudentActivity();
 
-        } else{
+        if (preferences.getString("userType", "").equals("Aluno")){
+
+            String college = preferences.getString("college", "");
+            String course  = preferences.getString("course", "");
+
+            if (college.equals("") || course.equals("")){
+                openQuestionActivity();
+            } else {
+                Intent intentHome = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(intentHome);
+            }
+
+        } else if (preferences.getString("userType", "").equals("Professor")){
+
+           /* DatabaseReference teacherRef = firebaseHelper.getReference()
+                    .child("Users").child(firebaseHelper.getUserID());
+
+            teacherRef.child("Teacher").setValue()*/
+
             Intent intentHome = new Intent(getApplicationContext(), HomeActivity.class);
             startActivity(intentHome);
         }
@@ -192,7 +209,7 @@ public class LoginActivity extends AppCompatActivity {
         return conected;
     }
 
-    public void openStudentActivity(){
+    public void openQuestionActivity(){
         String college = preferences.getString("college", "");
         String course  = preferences.getString("course", "");
         if (college.isEmpty() || course.isEmpty()){
@@ -223,17 +240,22 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void saveInPreferences(DataSnapshot dataSnapshot){
+    public void saveUserPreferences(SharedPreferences.Editor editor, DataSnapshot dataSnapshot){
 
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, 0);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        editor.putString("userID", (String) dataSnapshot.child("userID").getValue());
         editor.putString("name", (String) dataSnapshot.child("name").getValue());
         editor.putString("lastName", (String) dataSnapshot.child("lastName").getValue());
         editor.putString("nickname", (String) dataSnapshot.child("nickname").getValue());
         editor.putString("dateOfBirth", (String) dataSnapshot.child("dateOfBirth").getValue());
         editor.putString("userType", (String) dataSnapshot.child("userType").getValue());
+        editor.apply();
+        editor.commit();
+    }
+
+    public void saveStudentPreferences(SharedPreferences.Editor editor, DataSnapshot dataSnapshot){
+
+        editor.putString("classID", (String) dataSnapshot.child("classID").getValue());
+        editor.putString("college", (String) dataSnapshot.child("college").getValue());
+        editor.putString("course",  (String) dataSnapshot.child("course").getValue());
         editor.apply();
         editor.commit();
     }

@@ -27,6 +27,13 @@
     <string name="item_menu2">Anotações</string>
     <string name="item_menu3">Sobre</string>
     <string name="item_menu4">Sair</string>
+    <string-array name="event_type">
+        <item>Tipo</item>
+        <item>Prova</item>
+        <item>Projeto</item>
+        <item>Trabalho</item>
+        <item>lembrete</item>
+    </string-array>
     <string-array name="colleges">
         <item>Selecione sua faculdade</item>
         <item>Ceunsp Itu</item>

@@ -2,6 +2,8 @@ package com.ceunsp.app.projeto.Activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,11 +11,11 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Toast;
-
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
+import com.ceunsp.app.projeto.Model.Student;
 import com.ceunsp.app.projeto.R;
 import com.google.firebase.database.DatabaseReference;
+import java.util.Objects;
 
 public class QuestionActivity extends AppCompatActivity {
 
@@ -21,20 +23,20 @@ public class QuestionActivity extends AppCompatActivity {
     private static final String PREFERENCES = "Preferences";
     private String userId = firebaseHelper.getUserID();
     private Spinner collegeSpinner, courseSpinner;
-    private Button proceedButton;
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
-        getSupportActionBar().setTitle("Só mais um pouco...");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Só mais um pouco...");
 
         collegeSpinner  = findViewById(R.id.college_spinner);
         courseSpinner   = findViewById(R.id.course_spinner);
-        proceedButton   = findViewById(R.id.proceed_button);
 
         LoadSpinners();
 
+        Button proceedButton = findViewById(R.id.proceed_button);
         proceedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,7 +44,7 @@ public class QuestionActivity extends AppCompatActivity {
                 if (collegeSpinner.getSelectedItemId() != 0 && courseSpinner.getSelectedItemId() != 0){
                     String college = collegeSpinner.getSelectedItem().toString();
                     String course  = courseSpinner.getSelectedItem().toString();
-                    saveUserData(college, course);
+                    saveStudentData(college, course);
                     saveInPreferences(college, course);
                     nextActivity();
 
@@ -69,20 +71,20 @@ public class QuestionActivity extends AppCompatActivity {
     private void LoadSpinners() {
         String[] collegeData = getResources().getStringArray(R.array.colleges);
         ArrayAdapter<String> adapterCollege =
-                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, collegeData);
+                new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, collegeData);
         adapterCollege.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         collegeSpinner.setAdapter(adapterCollege);
 
         String[] coursesData = getResources().getStringArray(R.array.courses);
         ArrayAdapter<String> adapterCourse =
-                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, coursesData);
+                new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, coursesData);
         adapterCourse.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         courseSpinner.setAdapter(adapterCourse);
     }
-    public void saveUserData(String college, String course){
+    public void saveStudentData(String college, String course){
         DatabaseReference userRef = firebaseHelper.getReference().child("Users").child(userId);
-        userRef.child("college").setValue(college);
-        userRef.child("course").setValue(course);
+        Student student = new Student(college, course, "");
+        userRef.child("Student").setValue(student);
     }
 
     public void saveInPreferences(String college, String course){
