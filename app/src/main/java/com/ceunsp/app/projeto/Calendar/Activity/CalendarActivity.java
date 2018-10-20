@@ -107,7 +107,6 @@ public class CalendarActivity extends Fragment {
 
                                 Long time = (Long) postSnapshot.child("Event").child("timeInMillis").getValue();
                                 EventData eventData = postSnapshot.child("Event").child("data").getValue(EventData.class);
-
                                 Event event = new Event(R.color.colorAccent, time, eventData);
                                 loadEvents(event);
                             }
@@ -151,6 +150,7 @@ public class CalendarActivity extends Fragment {
                     timeInMilliseconds = System.currentTimeMillis();
                 }
                 Intent intentAddEvent = new Intent(mainTabView.getContext(), EventActivity.class);
+                intentAddEvent.putExtra("operation", "create");
                 intentAddEvent.putExtra("date", timeInMilliseconds);
                 intentAddEvent.putExtra("userClassID", classID);
                 intentAddEvent.putExtra("userID", userID);
@@ -201,10 +201,14 @@ public class CalendarActivity extends Fragment {
                 EventData eventData = eventDataList.get(position);
 
                 Intent openEvent = new Intent(getContext(), EventActivity.class);
-                openEvent.putExtra( "timeInMillis", event.getTimeInMillis());
+                openEvent.putExtra("userClassID", classID);
+                openEvent.putExtra("operation", "view");
                 openEvent.putExtra("title", eventData.getTitle());
-                //openEvent.putExtra("subject", eventData)
-
+                openEvent.putExtra( "date", event.getTimeInMillis());
+                openEvent.putExtra("subject", eventData.getSubject());
+                openEvent.putExtra("eventType", eventData.getEventType());
+                openEvent.putExtra("annotation", eventData.getAnnotation());
+                startActivity(openEvent);
             }
         });
 

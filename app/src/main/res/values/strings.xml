@@ -80,5 +80,10 @@
     <string name="text_question_activity2">Selecione abaixo a sua instituição de ensino e curso</string>
     <string name="proceed">Pronto!</string>
     <string name="class_name">Insira um nome</string>
-    <string name="wait">Aguarde...</string>
+    <string name="wait">Aguarde…</string>
+    <string name="title1">"Sair da turma"</string>
+    <string name="message1">"Ao sair você não terá mais acesso aos eventos dessa turma. Deseja continuar?"</string>
+    <string name="yes">"Sim"</string>
+    <string name="no">Não</string>
+
 </resources>

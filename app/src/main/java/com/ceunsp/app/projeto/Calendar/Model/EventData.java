@@ -2,12 +2,16 @@ package com.ceunsp.app.projeto.Calendar.Model;
 
 public class EventData {
 
-    private String type;
-    private String title;
-    private String annotation;
-    private String creatorID;
-    private String creationDate;
-    private String eventKey;
+    private String subject, title, annotation, creatorID, creationDate, eventKey;
+    private String eventType;
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
 
     public String getEventKey() {
         return eventKey;
@@ -17,12 +21,12 @@ public class EventData {
         this.eventKey = eventKey;
     }
 
-    public String getType() {
-        return type;
+    public String getEventType() {
+        return eventType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     public String getTitle() {

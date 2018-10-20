@@ -1,6 +1,7 @@
 package com.ceunsp.app.projeto.Calendar.Activity;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -8,39 +9,34 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-
 import com.ceunsp.app.projeto.Calendar.Helper.SlidingTabLayout;
 import com.ceunsp.app.projeto.Calendar.Helper.ViewPagerAdapter;
+import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.R;
+import com.google.firebase.database.DatabaseReference;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
-    private ViewPager pager;
-    private ViewPagerAdapter adapter;
-    private SlidingTabLayout tabs;
+    private final FirebaseHelper firebaseHelper = new FirebaseHelper();
     private CharSequence titles[]= {"Agenda","Histórico"};
-    private int numberOfTabs = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        toolbar = findViewById(R.id.tool_bar);
+        Toolbar toolbar = findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
 
-        // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
-        adapter =  new ViewPagerAdapter(getSupportFragmentManager(), titles, numberOfTabs);
+        int numberOfTabs = 2;
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), titles, numberOfTabs);
 
-        // Assigning ViewPager View and setting the adapter
-        pager = findViewById(R.id.pager);
+
+        ViewPager pager = findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
-        // Assiging the Sliding Tab Layout View
-        tabs = findViewById(R.id.tabs);
-        tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
+        SlidingTabLayout tabs = findViewById(R.id.tabs);
+        tabs.setDistributeEvenly(true);
 
         // Setting Custom Color for the Scroll bar indicator of the Tab View
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
@@ -50,13 +46,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -67,27 +61,49 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-
-            AlertDialog alert;
-                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-                builder.setTitle("Alert");
-                builder.setMessage("Deseja sair dessa turma?");
-                builder.setPositiveButton("Sim", new DialogInterface.OnClickListener(){
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        Toast.makeText(MainActivity.this, "positivo", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                builder.setNegativeButton("Negativo", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        Toast.makeText(MainActivity.this, "negativo" , Toast.LENGTH_SHORT).show();
-                    }
-                });
-                alert = builder.create();
-                alert.show();
-
+            showAlertDialog();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
+    }
+
+    public void showAlertDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.title1);
+        builder.setMessage(R.string.message1);
+
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                cleanUserClass();
+            }
+        });
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                closeContextMenu();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void cleanUserClass(){
+        final String PREFERENCES = "Preferences";
+        SharedPreferences preferences = getSharedPreferences(PREFERENCES, 0);
+        SharedPreferences.Editor editor = preferences.edit();
+        String userType = preferences.getString("userType", "");
+        String userID = firebaseHelper.getUserID();
+
+        DatabaseReference userRef;
+
+        if (userType.equals("Aluno")){
+
+            userRef = firebaseHelper.getReference().child("Users").child(userID)
+                    .child("Student").child("classID");
+            userRef.setValue("");
+            editor.remove("classID");
+            editor.apply();
+            editor.commit();
+            finish();
+        }
     }
 }

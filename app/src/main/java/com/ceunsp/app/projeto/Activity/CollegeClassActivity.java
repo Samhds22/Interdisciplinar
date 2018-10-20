@@ -54,7 +54,6 @@ public class CollegeClassActivity extends AppCompatActivity {
                 startActivity(intentNewClass);
             }
         });
-
     }
 
     @Override
