@@ -47,6 +47,7 @@ public class CalendarActivity extends Fragment {
     private List<Event> eventList = new ArrayList<>();
     private CompactCalendarView compactCalendarView;
     private Long timeInMilliseconds;
+    private ArrayAdapter adapter;
     private boolean shouldShow = false;
     private ActionBar toolbar;
     private Date selectedDate;
@@ -61,7 +62,7 @@ public class CalendarActivity extends Fragment {
         final Button showPreviousMonthBut = mainTabView.findViewById(R.id.prev_button);
         final Button showNextMonthBut = mainTabView.findViewById(R.id.next_button);
 
-        final ArrayAdapter adapter = new ArrayAdapter<>(Objects.requireNonNull(getContext())
+        adapter = new ArrayAdapter<>(Objects.requireNonNull(getContext())
                 , android.R.layout.simple_list_item_1, mutableBookings);
         final Button showCalendarWithAnimationBut = mainTabView.findViewById
                 (R.id.show_with_animation_calendar);
@@ -167,26 +168,6 @@ public class CalendarActivity extends Fragment {
                 selectedDate = dateClicked;
                 RefreshListView(dateClicked);
             }
-            void RefreshListView(Date dateClicked){
-                toolbar.setTitle(dateFormatForMonth.format(dateClicked));
-                List<Event> bookingsFromMap = compactCalendarView.getEvents(dateClicked);
-
-                eventDataList.clear();
-                for (int index = 0; index <bookingsFromMap.size(); index++){
-                    Event event = bookingsFromMap.get(index);
-                    EventData eventData = (EventData) event.getData();
-                    eventList.add(event);
-                    eventDataList.add(eventData);
-                }
-
-                mutableBookings.clear();
-
-                for (EventData eventData : eventDataList) {
-                    mutableBookings.add(eventData.getTitle());
-                }
-                adapter.notifyDataSetChanged();
-            }
-
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
                 toolbar.setTitle(dateFormatForMonth.format(firstDayOfNewMonth));
@@ -251,10 +232,31 @@ public class CalendarActivity extends Fragment {
     public void onResume() {
         super.onResume();
         toolbar.setTitle(dateFormatForMonth.format(compactCalendarView.getFirstDayOfCurrentMonth()));
+        if (selectedDate != null){
+            RefreshListView(selectedDate);
+        }
+
     }
 
     private void loadEvents(Event event) {
         compactCalendarView.addEvent(event);
+    }
+
+    void RefreshListView(Date dateClicked){
+        toolbar.setTitle(dateFormatForMonth.format(dateClicked));
+        List<Event> bookingsFromMap = compactCalendarView.getEvents(dateClicked);
+        eventDataList.clear();
+        for (int index = 0; index <bookingsFromMap.size(); index++){
+            Event event = bookingsFromMap.get(index);
+            EventData eventData = (EventData) event.getData();
+            eventList.add(event);
+            eventDataList.add(eventData);
+        }
+        mutableBookings.clear();
+        for (EventData eventData : eventDataList) {
+            mutableBookings.add(eventData.getTitle());
+        }
+        adapter.notifyDataSetChanged();
     }
 
 }
