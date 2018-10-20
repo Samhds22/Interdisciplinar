@@ -202,12 +202,13 @@ public class CalendarActivity extends Fragment {
 
                 Intent openEvent = new Intent(getContext(), EventActivity.class);
                 openEvent.putExtra("userClassID", classID);
-                openEvent.putExtra("operation", "view");
+                openEvent.putExtra("operation", "View&Edit");
                 openEvent.putExtra("title", eventData.getTitle());
                 openEvent.putExtra( "date", event.getTimeInMillis());
                 openEvent.putExtra("subject", eventData.getSubject());
                 openEvent.putExtra("eventType", eventData.getEventType());
                 openEvent.putExtra("annotation", eventData.getAnnotation());
+                openEvent.putExtra("eventKey", eventData.getEventKey());
                 startActivity(openEvent);
             }
         });

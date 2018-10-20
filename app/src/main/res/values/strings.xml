@@ -85,5 +85,8 @@
     <string name="message1">"Ao sair você não terá mais acesso aos eventos dessa turma. Deseja continuar?"</string>
     <string name="yes">"Sim"</string>
     <string name="no">Não</string>
+    <string name="delete_buttom">Excluir</string>
+    <string name="title2">"Excluir evento?"</string>
+    <string name="message2">"Você está prestes a excluir o evento da agenda da turma. Deseja continuar?"</string>
 
 </resources>

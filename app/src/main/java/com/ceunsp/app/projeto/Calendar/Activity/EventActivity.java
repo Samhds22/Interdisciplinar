@@ -1,10 +1,12 @@
 package com.ceunsp.app.projeto.Calendar.Activity;
 
 import android.app.DatePickerDialog;
-import android.content.SharedPreferences;
+import android.content.DialogInterface;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,15 +15,22 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
+
 import com.ceunsp.app.projeto.Calendar.Model.EventData;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.R;
 import com.github.sundeepk.compactcalendarview.domain.Event;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -30,10 +39,11 @@ public class EventActivity extends AppCompatActivity {
 
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
     private EditText dateEventEdit, subjectEdit, titleEventEdit, annotationEdit;
+    private String userClassID, userID, eventKey;
+
     private Spinner typeSpinner;
     private Calendar calendar;
-    private String userClassID;
-    private String userID;
+
 
     private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("ClassCalendar");
 
@@ -45,7 +55,9 @@ public class EventActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle("");
         getSupportActionBar().setElevation(0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Button deleteButtom;
 
+        deleteButtom   = findViewById(R.id.delete_button);
         titleEventEdit = findViewById(R.id.title_event_edit);
         dateEventEdit  = findViewById(R.id.date_event_edit);
         subjectEdit    = findViewById(R.id.subject_edit);
@@ -58,12 +70,15 @@ public class EventActivity extends AppCompatActivity {
         if (bundle != null){
             if (Objects.equals(bundle.getString("operation"), "create")){
 
+                deleteButtom.setVisibility(View.GONE);
                 dateEventEdit.setText(loadDate());
                 userClassID = bundle.getString("userClassID");
                 setSpinner(null);
 
-            } else if (Objects.equals(bundle.getString("operation"), "view")){
+            } else if (Objects.equals(bundle.getString("operation"), "View&Edit")){
 
+                deleteButtom.setVisibility(View.VISIBLE);
+                eventKey = bundle.getString("eventKey");
                 userClassID = bundle.getString("userClassID");
                 titleEventEdit.setText(bundle.getString("title"));
                 dateEventEdit.setText(loadDate());
@@ -79,7 +94,6 @@ public class EventActivity extends AppCompatActivity {
                 titleEventEdit.setHint("");
             }
         });
-
 
         dateEventEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -128,16 +142,17 @@ public class EventActivity extends AppCompatActivity {
 
                     createEvent(v, eventTitle, annotation, subject, eventType);
 
-                } else if (Objects.equals(bundle.getString("operation"), "edit")){
+                } else if (Objects.equals(bundle.getString("operation"), "View&Edit")){
 
-                    /*DatabaseReference classRef = firebaseHelper.getReference().child("user");
-                    Map<String, Object> userUpdates = new HashMap<>();
-                    userUpdates.put("alanisawesome/nickname", "Alan The Machine");
-                    userUpdates.put("gracehop/nickname", "Amazing Grace");
-
-                    usersRef.updateChildrenAsync(userUpdates);*/
+                    updateEvent(v, eventTitle, annotation, subject, eventType);
                 }
+            }
+        });
 
+        deleteButtom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attempDelete(v);
             }
         });
 
@@ -207,5 +222,80 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
+    public void updateEvent(View v, String eventTitle, String annotation,
+                            String subject, String eventType){
+
+        DatabaseReference classRef = ref.child(userClassID).child(eventKey);
+
+        Map<String, Object> eventUpdate = new HashMap<>();
+        eventUpdate.put("timeInMillis", calendar.getTimeInMillis());
+        eventUpdate.put("data/title", eventTitle);
+        eventUpdate.put("data/subject", subject);
+        eventUpdate.put("data/eventType", eventType);
+        eventUpdate.put("data/annotation", annotation);
+        classRef.child("Event").updateChildren(eventUpdate);
+
+        Snackbar.make(v, "Evento atualizado.", Snackbar.LENGTH_LONG).show();
+        finish();
+    }
+
+
+
+    public void attempDelete(final View v){
+
+        DatabaseReference userClass = ref.child(userClassID).child(eventKey).child("Event");
+        userClass.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (checkPermission(dataSnapshot, userID)){
+                    showDeleteDialog();
+                } else {
+                    Snackbar.make(v,"Você não tem permissão para apagar este evento",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public boolean checkPermission(DataSnapshot dataSnapshot, String currentUser){
+
+        String cretorID = (String) dataSnapshot.child("data").child("creatorID").getValue();
+
+        if (userID.equals(cretorID)){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void showDeleteDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(EventActivity.this);
+        builder.setTitle(R.string.title2);
+        builder.setMessage(R.string.message2);
+
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                deleteEvent();
+            }
+        });
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                closeContextMenu();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void deleteEvent(){
+        DatabaseReference userClass = ref.child(userClassID).child(eventKey);
+        userClass.setValue(null);
+        finish();
+    }
 }
 
