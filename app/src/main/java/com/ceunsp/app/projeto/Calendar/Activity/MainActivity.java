@@ -20,6 +20,8 @@ public class MainActivity extends AppCompatActivity {
 
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
     private CharSequence titles[]= {"Agenda","Histórico"};
+    private ViewPagerAdapter adapter;
+    String classID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +30,18 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
 
-        int numberOfTabs = 2;
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), titles, numberOfTabs);
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null){
+            classID = bundle.getString("classID");
+        }
 
+        int numberOfTabs = 2;
+
+        if (classID != null){
+            adapter = new ViewPagerAdapter(getSupportFragmentManager(), titles, numberOfTabs, classID);
+        } else {
+            adapter = new ViewPagerAdapter(getSupportFragmentManager(), titles, numberOfTabs);
+        }
 
         ViewPager pager = findViewById(R.id.pager);
         pager.setAdapter(adapter);

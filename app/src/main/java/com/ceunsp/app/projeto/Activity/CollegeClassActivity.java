@@ -67,8 +67,8 @@ public class CollegeClassActivity extends AppCompatActivity {
             finish();
         }
 
-        String college = cleanUpStrings(preferences.getString("college", ""));
-        String course  = cleanUpStrings(preferences.getString("course", ""));
+        final String college = cleanUpStrings(preferences.getString("college", ""));
+        final String course  = cleanUpStrings(preferences.getString("course", ""));
 
             Query classQry = ref.child("CollegeClass").child(college).child(course);
             classQry.addValueEventListener(new ValueEventListener() {
@@ -79,9 +79,9 @@ public class CollegeClassActivity extends AppCompatActivity {
                         if (dataSnapshot.exists()) {
 
                             String creationDate = (String) postSnapshot.child("creationDate").getValue();
-                            String className = (String) postSnapshot.child("className").getValue();
-                            String creator = (String) postSnapshot.child("creator").getValue();
-                            String classID = (String) postSnapshot.child("classID").getValue();
+                            String className    = (String) postSnapshot.child("className").getValue();
+                            String creator      = (String) postSnapshot.child("creator").getValue();
+                            String classID      = (String) postSnapshot.child("classID").getValue();
 
                             CollegeClass collegeClass = new CollegeClass(className, creator, creationDate, classID);
                             collegeClassList.add(collegeClass);
@@ -103,9 +103,11 @@ public class CollegeClassActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(View view, int position) {
                         CollegeClass collegeClass = collegeClassList.get(position);
-                        String classID = collegeClass.getClassID();
+                        String classID   = collegeClass.getClassID();
+                        String className = collegeClass.getClassName();
 
                         Intent intentJoin = new Intent(getApplicationContext(), JoinClassActivity.class);
+                        intentJoin.putExtra("className", className);
                         intentJoin.putExtra("classID", classID);
                         startActivity(intentJoin);
                     }

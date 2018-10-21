@@ -28,11 +28,13 @@ public class JoinClassActivity extends AppCompatActivity {
 
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
     private final DatabaseReference ref = firebaseHelper.getReference();
+    private String userType, college, course, classID, className;
     private final String userID = firebaseHelper.getUserID();
     private List<User> studentsList = new ArrayList<>();
+    private List<User> teacherList = new ArrayList<>();
     private static final String PREFERENCES = "Preferences";
     private SharedPreferences preferences;
-    private String userType, classID;
+
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -45,35 +47,48 @@ public class JoinClassActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null){
-            retrieveClassID(bundle);
+            retrieveClassData(bundle);
+            getSupportActionBar().setTitle(className);
         }
+
 
         preferences = getSharedPreferences(PREFERENCES, 0);
         userType = preferences.getString("userType", "");
 
-        DatabaseReference studentsRef = ref.child("Users");
+        final DatabaseReference studentsRef = ref.child("Users");
         studentsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
 
-                    String classId = (String) postSnapshot.child("Student").child("classID").getValue();
+                    String lastName = (String) postSnapshot.child("lastName").getValue();
+                    String userType = (String) postSnapshot.child("userType").getValue();
+                    String name     = (String) postSnapshot.child("name").getValue();
+                    User user       = new User(name, lastName, userType);
+                    String classId  = null;
 
-                    assert classId != null;
-                    if (classId.equals(classID)){
+                    assert userType != null;
+                    if (userType.equals("Aluno")){
+                        classId = (String) postSnapshot.child("Student").child("classID").getValue();
 
-                        String lastName = (String) postSnapshot.child("lastName").getValue();
-                        String userType = (String) postSnapshot.child("userType").getValue();
-                        String name     = (String) postSnapshot.child("name").getValue();
-
-                        User user = new User(name, lastName, userType);
-                        studentsList.add(user);
-
-                        fillRecyclerView();
+                        if ((classId != null) &&(classId.equals(classID))){
+                                studentsList.add(user);
 
                         }
+
+                    } else if (userType.equals("Professor")){
+                        for (DataSnapshot teacherSnapshot : postSnapshot.child("Classes").getChildren()){
+                           classId = (String) teacherSnapshot.getValue();
+                            if ((classId != null) &&(classId.equals(classID))) {
+                                teacherList.add(user);
+                            }
+                        }
                     }
+
+                    fillStudentRV();
+                    fillTeacherRV();
                 }
+            }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -92,18 +107,34 @@ public class JoinClassActivity extends AppCompatActivity {
                     studentRef.child("Student").child("classID").setValue(classID);
                     saveInPreferences();
                     finish();
+
+                } else if (userType.equals("Professor")){
+
+                    DatabaseReference teacherRef = ref.child("Users").child(userID);
+                    teacherRef.child("Classes").child(className).setValue(classID);
+                    finish();
                 }
             }
         });
     }
 
-    public void retrieveClassID(Bundle bundle){
-        classID = bundle.getString("classID");
+    public void retrieveClassData(Bundle bundle){
+        className = bundle.getString("className");
+        classID   = bundle.getString("classID");
     }
 
-    public void fillRecyclerView(){
-        RecyclerView recyclerView = findViewById(R.id.user_RecyclerView);
+    public void fillStudentRV(){
+        RecyclerView recyclerView = findViewById(R.id.student_RecyclerView);
         UsersAdapter adapter = new UsersAdapter(studentsList);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(JoinClassActivity.this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(adapter);
+    }
+
+    public void fillTeacherRV(){
+        RecyclerView recyclerView = findViewById(R.id.teacher_RecyclerView);
+        UsersAdapter adapter = new UsersAdapter(teacherList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(JoinClassActivity.this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);

@@ -137,6 +137,7 @@ public class EventActivity extends AppCompatActivity {
                 String subject    = subjectEdit.getText().toString();
                 String eventType  = typeSpinner.getSelectedItem().toString();
 
+
                 assert bundle != null;
                 if (Objects.equals(bundle.getString("operation"), "create")){
 

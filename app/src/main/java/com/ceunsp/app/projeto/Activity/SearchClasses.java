@@ -1,5 +1,6 @@
 package com.ceunsp.app.projeto.Activity;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.Spinner;
 
 import com.ceunsp.app.projeto.Helpers.ClassAdapter;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
+import com.ceunsp.app.projeto.Helpers.RecyclerItemClickListener;
 import com.ceunsp.app.projeto.Model.CollegeClass;
 import com.ceunsp.app.projeto.R;
 import com.google.firebase.database.DataSnapshot;
@@ -27,6 +29,8 @@ public class SearchClasses extends AppCompatActivity {
     private List<CollegeClass> collegeClassList = new ArrayList<CollegeClass>();
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
     private Spinner collegeSpinner, courseSpinner;
+    private String college, selectedCourse, className;
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,7 @@ public class SearchClasses extends AppCompatActivity {
 
         collegeSpinner = findViewById(R.id.college_spinner);
         courseSpinner  = findViewById(R.id.course_spinner);
+        recyclerView   = findViewById(R.id.class_recyclerView);
 
         loadSpinners();
 
@@ -42,8 +47,8 @@ public class SearchClasses extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                String college = cleanUpStrings(collegeSpinner.getSelectedItem().toString());
-                String selectedCourse = cleanUpStrings(parent.getSelectedItem().toString());
+                college = cleanUpStrings(collegeSpinner.getSelectedItem().toString());
+                selectedCourse = cleanUpStrings(parent.getSelectedItem().toString());
 
                 if (!college.isEmpty()){
 
@@ -55,7 +60,7 @@ public class SearchClasses extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             collegeClassList.clear();
                             for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
-                                loadRecyclerView(postSnapshot);
+                                fillRecyclerView(postSnapshot);
                             }
                         }
 
@@ -73,6 +78,31 @@ public class SearchClasses extends AppCompatActivity {
 
             }
         });
+
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplication(),
+                recyclerView,
+                new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        CollegeClass collegeClass = collegeClassList.get(position);
+                        String classID = collegeClass.getClassID();
+
+                        Intent intentJoin = new Intent(getApplicationContext(), JoinClassActivity.class);
+                        intentJoin.putExtra("className", className);
+                        intentJoin.putExtra("classID", classID);
+                        startActivity(intentJoin);
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+
+                    }
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    }
+                }));
     }
 
     private void loadSpinners() {
@@ -89,19 +119,17 @@ public class SearchClasses extends AppCompatActivity {
         courseSpinner.setAdapter(adapterCourse);
     }
 
-    public void loadRecyclerView(DataSnapshot postSnapshot){
+    public void fillRecyclerView(DataSnapshot postSnapshot){
 
         String creationDate = (String) postSnapshot.child("creationDate").getValue();
-        String className    = (String) postSnapshot.child("className").getValue();
         String creator      = (String) postSnapshot.child("creator").getValue();
         String classID      = (String) postSnapshot.child("classID").getValue();
+        className           = (String) postSnapshot.child("className").getValue();
 
         CollegeClass collegeClass = new CollegeClass(className, creator, creationDate, classID);
         collegeClassList.add(collegeClass);
 
-        RecyclerView recyclerView = findViewById(R.id.class_recyclerView);
         ClassAdapter adapter = new ClassAdapter(collegeClassList);
-
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(SearchClasses.this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);

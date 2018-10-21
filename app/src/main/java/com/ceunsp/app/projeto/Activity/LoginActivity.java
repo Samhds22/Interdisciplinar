@@ -185,12 +185,6 @@ public class LoginActivity extends AppCompatActivity {
             }
 
         } else if (preferences.getString("userType", "").equals("Professor")){
-
-           /* DatabaseReference teacherRef = firebaseHelper.getReference()
-                    .child("Users").child(firebaseHelper.getUserID());
-
-            teacherRef.child("Teacher").setValue()*/
-
             Intent intentHome = new Intent(getApplicationContext(), HomeActivity.class);
             startActivity(intentHome);
         }

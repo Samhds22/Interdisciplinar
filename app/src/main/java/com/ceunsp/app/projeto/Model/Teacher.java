@@ -1,4 +1,5 @@
 package com.ceunsp.app.projeto.Model;
 
-public class TeacherClasses {
+public class Teacher {
+
 }

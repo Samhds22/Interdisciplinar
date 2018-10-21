@@ -1,6 +1,9 @@
 package com.ceunsp.app.projeto.Calendar.Activity;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -35,13 +38,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+@SuppressLint("ValidFragment")
+@RequiresApi(api = Build.VERSION_CODES.KITKAT)
 public class CalendarActivity extends Fragment {
 
-    private static final String TAG = "MainActivity";
     private SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("MMM - yyyy", Locale.getDefault());
     private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
-    private String userID = auth.getCurrentUser().getUid();
+    private String userID = Objects.requireNonNull(auth.getCurrentUser()).getUid();
     final List<String> mutableBookings = new ArrayList<>();
     private List<EventData> eventDataList = new ArrayList<>();
     private List<Event> eventList = new ArrayList<>();
@@ -52,6 +56,13 @@ public class CalendarActivity extends Fragment {
     private ActionBar toolbar;
     private Date selectedDate;
     private String classID;
+
+    public CalendarActivity(String classID) {
+        this.classID = classID;
+    }
+    public CalendarActivity() {
+
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
