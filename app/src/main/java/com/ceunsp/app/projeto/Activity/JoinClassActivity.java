@@ -84,10 +84,10 @@ public class JoinClassActivity extends AppCompatActivity {
                             }
                         }
                     }
-
-                    fillStudentRV();
-                    fillTeacherRV();
                 }
+
+                fillStudentRV();
+                fillTeacherRV();
             }
 
                 @Override
