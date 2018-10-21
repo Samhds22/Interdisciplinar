@@ -17,7 +17,7 @@ import com.ceunsp.app.projeto.R;
 import com.google.firebase.database.DatabaseReference;
 import java.util.Objects;
 
-public class QuestionActivity extends AppCompatActivity {
+public class StudentQuestionActivity extends AppCompatActivity {
 
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
     private static final String PREFERENCES = "Preferences";

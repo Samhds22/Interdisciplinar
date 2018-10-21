@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.ceunsp.app.projeto">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -8,7 +11,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:fullBackupContent="@xml/backup_descriptor"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".Activity.SplashScreenActivity"
             android:screenOrientation="portrait"
@@ -33,10 +38,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Calendar.Activity.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".Activity.CalendarMainActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait" />
         <activity
-            android:name=".Calendar.Activity.EventActivity"
+            android:name=".Activity.EventBodyActivity"
             android:screenOrientation="portrait" />
         <!--
             <activity
@@ -45,26 +51,34 @@
             android:theme="@style/AppTheme.NoActionBar"></activity>
         -->
         <activity
-            android:name=".Activity.CollegeClassActivity"
+            android:name=".Activity.StudentClassActivity"
             android:label="@string/title_activity_class_register"
             android:parentActivityName=".Activity.HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ceunsp.app.projeto.Activity.HomeActivity" />
         </activity>
-        <activity android:name=".Activity.NewClassActivity" />
+        <activity android:name=".Activity.NewClassActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.ClassActivity"
             android:label="@string/title_activity_class"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.JoinClassActivity"
             android:label="@string/title_activity_join_class"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activity.TeacherClassesActivity" />
-        <activity android:name=".Activity.QuestionActivity" />
-        <activity android:name=".Activity.SearchClasses"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Activity.TeacherClassesActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="InnerclassSeparator" />
+        <activity android:name=".Activity.StudentQuestionActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Activity.SearchClassesActivity"
+            android:screenOrientation="portrait" ></activity>
     </application>
 
 </manifest>

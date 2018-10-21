@@ -1,4 +1,4 @@
-package com.ceunsp.app.projeto.Calendar.Helper;
+package com.ceunsp.app.projeto.Helpers;
 /*
  * Copyright 2014 Google Inc. All rights reserved.
  *

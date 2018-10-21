@@ -13,7 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
-import com.ceunsp.app.projeto.Calendar.Activity.MainActivity;
+
 import com.ceunsp.app.projeto.Helpers.ClassAdapter;
 import com.ceunsp.app.projeto.Helpers.RecyclerItemClickListener;
 import com.ceunsp.app.projeto.Model.CollegeClass;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class CollegeClassActivity extends AppCompatActivity {
+public class StudentClassActivity extends AppCompatActivity {
 
     private DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
     private static final String PREFERENCES = "Preferences";
@@ -62,7 +62,7 @@ public class CollegeClassActivity extends AppCompatActivity {
         SharedPreferences preferences = getSharedPreferences(PREFERENCES, 0);
 
         if (!preferences.getString("classID" , "").equals("")){
-            Intent intentCalendar = new Intent(getApplicationContext(), MainActivity.class);
+            Intent intentCalendar = new Intent(getApplicationContext(), CalendarMainActivity.class);
             startActivity(intentCalendar);
             finish();
         }
@@ -132,7 +132,7 @@ public class CollegeClassActivity extends AppCompatActivity {
 
     public void fillRecyclerView(){
         ClassAdapter adapter = new ClassAdapter(collegeClassList);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(CollegeClassActivity.this);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(StudentClassActivity.this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);

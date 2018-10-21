@@ -1,9 +1,7 @@
-package com.ceunsp.app.projeto.Calendar.Activity;
+package com.ceunsp.app.projeto.Fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,7 +18,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import com.ceunsp.app.projeto.Calendar.Model.EventData;
+
+import com.ceunsp.app.projeto.Activity.EventBodyActivity;
+import com.ceunsp.app.projeto.Model.EventData;
 import com.ceunsp.app.projeto.R;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
@@ -40,7 +40,7 @@ import java.util.Objects;
 
 @SuppressLint("ValidFragment")
 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-public class CalendarActivity extends Fragment {
+public class CalendarFragment extends Fragment {
 
     private SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("MMM - yyyy", Locale.getDefault());
     private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
@@ -57,10 +57,10 @@ public class CalendarActivity extends Fragment {
     private Date selectedDate;
     private String classID;
 
-    public CalendarActivity(String classID) {
+    public CalendarFragment(String classID) {
         this.classID = classID;
     }
-    public CalendarActivity() {
+    public CalendarFragment() {
 
     }
 
@@ -161,7 +161,7 @@ public class CalendarActivity extends Fragment {
                 }else{
                     timeInMilliseconds = System.currentTimeMillis();
                 }
-                Intent intentAddEvent = new Intent(mainTabView.getContext(), EventActivity.class);
+                Intent intentAddEvent = new Intent(mainTabView.getContext(), EventBodyActivity.class);
                 intentAddEvent.putExtra("operation", "create");
                 intentAddEvent.putExtra("date", timeInMilliseconds);
                 intentAddEvent.putExtra("userClassID", classID);
@@ -192,7 +192,7 @@ public class CalendarActivity extends Fragment {
                 Event event = eventList.get(position);
                 EventData eventData = eventDataList.get(position);
 
-                Intent openEvent = new Intent(getContext(), EventActivity.class);
+                Intent openEvent = new Intent(getContext(), EventBodyActivity.class);
                 openEvent.putExtra("userClassID", classID);
                 openEvent.putExtra("operation", "View&Edit");
                 openEvent.putExtra("title", eventData.getTitle());

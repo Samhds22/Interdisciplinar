@@ -1,92 +1,17 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    android:id="@+id/main_content"
-    android:background="@color/colorWhite"
-    >
-
-
-    <com.github.sundeepk.compactcalendarview.CompactCalendarView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/compactcalendar_view"
-        android:layout_width="fill_parent"
-        android:layout_height="217dp"
-        app:compactCalendarBackgroundColor="@color/colorPrimary"
-        app:compactCalendarCurrentDayBackgroundColor="#BD0900"
-        app:compactCalendarCurrentDayIndicatorStyle="fill_large_indicator"
-        app:compactCalendarCurrentSelectedDayBackgroundColor="#D46A6A"
-        app:compactCalendarEventIndicatorStyle="small_indicator"
-        app:compactCalendarOtherMonthDaysTextColor="#534c4c"
-        app:compactCalendarShouldSelectFirstDayOfMonthOnScroll="true"
-        app:compactCalendarTargetHeight="250dp"
-        app:compactCalendarTextColor="#fff"
-        app:compactCalendarTextSize="20sp"/>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:id="@+id/calendar_control_buttons"
-        android:layout_below="@+id/compactcalendar_view"
-        android:layout_height="wrap_content">
-
-    </LinearLayout>
-
-    <Button
-        android:layout_below="@+id/compactcalendar_view"
-        android:background="#00000000"
-        android:id="@+id/prev_button"
-        android:drawableLeft="@drawable/ic_arrow_left_24dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_calendar_activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="15dp"
-        android:paddingStart="15dp"
-        android:paddingRight="0dp"
-        android:paddingEnd="0dp"
-        />
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@drawable/ic_add_white_24dp"
+        app:fab_size="normal"/>
 
-    <Button
-        android:id="@+id/show_with_animation_calendar"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_alignBaseline="@+id/prev_button"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/circle_buttom"
-        android:drawableTop="@drawable/ic_arrow_up_24dp"
-        android:drawableBottom="@drawable/ic_arrow_down__24dp"/>
+    <include layout="@layout/content_calendar"/>
 
-    <Button
-        android:id="@+id/next_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawableRight="@drawable/ic_arrow_right_24dp"
-        android:layout_alignParentRight="true"
-        android:background="#00000000"
-        android:layout_below="@+id/compactcalendar_view"
-        android:paddingLeft="0dp"
-        android:paddingStart="0dp"
-        android:paddingRight="15dp"
-        android:paddingEnd="15dp" />
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:id="@+id/calendar_control_buttons_2"
-        android:layout_below="@+id/calendar_control_buttons"
-        android:layout_height="wrap_content">
-    </LinearLayout>
-
-    <include
-        layout="@layout/calendar_fab"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true" />
-    <ListView
-        android:id="@+id/bookings_listview"
-        android:layout_below="@+id/prev_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-    </ListView>
-
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

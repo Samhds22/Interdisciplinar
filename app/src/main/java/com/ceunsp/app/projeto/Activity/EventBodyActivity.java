@@ -1,4 +1,4 @@
-package com.ceunsp.app.projeto.Calendar.Activity;
+package com.ceunsp.app.projeto.Activity;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
@@ -17,7 +17,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.ceunsp.app.projeto.Calendar.Model.EventData;
+import com.ceunsp.app.projeto.Model.EventData;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.R;
 import com.github.sundeepk.compactcalendarview.domain.Event;
@@ -35,7 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-public class EventActivity extends AppCompatActivity {
+public class EventBodyActivity extends AppCompatActivity {
 
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
     private EditText dateEventEdit, subjectEdit, titleEventEdit, annotationEdit;
@@ -110,7 +110,7 @@ public class EventActivity extends AppCompatActivity {
                 dateEventEdit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        new DatePickerDialog(EventActivity.this, date, calendar
+                        new DatePickerDialog(EventBodyActivity.this, date, calendar
                                 .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
                                 calendar.get(Calendar.DAY_OF_MONTH)).show();
                     }
@@ -275,7 +275,7 @@ public class EventActivity extends AppCompatActivity {
     }
 
     public void showDeleteDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(EventActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(EventBodyActivity.this);
         builder.setTitle(R.string.title2);
         builder.setMessage(R.string.message2);
 

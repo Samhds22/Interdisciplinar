@@ -30,6 +30,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
@@ -38,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -46,12 +49,13 @@ public class RegisterActivity extends AppCompatActivity {
     final FirebaseHelper firebaseHelper = new FirebaseHelper();
     private EditText nameEdit, lastNameEdit, nicknameEdit, dtBirthEdit;
     private EditText emailEdit, passwordEdit, pwConfirmEdit;
-    private String  userID;
+    private static final String PREFERENCES = "Preferences";
+    private Calendar calendar = Calendar.getInstance();
+    private final int PICK_IMAGE_REQUEST = 71;
     private CircleImageView photoImage;
     private Spinner userTypeSpinner;
-    private Calendar calendar = Calendar.getInstance();
-    private static final String PREFERENCES = "Preferences";
-    private final int PICK_IMAGE_REQUEST = 1;
+    private String  userID;
+    private Uri filePath;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -219,7 +223,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void LoadSpinner(){
         String []userType = getResources().getStringArray(R.array.user_type);
         ArrayAdapter<String> adapterUserType =
-                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,userType);
+                new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,userType);
         adapterUserType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         userTypeSpinner.setAdapter(adapterUserType);
     }
@@ -229,9 +233,9 @@ public class RegisterActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri uri = data.getData();
+            filePath = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
                 photoImage.setImageBitmap(bitmap);
 
             } catch (IOException e) {
@@ -240,33 +244,6 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    public void SaveImage(StorageReference reference){
-
-        photoImage.setDrawingCacheEnabled(true);
-        photoImage.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        photoImage.layout(0, 0, photoImage.getMeasuredWidth(), photoImage.getMeasuredHeight());
-        photoImage.buildDrawingCache();
-        Bitmap bitmapImage = Bitmap.createBitmap(photoImage.getDrawingCache());
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-        byte[] byteData = outputStream.toByteArray();
-
-        UploadTask uploadTask = reference.putBytes(byteData);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Toast.makeText(getApplicationContext(), "Falha ao salvar imagem do perfil.",
-                        Toast.LENGTH_LONG).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(getApplicationContext(), "ok", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
 
     public void createUser(String email, String password , final String name, final String lastName,
                            final String nickname, final String dateOfBith, final String userType){
@@ -277,17 +254,51 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 
-                            User user = new User(name, lastName, nickname,dateOfBith, userType);
-
+                            uploadImage();
                             userID = firebaseHelper.getUserID();
+                            User user = new User(name, lastName, nickname,dateOfBith, userType);
                             firebaseHelper.getReference().child("Users").child(userID).setValue(user);
-                            SaveImage(firebaseHelper.getStorage().child("image-profile." + userID));
                             saveInPreferences(userID, name, lastName, nickname, dateOfBith, userType);
                             finish();
                         }
                     }
                 });
     }
+
+    private void uploadImage() {
+
+        if(filePath != null) {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageReference = storage.getReference();
+
+            photoImage.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            photoImage.layout(0, 0, photoImage.getMeasuredWidth(), photoImage.getMeasuredHeight());
+            photoImage.buildDrawingCache();
+            Bitmap bitmapImage = Bitmap.createBitmap(photoImage.getDrawingCache());
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            byte[] byteData = outputStream.toByteArray();
+
+            StorageReference ref = storageReference.child("profilePicture."+ userID);
+            ref.putBytes(byteData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>(){
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(getApplicationContext(), "Uploaded", Toast.LENGTH_SHORT).show();
+                }
+            })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), "Failed "+e.getMessage()
+                                    ,Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
+
 
     public void saveInPreferences(String userID, String name, String lastName,
                                   String nickname, String dateOfBirth, String userType ){
@@ -313,16 +324,12 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public  boolean checkConnection() {
-        boolean connected;
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+
         assert connectivityManager != null;
-        if (connectivityManager.getActiveNetworkInfo() != null
+        return connectivityManager.getActiveNetworkInfo() != null
                 && connectivityManager.getActiveNetworkInfo().isAvailable()
-                && connectivityManager.getActiveNetworkInfo().isConnected()) {
-            connected = true;
-        } else {
-            connected = false;
-        }
-        return connected;
+                && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }

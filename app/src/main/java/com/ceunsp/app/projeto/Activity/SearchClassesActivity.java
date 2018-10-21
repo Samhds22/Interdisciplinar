@@ -24,7 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchClasses extends AppCompatActivity {
+public class SearchClassesActivity extends AppCompatActivity {
 
     private List<CollegeClass> collegeClassList = new ArrayList<CollegeClass>();
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
@@ -85,7 +85,8 @@ public class SearchClasses extends AppCompatActivity {
                     @Override
                     public void onItemClick(View view, int position) {
                         CollegeClass collegeClass = collegeClassList.get(position);
-                        String classID = collegeClass.getClassID();
+                        String classID   = collegeClass.getClassID();
+                        String className = collegeClass.getClassName();
 
                         Intent intentJoin = new Intent(getApplicationContext(), JoinClassActivity.class);
                         intentJoin.putExtra("className", className);
@@ -130,7 +131,7 @@ public class SearchClasses extends AppCompatActivity {
         collegeClassList.add(collegeClass);
 
         ClassAdapter adapter = new ClassAdapter(collegeClassList);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(SearchClasses.this);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(SearchClassesActivity.this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);

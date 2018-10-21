@@ -5,7 +5,7 @@
                 android:animateLayoutChanges="true"
                 android:orientation="vertical"
                 android:id="@+id/parent"
-                tools:context=".Calendar.Activity.MainActivity">
+                tools:context=".Activity.CalendarMainActivity">
 
     <include
         android:id="@+id/tool_bar"
@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         />
 
-    <com.ceunsp.app.projeto.Calendar.Helper.SlidingTabLayout
+    <com.ceunsp.app.projeto.Helpers.SlidingTabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

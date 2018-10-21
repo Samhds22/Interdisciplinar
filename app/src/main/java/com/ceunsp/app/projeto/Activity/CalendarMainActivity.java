@@ -1,34 +1,41 @@
-package com.ceunsp.app.projeto.Calendar.Activity;
+package com.ceunsp.app.projeto.Activity;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.ceunsp.app.projeto.Calendar.Helper.SlidingTabLayout;
-import com.ceunsp.app.projeto.Calendar.Helper.ViewPagerAdapter;
+import com.ceunsp.app.projeto.Helpers.SlidingTabLayout;
+import com.ceunsp.app.projeto.Helpers.ViewPagerAdapter;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.R;
 import com.google.firebase.database.DatabaseReference;
 
+import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+
+public class CalendarMainActivity extends AppCompatActivity {
 
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
     private CharSequence titles[]= {"Agenda","Histórico"};
     private ViewPagerAdapter adapter;
     String classID;
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null){
@@ -72,20 +79,23 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            showAlertDialog();
-            return true;
+            confirmDelete();
+            super.onOptionsItemSelected(item);
+        } else if (id == android.R.id.home){
+            finish();
         }
+
         return super.onOptionsItemSelected(item);
     }
 
-    public void showAlertDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+    public void confirmDelete(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(CalendarMainActivity.this);
         builder.setTitle(R.string.title1);
         builder.setMessage(R.string.message1);
 
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                cleanUserClass();
+                deleteClass();
             }
         });
         builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -97,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void cleanUserClass(){
+    public void deleteClass(){
         final String PREFERENCES = "Preferences";
         SharedPreferences preferences = getSharedPreferences(PREFERENCES, 0);
         SharedPreferences.Editor editor = preferences.edit();
@@ -115,6 +125,15 @@ public class MainActivity extends AppCompatActivity {
             editor.apply();
             editor.commit();
             finish();
+
+        } else if (userType.equals("Professor")){
+
+            FirebaseHelper firebaseHelper = new FirebaseHelper();
+            DatabaseReference ref = firebaseHelper.getReference();
+            DatabaseReference teacherRef = ref.child("Users").child(userID);
+            teacherRef.child("Classes").child(classID).setValue(null);
+            finish();
         }
     }
+
 }

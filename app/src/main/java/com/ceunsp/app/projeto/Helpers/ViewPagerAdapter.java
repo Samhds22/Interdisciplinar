@@ -1,4 +1,4 @@
-package com.ceunsp.app.projeto.Calendar.Helper;
+package com.ceunsp.app.projeto.Helpers;
 
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -6,7 +6,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.ceunsp.app.projeto.Calendar.Activity.CalendarActivity;
+import com.ceunsp.app.projeto.Fragments.CalendarFragment;
+import com.ceunsp.app.projeto.Fragments.Tab2;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -25,7 +26,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         super(fm);
         this.titles = titles;
         this.numbOfTabs = mNumbOfTabs;
-        this.classID = classID;
     }
 
 
@@ -34,10 +34,10 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         if (position == 0) {
             if (classID != null){
-                CalendarActivity calendarActivity = new CalendarActivity(classID); //alterado
+                CalendarFragment calendarActivity = new CalendarFragment(classID); //alterado
                 return calendarActivity;
             } else {
-                CalendarActivity calendarActivity = new CalendarActivity(); //alterado
+                CalendarFragment calendarActivity = new CalendarFragment(); //alterado
                 return calendarActivity;
             }
 

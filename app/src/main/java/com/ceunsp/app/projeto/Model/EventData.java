@@ -1,4 +1,4 @@
-package com.ceunsp.app.projeto.Calendar.Model;
+package com.ceunsp.app.projeto.Model;
 
 public class EventData {
 

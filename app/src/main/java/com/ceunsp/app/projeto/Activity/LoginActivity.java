@@ -207,7 +207,7 @@ public class LoginActivity extends AppCompatActivity {
         String college = preferences.getString("college", "");
         String course  = preferences.getString("course", "");
         if (college.isEmpty() || course.isEmpty()){
-            Intent intentQuestion = new Intent(getApplicationContext(), QuestionActivity.class);
+            Intent intentQuestion = new Intent(getApplicationContext(), StudentQuestionActivity.class);
             startActivity(intentQuestion);
         } else{
             Intent intentHome = new Intent(getApplicationContext(), HomeActivity.class);

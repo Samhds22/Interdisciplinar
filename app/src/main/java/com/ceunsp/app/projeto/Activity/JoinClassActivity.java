@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Helpers.UsersAdapter;
@@ -19,7 +20,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,7 +28,7 @@ public class JoinClassActivity extends AppCompatActivity {
 
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
     private final DatabaseReference ref = firebaseHelper.getReference();
-    private String userType, college, course, classID, className;
+    private String userType, classID, className;
     private final String userID = firebaseHelper.getUserID();
     private List<User> studentsList = new ArrayList<>();
     private List<User> teacherList = new ArrayList<>();
@@ -44,6 +44,7 @@ public class JoinClassActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null){
@@ -65,7 +66,7 @@ public class JoinClassActivity extends AppCompatActivity {
                     String userType = (String) postSnapshot.child("userType").getValue();
                     String name     = (String) postSnapshot.child("name").getValue();
                     User user       = new User(name, lastName, userType);
-                    String classId  = null;
+                    String classId;
 
                     assert userType != null;
                     if (userType.equals("Aluno")){
@@ -78,7 +79,7 @@ public class JoinClassActivity extends AppCompatActivity {
 
                     } else if (userType.equals("Professor")){
                         for (DataSnapshot teacherSnapshot : postSnapshot.child("Classes").getChildren()){
-                           classId = (String) teacherSnapshot.getValue();
+                           classId = teacherSnapshot.getKey();
                             if ((classId != null) &&(classId.equals(classID))) {
                                 teacherList.add(user);
                             }
@@ -106,14 +107,14 @@ public class JoinClassActivity extends AppCompatActivity {
                     DatabaseReference studentRef = ref.child("Users").child(userID);
                     studentRef.child("Student").child("classID").setValue(classID);
                     saveInPreferences();
-                    finish();
 
                 } else if (userType.equals("Professor")){
 
                     DatabaseReference teacherRef = ref.child("Users").child(userID);
-                    teacherRef.child("Classes").child(className).setValue(classID);
-                    finish();
+                    teacherRef.child("Classes").child(classID).setValue(className);
+
                 }
+                finish();
             }
         });
     }
@@ -146,5 +147,14 @@ public class JoinClassActivity extends AppCompatActivity {
         editor.putString("classID", classID);
         editor.apply();
         editor.commit();
+    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            default:break;
+        }
+        return true;
     }
 }
