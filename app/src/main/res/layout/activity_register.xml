@@ -155,14 +155,29 @@
                 android:layout_weight="1"/>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/save_button"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:background="@drawable/border_rounded_button"
-            android:text="@string/save_button"
-            android:textColor="@color/colorWhite"
-            android:layout_margin="6dp"/>
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom|end">
+
+
+            <ProgressBar
+                android:id="@+id/register_progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/save_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rounded_button"
+                android:text="@string/save_button"
+                android:textColor="@color/colorWhite"
+                android:layout_margin="6dp"/>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

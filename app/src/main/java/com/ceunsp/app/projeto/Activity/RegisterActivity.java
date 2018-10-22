@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
@@ -52,8 +54,10 @@ public class RegisterActivity extends AppCompatActivity {
     private static final String PREFERENCES = "Preferences";
     private Calendar calendar = Calendar.getInstance();
     private final int PICK_IMAGE_REQUEST = 71;
+    private ProgressBar progressBar;
     private CircleImageView photoImage;
     private Spinner userTypeSpinner;
+    private Button saveButton;
     private String  userID;
     private Uri filePath;
 
@@ -72,8 +76,9 @@ public class RegisterActivity extends AppCompatActivity {
         emailEdit       = findViewById(R.id.email_edit);
         passwordEdit    = findViewById(R.id.password_edit);
         pwConfirmEdit   = findViewById(R.id.password_confirm_edit);
-
+        saveButton      = findViewById(R.id.save_button);
         photoImage      = findViewById(R.id.photo_image);
+        progressBar     = findViewById(R.id.register_progressBar);
 
         calendar.setTimeInMillis(System.currentTimeMillis());
         LoadSpinner();
@@ -106,7 +111,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
             private void updateLabel(){
-                String myFormat = "dd/MM/yyyy"; //In which you need put here
+                String myFormat = "dd/MM/yyyy";
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("pt","BR"));
 
                 dtBirthEdit.setText(sdf.format(calendar.getTime()));
@@ -125,7 +130,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        Button saveButton = findViewById(R.id.save_button);
+
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,15 +145,27 @@ public class RegisterActivity extends AppCompatActivity {
                 String pwConfirm  = pwConfirmEdit.getText().toString();
 
                 if (checkConnection()){
+
                     if (tryToRegister(name, lastName, nickname, dateOfBirth, email, password, pwConfirm)) {
-                        createUser(email, password, name, lastName, nickname, dateOfBirth, userType);
+                        showProgressBar();
+                        createUser( v ,email, password, name, lastName, nickname, dateOfBirth, userType);
+                    } else {
+                        hideProgressBar();
                     }
+
                 } else{
                     Toast.makeText(getApplicationContext(), "Sem conexão", Toast.LENGTH_LONG)
                             .show();
                 }
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+
+        hideProgressBar();
+        super.onResume();
     }
 
     public boolean tryToRegister(String name, String lastname, String nickname, String dateOfBirth,
@@ -245,8 +262,8 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
-    public void createUser(String email, String password , final String name, final String lastName,
-                           final String nickname, final String dateOfBith, final String userType){
+    public void createUser(final View v, final String email, String password , final String name, final String lastName,
+                           final String nickname, final String dateOfBirth, final String userType){
 
         firebaseHelper.getAuth().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
@@ -254,12 +271,15 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 
-                            uploadImage();
                             userID = firebaseHelper.getUserID();
-                            User user = new User(name, lastName, nickname,dateOfBith, userType);
+                            User user = new User(name, lastName, nickname,dateOfBirth, userType);
                             firebaseHelper.getReference().child("Users").child(userID).setValue(user);
-                            saveInPreferences(userID, name, lastName, nickname, dateOfBith, userType);
-                            finish();
+                            saveInPreferences(userID, name, lastName, nickname, dateOfBirth, userType, email);
+                            uploadImage();
+
+                        } else {
+                            Snackbar.make(v,"Falha ao criar usuário", Snackbar.LENGTH_LONG ).show();
+                            hideProgressBar();
                         }
                     }
                 });
@@ -296,12 +316,13 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     });
         }
+        finish();
     }
 
 
 
-    public void saveInPreferences(String userID, String name, String lastName,
-                                  String nickname, String dateOfBirth, String userType ){
+    public void saveInPreferences(String userID, String name, String lastName, String nickname,
+                                  String dateOfBirth, String userType, String email ){
 
         SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -312,6 +333,7 @@ public class RegisterActivity extends AppCompatActivity {
         editor.putString("nickname", nickname);
         editor.putString("dateOfBirth", dateOfBirth);
         editor.putString("userType", userType);
+        editor.putString("email", email);
         editor.apply();
         editor.commit();
     }
@@ -331,5 +353,15 @@ public class RegisterActivity extends AppCompatActivity {
         return connectivityManager.getActiveNetworkInfo() != null
                 && connectivityManager.getActiveNetworkInfo().isAvailable()
                 && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
+
+    public void showProgressBar(){
+        saveButton.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgressBar(){
+        saveButton.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
     }
 }

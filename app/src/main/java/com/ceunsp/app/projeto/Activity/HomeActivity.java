@@ -28,6 +28,7 @@ public class HomeActivity extends AppCompatActivity
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
     public TextView userNicknameTextView, userEmailTextView;
     private static final String PREFERENCES = "Preferences";
+    SharedPreferences preferences;
     public ImageView userImageView;
     private boolean exit = false;
 
@@ -44,10 +45,14 @@ public class HomeActivity extends AppCompatActivity
         toggle.syncState();
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        preferences = getSharedPreferences(PREFERENCES, 0);
 
-        userNicknameTextView = findViewById(R.id.user_nickname_TextView);
-        userEmailTextView    = findViewById(R.id.user_email_TextView);
-        userImageView        = findViewById(R.id.user_imageView);
+        /*userNicknameTextView = drawer.findViewById(R.id.user_nickname_TextView);
+        userEmailTextView    = drawer.findViewById(R.id.user_email_TextView);
+        userImageView        = drawer.findViewById(R.id.user_imageView);
+
+        userNicknameTextView.setText("");
+        userEmailTextView.setText("");*/
 
     }
 
@@ -101,8 +106,6 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_schedule) {
-
-            SharedPreferences preferences = getSharedPreferences(PREFERENCES, 0);
 
             if (preferences.getString("userType", "").equals("Aluno")) {
                 loadStudentClass(preferences);
