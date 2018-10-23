@@ -18,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-
 import com.ceunsp.app.projeto.Activity.EventBodyActivity;
 import com.ceunsp.app.projeto.Model.EventData;
 import com.ceunsp.app.projeto.R;
@@ -46,15 +45,17 @@ public class CalendarFragment extends Fragment {
     private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private String userID = Objects.requireNonNull(auth.getCurrentUser()).getUid();
+    private Calendar calendar = Calendar.getInstance();
     final List<String> mutableBookings = new ArrayList<>();
     private List<EventData> eventDataList = new ArrayList<>();
     private List<Event> eventList = new ArrayList<>();
     private CompactCalendarView compactCalendarView;
+    private Date selectedDate = calendar.getTime();
     private Long timeInMilliseconds;
     private ArrayAdapter adapter;
     private boolean shouldShow = false;
     private ActionBar toolbar;
-    private Date selectedDate;
+
     private String classID;
 
     public CalendarFragment(String classID) {
@@ -79,13 +80,13 @@ public class CalendarFragment extends Fragment {
                 (R.id.show_with_animation_calendar);
 
         bookingsListView.setAdapter(adapter);
-
         compactCalendarView = mainTabView.findViewById(R.id.compactcalendar_view);
         compactCalendarView.setUseThreeLetterAbbreviation(false);
         compactCalendarView.setFirstDayOfWeek(Calendar.MONDAY);
         compactCalendarView.setIsRtl(false);
         compactCalendarView.displayOtherMonthDays(false);
         compactCalendarView.invalidate();
+
 
         final View.OnClickListener exposeCalendarListener = getCalendarExposeLis();
         showCalendarWithAnimationBut.setOnClickListener(exposeCalendarListener);
@@ -100,10 +101,6 @@ public class CalendarFragment extends Fragment {
                 assert userType != null;
                 if (userType.equals("Aluno")){
                     classID = (String) dataSnapshot.child("Student").child("classID").getValue();
-
-                } else if (userType.equals("Professor")){
-
-
                 }
 
                 DatabaseReference classRef = ref.child("ClassCalendar").child(classID);
@@ -129,6 +126,7 @@ public class CalendarFragment extends Fragment {
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                     }
                 });
+
             }
 
             @Override
@@ -155,7 +153,6 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (selectedDate != null) {
-                    Calendar calendar = Calendar.getInstance();
                     calendar.setTime(selectedDate);
                     timeInMilliseconds = calendar.getTimeInMillis();
                 }else{

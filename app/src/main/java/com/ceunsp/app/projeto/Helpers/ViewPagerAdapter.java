@@ -42,8 +42,13 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             }
 
         } else {
-            Tab2 tab2 = new Tab2();
-            return tab2;
+            if (classID != null) {
+                Tab2 tab2 = new Tab2(classID);
+                return tab2;
+            } else {
+                Tab2 tab2 = new Tab2();
+                return  tab2;
+            }
         }
     }
 

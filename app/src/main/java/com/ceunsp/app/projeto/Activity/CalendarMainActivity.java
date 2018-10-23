@@ -23,7 +23,6 @@ import java.util.Objects;
 public class CalendarMainActivity extends AppCompatActivity {
 
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
-    private CharSequence titles[]= {"Agenda","Histórico"};
     private ViewPagerAdapter adapter;
     String classID;
 
@@ -36,6 +35,7 @@ public class CalendarMainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        CharSequence titles[]= {"Agenda","Teste"};
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null){

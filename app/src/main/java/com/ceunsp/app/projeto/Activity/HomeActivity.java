@@ -138,6 +138,7 @@ public class HomeActivity extends AppCompatActivity
             startActivity(intentNewClass);
         }else {
             Intent intentCalendar = new Intent(getApplicationContext(), CalendarMainActivity.class);
+            intentCalendar.putExtra("classID", preferences.getString("classID", ""));
             startActivity(intentCalendar);
         }
     }

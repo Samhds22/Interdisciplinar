@@ -135,14 +135,14 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String email      = emailEdit.getText().toString();
-                String password   = passwordEdit.getText().toString();
-                String name       = nameEdit.getText().toString();
-                String lastName   = lastNameEdit.getText().toString();
-                String nickname   = nicknameEdit.getText().toString();
+                String email       = emailEdit.getText().toString();
+                String password    = passwordEdit.getText().toString();
+                String name        = nameEdit.getText().toString();
+                String lastName    = lastNameEdit.getText().toString();
+                String nickname    = nicknameEdit.getText().toString();
                 String dateOfBirth = dtBirthEdit.getText().toString();
-                String userType   = userTypeSpinner.getSelectedItem().toString();
-                String pwConfirm  = pwConfirmEdit.getText().toString();
+                String userType    = userTypeSpinner.getSelectedItem().toString();
+                String pwConfirm   = pwConfirmEdit.getText().toString();
 
                 if (checkConnection()){
 

@@ -2,6 +2,10 @@ package com.ceunsp.app.projeto.Activity;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -9,6 +13,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,13 +24,16 @@ import android.widget.Toast;
 
 import com.ceunsp.app.projeto.Model.EventData;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
+import com.ceunsp.app.projeto.Model.Historic;
 import com.ceunsp.app.projeto.R;
 import com.github.sundeepk.compactcalendarview.domain.Event;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -39,8 +47,9 @@ public class EventBodyActivity extends AppCompatActivity {
 
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
     private EditText dateEventEdit, subjectEdit, titleEventEdit, annotationEdit;
+    private final String PREFERENCES = "Preferences";
     private String userClassID, userID, eventKey;
-
+    private SharedPreferences preferences;
     private Spinner typeSpinner;
     private Calendar calendar;
 
@@ -55,6 +64,7 @@ public class EventBodyActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle("");
         getSupportActionBar().setElevation(0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        preferences = getSharedPreferences(PREFERENCES, 0);
         Button deleteButtom;
 
         deleteButtom   = findViewById(R.id.delete_button);
@@ -216,11 +226,29 @@ public class EventBodyActivity extends AppCompatActivity {
             Event event = new Event(R.color.colorAccent, calendar.getTimeInMillis(), eventData);
             pushKey.child("Event").setValue(event);
             Snackbar.make(v, "Evento criado com sucesso!", Snackbar.LENGTH_LONG).show();
+            createHistoric(eventTitle, eventType);
             finish();
 
         }else {
             Snackbar.make(v, "Insira o titulo para continuar.", Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    public void createHistoric(String eventTitle, String eventType){
+
+        DatabaseReference historicRef = firebaseHelper.getReference().child("Historic");
+        DatabaseReference pushKey = historicRef.child(userClassID).push();
+
+        String name     = preferences.getString("name", "");
+        String lastName = preferences.getString("lastName", "");
+        String userType = preferences.getString("userType", "");
+        String date     = convertDate(calendar.getTime());
+        String fullName = name + " " + lastName;
+
+        Historic historic = new Historic(fullName, userType, userID,
+                "create", eventType, eventTitle, date);
+
+        pushKey.setValue(historic);
     }
 
     public void updateEvent(View v, String eventTitle, String annotation,
@@ -297,6 +325,17 @@ public class EventBodyActivity extends AppCompatActivity {
         DatabaseReference userClass = ref.child(userClassID).child(eventKey);
         userClass.setValue(null);
         finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            default:break;
+        }
+        return true;
     }
 }
 

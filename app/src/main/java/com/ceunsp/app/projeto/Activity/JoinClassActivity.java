@@ -73,7 +73,7 @@ public class JoinClassActivity extends AppCompatActivity {
                         classId = (String) postSnapshot.child("Student").child("classID").getValue();
 
                         if ((classId != null) &&(classId.equals(classID))){
-                                studentsList.add(user);
+                            studentsList.add(user);
 
                         }
 
