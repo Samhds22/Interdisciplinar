@@ -1,10 +1,13 @@
 package com.ceunsp.app.projeto.Model;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 
 public class User implements Serializable {
 
     private String name, lastName, nickname, dateOfBirth, userType;
+    private Bitmap ImgProfile;
 
     public User(String name, String lastName, String nickname, String dateOfBirth, String userType){
         this.name = name;
@@ -18,6 +21,14 @@ public class User implements Serializable {
         this.name = name;
         this.lastName = lastName;
         this.userType = userType;
+    }
+
+    public Bitmap getImgProfile() {
+        return ImgProfile;
+    }
+
+    public void setImgProfile(Bitmap imgProfile) {
+        ImgProfile = imgProfile;
     }
 
     public String getName() {

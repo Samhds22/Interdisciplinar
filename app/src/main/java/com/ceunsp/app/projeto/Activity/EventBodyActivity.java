@@ -2,10 +2,7 @@ package com.ceunsp.app.projeto.Activity;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -21,19 +18,17 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 import com.ceunsp.app.projeto.Model.EventData;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Model.Historic;
 import com.ceunsp.app.projeto.R;
 import com.github.sundeepk.compactcalendarview.domain.Event;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.StorageReference;
+
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -47,7 +42,6 @@ public class EventBodyActivity extends AppCompatActivity {
 
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
     private EditText dateEventEdit, subjectEdit, titleEventEdit, annotationEdit;
-    private final String PREFERENCES = "Preferences";
     private String userClassID, userID, eventKey;
     private SharedPreferences preferences;
     private Spinner typeSpinner;
@@ -64,6 +58,7 @@ public class EventBodyActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle("");
         getSupportActionBar().setElevation(0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        String PREFERENCES = "Preferences";
         preferences = getSharedPreferences(PREFERENCES, 0);
         Button deleteButtom;
 
@@ -95,6 +90,7 @@ public class EventBodyActivity extends AppCompatActivity {
                 subjectEdit.setText(bundle.getString("subject"));
                 annotationEdit.setText(bundle.getString("annotation"));
                 setSpinner(bundle.getString("eventType"));
+                titleEventEdit.setEnabled(false);
             }
         }
 
@@ -155,7 +151,8 @@ public class EventBodyActivity extends AppCompatActivity {
 
                 } else if (Objects.equals(bundle.getString("operation"), "View&Edit")){
 
-                    updateEvent(v, eventTitle, annotation, subject, eventType);
+                    attempUpdate(v, eventTitle, annotation, subject, eventType);
+
                 }
             }
         });
@@ -184,6 +181,11 @@ public class EventBodyActivity extends AppCompatActivity {
 
     public String convertDate(Date date) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("pt","BR"));
+        return sdf.format(date);
+    }
+
+    public String convertHour(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", new Locale("pt","BR"));
         return sdf.format(date);
     }
 
@@ -226,7 +228,7 @@ public class EventBodyActivity extends AppCompatActivity {
             Event event = new Event(R.color.colorAccent, calendar.getTimeInMillis(), eventData);
             pushKey.child("Event").setValue(event);
             Snackbar.make(v, "Evento criado com sucesso!", Snackbar.LENGTH_LONG).show();
-            createHistoric(eventTitle, eventType);
+            createHistoric(eventTitle, eventType, pushKey.getKey(), "create");
             finish();
 
         }else {
@@ -234,24 +236,26 @@ public class EventBodyActivity extends AppCompatActivity {
         }
     }
 
-    public void createHistoric(String eventTitle, String eventType){
+    public void createHistoric(String eventTitle, String eventType, String eventKey, String action){
 
-        DatabaseReference historicRef = firebaseHelper.getReference().child("Historic");
-        DatabaseReference pushKey = historicRef.child(userClassID).push();
+        DatabaseReference ref = firebaseHelper.getReference().child("Historic");
+        DatabaseReference historicRef = ref.child(userClassID).child(eventKey);
+        Calendar calendarAux = Calendar.getInstance();
 
         String name     = preferences.getString("name", "");
         String lastName = preferences.getString("lastName", "");
         String userType = preferences.getString("userType", "");
-        String date     = convertDate(calendar.getTime());
+        String date     = convertDate(calendarAux.getTime());
+        String hour     = convertHour(calendarAux.getTime());
         String fullName = name + " " + lastName;
 
         Historic historic = new Historic(fullName, userType, userID,
-                "create", eventType, eventTitle, date);
+                action, eventType, eventTitle, date, hour);
 
-        pushKey.setValue(historic);
+        historicRef.setValue(historic);
     }
 
-    public void updateEvent(View v, String eventTitle, String annotation,
+    public void updateEvent(String eventTitle, String annotation,
                             String subject, String eventType){
 
         DatabaseReference classRef = ref.child(userClassID).child(eventKey);
@@ -264,8 +268,11 @@ public class EventBodyActivity extends AppCompatActivity {
         eventUpdate.put("data/annotation", annotation);
         classRef.child("Event").updateChildren(eventUpdate);
 
-        Snackbar.make(v, "Evento atualizado.", Snackbar.LENGTH_LONG).show();
+        createHistoric(eventTitle, eventType, eventKey, "update");
+
+        Toast.makeText(getApplicationContext(), "Evento atualizado com sucesso!", Snackbar.LENGTH_LONG).show();
         finish();
+
     }
 
 
@@ -277,7 +284,7 @@ public class EventBodyActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                if (checkPermission(dataSnapshot, userID)){
+                if (checkPermission(dataSnapshot)){
                     showDeleteDialog();
                 } else {
                     Snackbar.make(v,"Você não tem permissão para apagar este evento",
@@ -291,7 +298,29 @@ public class EventBodyActivity extends AppCompatActivity {
         });
     }
 
-    public boolean checkPermission(DataSnapshot dataSnapshot, String currentUser){
+    public void attempUpdate(final View v, final String eventTitle,
+                             final String annotation, final String subject, final String eventType){
+
+        DatabaseReference userClass = ref.child(userClassID).child(eventKey).child("Event");
+        userClass.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (checkPermission(dataSnapshot)){
+                    showUpdateDialog(eventTitle, annotation, subject, eventType);
+                } else {
+                    Snackbar.make(v,"Você não tem permissão para alterar este evento",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public boolean checkPermission(DataSnapshot dataSnapshot){
 
         String cretorID = (String) dataSnapshot.child("data").child("creatorID").getValue();
 
@@ -321,9 +350,36 @@ public class EventBodyActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    public void showUpdateDialog(final String eventTitle, final String annotation,
+                                 final String subject, final String eventType){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(EventBodyActivity.this);
+        builder.setTitle(R.string.title3);
+        builder.setMessage(R.string.message3);
+
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                updateEvent(eventTitle, annotation, subject, eventType);
+            }
+        });
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                closeContextMenu();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     public void deleteEvent(){
+
+
         DatabaseReference userClass = ref.child(userClassID).child(eventKey);
         userClass.setValue(null);
+        DatabaseReference ref = firebaseHelper.getReference().child("Historic");
+        DatabaseReference historicRef = ref.child(userClassID).child(eventKey);
+        historicRef.setValue(null);
+
         finish();
     }
 

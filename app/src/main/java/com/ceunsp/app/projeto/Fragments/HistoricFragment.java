@@ -1,6 +1,7 @@
 package com.ceunsp.app.projeto.Fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.ceunsp.app.projeto.Activity.CalendarMainActivity;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Helpers.HistoricAdapter;
 import com.ceunsp.app.projeto.Model.Historic;
@@ -36,7 +38,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class Tab2 extends Fragment {
+public class HistoricFragment extends Fragment {
 
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
     private final DatabaseReference ref = firebaseHelper.getReference();
@@ -49,11 +51,11 @@ public class Tab2 extends Fragment {
     protected String classID;
 
     @SuppressLint("ValidFragment")
-    public Tab2(String classID) {
+    public HistoricFragment(String classID) {
         this.classID = classID;
     }
 
-    public Tab2() {
+    public HistoricFragment() {
 
     }
 
@@ -65,8 +67,9 @@ public class Tab2 extends Fragment {
         recyclerView     = historicTab.findViewById(R.id.historic_Recyclerview);
         defaultProfile   = historicTab.findViewById(R.id.default_image);
 
-        progressBar.setVisibility(View.VISIBLE);
+        defaultProfile.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
         loadHistoric();
 
         return historicTab;
@@ -97,8 +100,9 @@ public class Tab2 extends Fragment {
     }
 
     public void loadData(){
+
         DatabaseReference historicRef = firebaseHelper.getReference().child("Historic");
-        Query queryHistoric = historicRef.child(classID).orderByKey();
+        Query queryHistoric = historicRef.child(classID).limitToFirst(20);
 
         queryHistoric.addValueEventListener(new ValueEventListener(){
             @Override
@@ -118,7 +122,7 @@ public class Tab2 extends Fragment {
 
                                     bitmap[0] = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                                     historic.setImgProfile(bitmap[0]);
-                                    historicList.add(historic);
+                                    historicList.add(0, historic);
                                     fillRecyclerView();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
@@ -127,7 +131,7 @@ public class Tab2 extends Fragment {
 
                             bitmap[0] = retrieveDefaultImage();
                             historic.setImgProfile(bitmap[0]);
-                            historicList.add(historic);
+                            historicList.add(0, historic);
                             fillRecyclerView();
                         }
                     });

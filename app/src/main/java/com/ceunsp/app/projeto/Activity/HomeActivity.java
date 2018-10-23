@@ -47,13 +47,12 @@ public class HomeActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         preferences = getSharedPreferences(PREFERENCES, 0);
 
-        /*userNicknameTextView = drawer.findViewById(R.id.user_nickname_TextView);
-        userEmailTextView    = drawer.findViewById(R.id.user_email_TextView);
-        userImageView        = drawer.findViewById(R.id.user_imageView);
+        /*userNicknameTextView = findViewById(R.id.user_nickname_TextView);
+        userEmailTextView    = findViewById(R.id.user_email_TextView);
+        userImageView        = findViewById(R.id.user_imageView);
 
         userNicknameTextView.setText("");
         userEmailTextView.setText("");*/
-
     }
 
     @Override

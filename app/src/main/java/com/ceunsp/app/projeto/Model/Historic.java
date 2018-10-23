@@ -4,7 +4,8 @@ import android.graphics.Bitmap;
 
 public class Historic {
 
-    private String userFullName, userType, userID, action, eventType, eventTitle, date;
+    private String userFullName, userType, userID, action, eventType;
+    private String eventTitle, date, hour;
     private Bitmap imgProfile;
 
     public Historic() {
@@ -12,7 +13,7 @@ public class Historic {
     }
 
     public Historic(String userFullName, String userType, String userID, String action,
-                    String eventType, String eventTitle, String date) {
+                    String eventType, String eventTitle, String date, String hour){
 
         this.userFullName = userFullName;
         this.userType = userType;
@@ -21,58 +22,20 @@ public class Historic {
         this.eventType = eventType;
         this.eventTitle = eventTitle;
         this.date = date;
+        this.hour = hour;
+
     }
 
-    public Historic(Bitmap imgProfile) {
-        this.imgProfile = imgProfile;
-    }
+    public Historic(String userFullName, String userType, String userID, String action,
+                    String date, String hour) {
 
-    public Bitmap getImgProfile() {
-        return imgProfile;
-    }
-
-    public void setImgProfile(Bitmap imgProfile) {
-        this.imgProfile = imgProfile;
-    }
-
-    public String getEventTitle() {
-        return eventTitle;
-    }
-
-    public void setEventTitle(String eventTitle) {
-        this.eventTitle = eventTitle;
-    }
-
-    public String getEventType() {
-        return eventType;
-    }
-
-    public void setEventType(String eventType) {
-        this.eventType = eventType;
-    }
-
-    public String getUserType() {
-        return userType;
-    }
-
-    public void setUserType(String userType) {
+        this.userFullName = userFullName;
         this.userType = userType;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
+        this.userID = userID;
         this.action = action;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
         this.date = date;
+        this.hour = hour;
+        this.imgProfile = imgProfile;
     }
 
     public String getUserFullName() {
@@ -83,11 +46,67 @@ public class Historic {
         this.userFullName = userFullName;
     }
 
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
     public String getUserID() {
         return userID;
     }
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public String getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
+    }
+
+    public String getEventTitle() {
+        return eventTitle;
+    }
+
+    public void setEventTitle(String eventTitle) {
+        this.eventTitle = eventTitle;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getHour() {
+        return hour;
+    }
+
+    public void setHour(String hour) {
+        this.hour = hour;
+    }
+
+    public Bitmap getImgProfile() {
+        return imgProfile;
+    }
+
+    public void setImgProfile(Bitmap imgProfile) {
+        this.imgProfile = imgProfile;
     }
 }

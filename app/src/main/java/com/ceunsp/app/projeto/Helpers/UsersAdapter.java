@@ -11,6 +11,8 @@ import com.ceunsp.app.projeto.R;
 
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyViewHolder> {
 
     private List<User> usersList;
@@ -29,10 +31,12 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+
         User users = usersList.get(position);
         String fullName = users.getName() + " " + users.getLastName();
         holder.fullNameTextView.setText(fullName);
         holder.userTypeTextView.setText(users.getUserType());
+        holder.profileImage.setImageBitmap(users.getImgProfile());
     }
 
     @Override
@@ -41,13 +45,18 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyViewHolder
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
+
+        private CircleImageView profileImage;
         private TextView fullNameTextView;
         private TextView userTypeTextView;
 
         private MyViewHolder(View itemView) {
             super(itemView);
+
+            profileImage     = itemView.findViewById(R.id.student_profileImage);
             fullNameTextView = itemView.findViewById(R.id.user_fullName_TextView);
             userTypeTextView = itemView.findViewById(R.id.userType_textView);
+
         }
     }
 }

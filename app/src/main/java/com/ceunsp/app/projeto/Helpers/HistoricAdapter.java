@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.ceunsp.app.projeto.Fragments.Tab2;
-import com.ceunsp.app.projeto.Model.CollegeClass;
 import com.ceunsp.app.projeto.Model.Historic;
 import com.ceunsp.app.projeto.R;
 
@@ -36,27 +34,30 @@ public class HistoricAdapter extends RecyclerView.Adapter<HistoricAdapter.MyView
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
-        Historic historic = historicList.get(position);
-        Bitmap profileImage = null;
-        String message = "";
+        Historic historic   = historicList.get(position);
+        Bitmap profileImage = historic.getImgProfile();
+        String fullName     = historic.getUserFullName();
+        String eventTitle   = historic.getEventTitle();
+        String eventType    = historic.getEventType();
+        String usertype     = historic.getUserType();
+        String date         = historic.getDate() + " ás " + historic.getHour();
+        String message      = "";
 
-      /*  if (position == (historicList.size()-1)){
-            Tab2 tab2 = new Tab2();
-            tab2.loadData();
-        }*/
         if (historic.getAction().equals("create")){
 
-            profileImage      = historic.getImgProfile();
-            String usertype   = historic.getUserType();
-            String fullName   = historic.getUserFullName();
-            String eventTitle = historic.getEventTitle();
-            String eventType  = historic.getEventType();
-
             message = fullName + " adicionou o compromisso " + eventTitle + " á agenda";
+
+        }else if (historic.getAction().equals("update")){
+
+            message = fullName + " alterou o compromisso " + eventTitle + " na agenda";
+
+        }else if (historic.getAction().equals("enterTheClass")){
+
+            message = fullName + " acaba de entrar para a turma!";
         }
 
         holder.actionText.setText(message);
-        holder.dateText.setText(historic.getDate());
+        holder.dateText.setText(date);
         holder.profileImage.setImageBitmap(profileImage);
     }
 

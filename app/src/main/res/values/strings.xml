@@ -88,6 +88,8 @@
     <string name="delete_buttom">Excluir</string>
     <string name="title2">"Excluir evento?"</string>
     <string name="message2">"Você está prestes a excluir o evento da agenda da turma. Deseja continuar?"</string>
+    <string name="title3">"Atualizar evento?"</string>
+    <string name="message3">"Deseja aplicar as alteraçãoes realizadas ao evento?"</string>
     <string name="students">Alunos</string>
     <string name="teachers">Professores</string>
     <string name="empty_class">"No momento você não está em nenhuma turma. Clique no botão abaixo para encontrar novas turmas."</string>

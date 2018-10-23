@@ -1,7 +1,9 @@
 package com.ceunsp.app.projeto.Activity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -23,7 +25,6 @@ import java.util.Objects;
 public class CalendarMainActivity extends AppCompatActivity {
 
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
-    private ViewPagerAdapter adapter;
     String classID;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -35,7 +36,7 @@ public class CalendarMainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        CharSequence titles[]= {"Agenda","Teste"};
+        CharSequence titles[]= {"Agenda","Atualizações"};
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null){
@@ -44,6 +45,7 @@ public class CalendarMainActivity extends AppCompatActivity {
 
         int numberOfTabs = 2;
 
+        ViewPagerAdapter adapter;
         if (classID != null){
             adapter = new ViewPagerAdapter(getSupportFragmentManager(), titles, numberOfTabs, classID);
         } else {
@@ -78,11 +80,18 @@ public class CalendarMainActivity extends AppCompatActivity {
 
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_exitClass) {
             confirmDelete();
             super.onOptionsItemSelected(item);
+
         } else if (id == android.R.id.home){
             finish();
+
+        } else if (id == R.id.action_people) {
+            Intent intent = new Intent(getApplicationContext(), JoinClassActivity.class);
+            intent.putExtra("classID", classID);
+            intent.putExtra("operation", "view");
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);

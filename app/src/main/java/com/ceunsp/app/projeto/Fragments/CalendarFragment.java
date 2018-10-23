@@ -18,6 +18,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.ceunsp.app.projeto.Activity.CalendarMainActivity;
 import com.ceunsp.app.projeto.Activity.EventBodyActivity;
 import com.ceunsp.app.projeto.Model.EventData;
 import com.ceunsp.app.projeto.R;
@@ -55,7 +59,6 @@ public class CalendarFragment extends Fragment {
     private ArrayAdapter adapter;
     private boolean shouldShow = false;
     private ActionBar toolbar;
-
     private String classID;
 
     public CalendarFragment(String classID) {
@@ -86,6 +89,11 @@ public class CalendarFragment extends Fragment {
         compactCalendarView.setIsRtl(false);
         compactCalendarView.displayOtherMonthDays(false);
         compactCalendarView.invalidate();
+        compactCalendarView.setUseThreeLetterAbbreviation(true);
+        compactCalendarView.setFirstDayOfWeek(Calendar.SUNDAY);
+        String[] days = {"D", "S", "T", "Q", "Q", "S", "S"};
+        compactCalendarView.setDayColumnNames(days);
+        compactCalendarView.displayOtherMonthDays(true);
 
 
         final View.OnClickListener exposeCalendarListener = getCalendarExposeLis();
@@ -189,6 +197,11 @@ public class CalendarFragment extends Fragment {
                 Event event = eventList.get(position);
                 EventData eventData = eventDataList.get(position);
 
+                if (selectedDate != null) {
+                    calendar.setTime(selectedDate);
+                    timeInMilliseconds = calendar.getTimeInMillis();
+                }
+
                 Intent openEvent = new Intent(getContext(), EventBodyActivity.class);
                 openEvent.putExtra("userClassID", classID);
                 openEvent.putExtra("operation", "View&Edit");
@@ -198,6 +211,7 @@ public class CalendarFragment extends Fragment {
                 openEvent.putExtra("eventType", eventData.getEventType());
                 openEvent.putExtra("annotation", eventData.getAnnotation());
                 openEvent.putExtra("eventKey", eventData.getEventKey());
+                openEvent.putExtra("date", timeInMilliseconds);
                 startActivity(openEvent);
             }
         });
@@ -237,8 +251,8 @@ public class CalendarFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         toolbar.setTitle(dateFormatForMonth.format(compactCalendarView.getFirstDayOfCurrentMonth()));
         if (selectedDate != null){
             RefreshListView(selectedDate);
@@ -265,6 +279,7 @@ public class CalendarFragment extends Fragment {
             mutableBookings.add(eventData.getTitle());
         }
         adapter.notifyDataSetChanged();
+
     }
 
 }

@@ -7,13 +7,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.ceunsp.app.projeto.Fragments.CalendarFragment;
-import com.ceunsp.app.projeto.Fragments.Tab2;
+import com.ceunsp.app.projeto.Fragments.HistoricFragment;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
-    CharSequence titles[];
-    int numbOfTabs;
-    String classID;
+    private CharSequence titles[];
+    private int numbOfTabs;
+    private String classID;
 
     public ViewPagerAdapter(FragmentManager fm, CharSequence titles[], int mNumbOfTabs, String classID) {
         super(fm);
@@ -34,20 +34,16 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         if (position == 0) {
             if (classID != null){
-                CalendarFragment calendarActivity = new CalendarFragment(classID); //alterado
-                return calendarActivity;
+                return new CalendarFragment(classID);
             } else {
-                CalendarFragment calendarActivity = new CalendarFragment(); //alterado
-                return calendarActivity;
+                return new CalendarFragment();
             }
 
         } else {
             if (classID != null) {
-                Tab2 tab2 = new Tab2(classID);
-                return tab2;
+                return new HistoricFragment(classID);
             } else {
-                Tab2 tab2 = new Tab2();
-                return  tab2;
+                return new HistoricFragment();
             }
         }
     }
