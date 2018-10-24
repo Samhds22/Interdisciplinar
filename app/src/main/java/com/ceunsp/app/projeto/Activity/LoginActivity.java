@@ -241,6 +241,7 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString("nickname", (String) dataSnapshot.child("nickname").getValue());
         editor.putString("dateOfBirth", (String) dataSnapshot.child("dateOfBirth").getValue());
         editor.putString("userType", (String) dataSnapshot.child("userType").getValue());
+        editor.putString("email", auth.getCurrentUser().getEmail());
         editor.apply();
         editor.commit();
     }

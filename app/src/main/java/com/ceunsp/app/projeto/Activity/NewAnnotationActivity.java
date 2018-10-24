@@ -1,4 +1,4 @@
-package com.ceunsp.app.projeto;
+package com.ceunsp.app.projeto.Activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.ceunsp.app.projeto.Model.Annotation;
+import com.ceunsp.app.projeto.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -25,7 +27,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 @SuppressLint("Registered")
-public class AnotacaoActivity extends AppCompatActivity {
+public class NewAnnotationActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -88,10 +90,10 @@ public class AnotacaoActivity extends AppCompatActivity {
         DatabaseReference pushKey = anotacoesdb.push();
         String anotID = pushKey.getKey();
 
-        Anotacaolista novaAnotacao = new Anotacaolista(title, body,UserAtivo,anotID);
+        Annotation novaAnotacao = new Annotation(title, body,UserAtivo,anotID);
         pushKey.setValue(novaAnotacao);
 
-        Intent intent = new Intent(getApplicationContext(), AnotacoesViewActivity.class);
+        Intent intent = new Intent(getApplicationContext(), AnnotationsActivity.class);
         startActivity(intent);
 
     }

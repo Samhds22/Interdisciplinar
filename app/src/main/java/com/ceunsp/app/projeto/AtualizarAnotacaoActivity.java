@@ -6,6 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
+import com.ceunsp.app.projeto.Activity.AnnotationsActivity;
+import com.ceunsp.app.projeto.Helpers.FirebaseConfig;
+import com.ceunsp.app.projeto.Model.Annotation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -17,8 +21,8 @@ import java.util.Map;
 public class AtualizarAnotacaoActivity extends AppCompatActivity {
 
     private DatabaseReference localbanco;
-    private List<Anotacaolista> listaAnotacaolistas = new ArrayList<>();
-    private Anotacaolista anotacaoselecionada;
+    private List<Annotation> listaAnotacaolistas = new ArrayList<>();
+    private Annotation anotacaoselecionada;
     private DatabaseReference referencia = FirebaseDatabase.getInstance().getReference();
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -63,7 +67,7 @@ public class AtualizarAnotacaoActivity extends AppCompatActivity {
         String Usuario = dados.getString("usuario");
         String Key = dados.getString("key");
 
-        DatabaseReference firebaseref = ConfiguracaoFirebase.getFirebase();
+        DatabaseReference firebaseref = FirebaseConfig.getFirebase();
         DatabaseReference anotref = firebaseref.child("Anotacoes").child(Usuario).child(Key);
 
         Map<String, Object> AnotacaoUpdate = new HashMap<>();
@@ -73,7 +77,7 @@ public class AtualizarAnotacaoActivity extends AppCompatActivity {
 
         anotref.updateChildren(AnotacaoUpdate);
 
-        Intent intent = new Intent(getApplicationContext(), AnotacoesViewActivity.class);
+        Intent intent = new Intent(getApplicationContext(), AnnotationsActivity.class);
 
 
     }

@@ -83,10 +83,10 @@
             android:name=".AtualizarAnotacaoActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".AnotacoesViewActivity"
+            android:name=".Activity.AnnotationsActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".AnotacaoActivity"
+            android:name=".Activity.NewAnnotationActivity"
             android:screenOrientation="portrait"/>
     </application>
 

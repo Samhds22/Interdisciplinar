@@ -2,6 +2,8 @@ package com.ceunsp.app.projeto.Activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,15 +17,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ceunsp.app.projeto.AnotacaoActivity;
-import com.ceunsp.app.projeto.AnotacoesViewActivity;
 import com.ceunsp.app.projeto.Fragments.HomeFragment;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.StorageReference;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class HomeActivity extends AppCompatActivity
@@ -33,7 +39,7 @@ public class HomeActivity extends AppCompatActivity
     public TextView userNicknameTextView, userEmailTextView;
     private static final String PREFERENCES = "Preferences";
     SharedPreferences preferences;
-    public ImageView userImageView;
+    public CircleImageView userImageView;
     private boolean exit = false;
 
     @Override
@@ -51,6 +57,15 @@ public class HomeActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         preferences = getSharedPreferences(PREFERENCES, 0);
 
+        View headerView = navigationView.getHeaderView(0);
+        userNicknameTextView = headerView.findViewById(R.id.user_nickname_TextView);
+        userEmailTextView    = headerView.findViewById(R.id.user_email_TextView);
+        userImageView        = headerView.findViewById(R.id.user_imageView);
+
+        userNicknameTextView.setText(preferences.getString("nickname", ""));
+        userEmailTextView.setText(preferences.getString("email", ""));
+        retrieveProfilePhoto();
+
 
         if (preferences.getString("userType", "").equals("Aluno")){
             HomeFragment homeFragment = new HomeFragment(preferences.getString("classID", ""));
@@ -58,8 +73,6 @@ public class HomeActivity extends AppCompatActivity
             transaction.replace(R.id.content_frame, homeFragment);
             transaction.commit();
         }
-
-
     }
 
     @Override
@@ -126,7 +139,7 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_annotation) {
 
-            Intent intent = new Intent(getApplicationContext(), AnotacoesViewActivity.class);
+            Intent intent = new Intent(getApplicationContext(), AnnotationsActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_info) {
@@ -167,8 +180,34 @@ public class HomeActivity extends AppCompatActivity
         editor.remove("classID");
         editor.remove("course");
         editor.remove("college");
+        editor.remove("email");
         editor.apply();
         editor.commit();
+    }
+
+    public void retrieveProfilePhoto(){
+
+        final Bitmap[] bitmap = new Bitmap[1];
+
+        StorageReference storageRef = firebaseHelper.getStorage();
+        final long ONE_MEGABYTE = 1024 * 1024;
+        storageRef.child("profilePicture."+ firebaseHelper.getUserID()).getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener(new OnSuccessListener<byte[]>(){
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+
+                        bitmap[0] = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        userImageView.setImageBitmap(bitmap[0]);
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                userImageView.setImageResource(R.drawable.default_profile_image);
+            }
+        });
+
     }
 
 }

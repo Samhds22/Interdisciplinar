@@ -1,4 +1,4 @@
-package com.ceunsp.app.projeto;
+package com.ceunsp.app.projeto.Helpers;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -7,13 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.ceunsp.app.projeto.Model.Annotation;
+import com.ceunsp.app.projeto.R;
+
 import java.util.List;
 
-public class AnotacoesViewAdapter extends RecyclerView.Adapter<AnotacoesViewAdapter.MyViewHolder> {
+public class AnnotationAdapter extends RecyclerView.Adapter<AnnotationAdapter.MyViewHolder> {
 
-    private List<Anotacaolista> listaAnotacaolistas;
+    private List<Annotation> listaAnotacaolistas;
 
-    public AnotacoesViewAdapter(List<Anotacaolista> lista) {
+    public AnnotationAdapter(List<Annotation> lista) {
 
         this.listaAnotacaolistas = lista;
     }
@@ -31,7 +34,7 @@ public class AnotacoesViewAdapter extends RecyclerView.Adapter<AnotacoesViewAdap
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
-        Anotacaolista anotacaolista = listaAnotacaolistas.get( position );
+        Annotation anotacaolista = listaAnotacaolistas.get( position );
         holder.titulo.setText( anotacaolista.getTituloAnotacao() );
         holder.desc.setText(anotacaolista.getDescAnotacao());
 

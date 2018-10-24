@@ -1,4 +1,4 @@
-package com.ceunsp.app.projeto;
+package com.ceunsp.app.projeto.Activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,8 +17,14 @@ import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.ceunsp.app.projeto.Helpers.AnnotationAdapter;
+import com.ceunsp.app.projeto.AtualizarAnotacaoActivity;
+import com.ceunsp.app.projeto.Helpers.FirebaseConfig;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Helpers.RecyclerItemClickListener;
+import com.ceunsp.app.projeto.Model.Annotation;
+import com.ceunsp.app.projeto.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,17 +35,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class AnotacoesViewActivity extends AppCompatActivity {
+public class AnnotationsActivity extends AppCompatActivity {
 
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
     private final String userID = firebaseHelper.getUserID();
     private DatabaseReference anotacoesdb= firebaseHelper.getReference();
-    private DatabaseReference firebaseRef = ConfiguracaoFirebase.getFirebaseDatabase();
+    private DatabaseReference firebaseRef = FirebaseConfig.getFirebaseDatabase();
     private DatabaseReference localbanco;
     private RecyclerView recyclerView;
-    private AnotacoesViewAdapter anotacoesViewAdapter;
-    private List<Anotacaolista> annotationList = new ArrayList<>();
-    private Anotacaolista anot;
+    private AnnotationAdapter anotacoesViewAdapter;
+    private List<Annotation> annotationList = new ArrayList<>();
+    private Annotation anot;
     private ProgressBar progressBar;
     private TextView emptyText;
 
@@ -75,7 +81,7 @@ public class AnotacoesViewActivity extends AppCompatActivity {
                         String usuarioAtivo = (String) postSnapshot.child("usuarioAtivo").getValue();
                         final String key = (String) postSnapshot.child("key").getValue();
 
-                        Anotacaolista anotacaopegadadosdb = new Anotacaolista
+                        Annotation anotacaopegadadosdb = new Annotation
                                 (titulo,eventdescricao,usuarioAtivo,key);
                         annotationList.add(0, anotacaopegadadosdb);
                         fillRecyclerView();
@@ -177,7 +183,7 @@ public class AnotacoesViewActivity extends AppCompatActivity {
         alertDialog.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(AnotacoesViewActivity.this,
+                Toast.makeText(AnnotationsActivity.this,
                         "Cancelado",
                         Toast.LENGTH_SHORT).show();
                 anotacoesViewAdapter.notifyDataSetChanged();
@@ -189,12 +195,12 @@ public class AnotacoesViewActivity extends AppCompatActivity {
     }
 
     public void chamaanotacoes(View view){
-        Intent intent = new Intent(getApplicationContext(), AnotacaoActivity.class);
+        Intent intent = new Intent(getApplicationContext(), NewAnnotationActivity.class);
         startActivity(intent);
     }
 
     public void fillRecyclerView(){
-        anotacoesViewAdapter = new AnotacoesViewAdapter(annotationList);
+        anotacoesViewAdapter = new AnnotationAdapter(annotationList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);

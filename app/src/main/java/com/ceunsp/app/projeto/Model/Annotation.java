@@ -1,6 +1,6 @@
-package com.ceunsp.app.projeto;
+package com.ceunsp.app.projeto.Model;
 
-public class Anotacaolista {
+public class Annotation {
 
     private String tituloAnotacao;
     private String descAnotacao;
@@ -8,10 +8,10 @@ public class Anotacaolista {
     private String key;
 
 
-    public Anotacaolista() {
+    public Annotation() {
     }
 
-    public Anotacaolista(String tituloAnotacao, String descAnotacao, String usuarioAtivo, String key) {
+    public Annotation(String tituloAnotacao, String descAnotacao, String usuarioAtivo, String key) {
         this.tituloAnotacao = tituloAnotacao;
         this.descAnotacao = descAnotacao;
         this.usuarioAtivo = usuarioAtivo;

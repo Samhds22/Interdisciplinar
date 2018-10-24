@@ -85,7 +85,7 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
+    public void onResume() {
 
         progressBar.setVisibility(View.VISIBLE);
         todayRecyclerView.setVisibility(View.GONE);
@@ -131,7 +131,7 @@ public class HomeFragment extends Fragment {
         }
 
 
-        super.onStart();
+        super.onResume();
     }
 
     public void fillEventRecyclerView(){
