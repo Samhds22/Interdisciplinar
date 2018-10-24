@@ -15,9 +15,11 @@ import java.util.List;
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.MyViewHolder> {
 
     private List<Event> eventList;
+    private List<String> classNameList;
 
-    public EventAdapter(List<Event> list){
+    public EventAdapter(List<Event> list, List<String> classNameList){
         this.eventList = list;
+        this.classNameList = classNameList;
     }
 
     @NonNull
@@ -35,6 +37,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.MyViewHolder
 
         holder.titleText.setText(eventData.getTitle());
         holder.typeText.setText(eventData.getEventType());
+
+        if (!classNameList.isEmpty()){
+            holder.classNameText.setText(classNameList.get(position));
+            holder.classNameText.setVisibility(View.VISIBLE);
+
+        } else {
+            holder.classNameText.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -45,13 +56,14 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.MyViewHolder
     public class MyViewHolder extends RecyclerView.ViewHolder{
         private TextView titleText;
         private TextView typeText;
+        private TextView classNameText;
 
         public MyViewHolder(View itemView) {
             super(itemView);
 
             titleText = itemView.findViewById(R.id.event_title_text);
             typeText = itemView.findViewById(R.id.event_type_text);
-
+            classNameText = itemView.findViewById(R.id.className_edit);
         }
     }
 

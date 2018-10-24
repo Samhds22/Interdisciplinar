@@ -3,7 +3,16 @@ package com.ceunsp.app.projeto.Model;
 public class EventData {
 
     private String subject, title, annotation, creatorID, creationDate, eventKey;
-    private String eventType;
+    private String eventType, className;
+
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
 
     public String getSubject() {
         return subject;

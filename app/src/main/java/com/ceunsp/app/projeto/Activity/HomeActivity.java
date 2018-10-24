@@ -66,13 +66,10 @@ public class HomeActivity extends AppCompatActivity
         userEmailTextView.setText(preferences.getString("email", ""));
         retrieveProfilePhoto();
 
-
-        if (preferences.getString("userType", "").equals("Aluno")){
-            HomeFragment homeFragment = new HomeFragment(preferences.getString("classID", ""));
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.content_frame, homeFragment);
-            transaction.commit();
-        }
+        HomeFragment homeFragment = new HomeFragment(preferences.getString("classID", ""));
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.content_frame, homeFragment);
+        transaction.commit();
     }
 
     @Override

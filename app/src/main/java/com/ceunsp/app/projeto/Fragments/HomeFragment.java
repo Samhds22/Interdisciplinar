@@ -52,12 +52,13 @@ public class HomeFragment extends Fragment {
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
     private DatabaseReference ref = firebaseHelper.getReference().child("ClassCalendar");
     private List<Event> eventList = new ArrayList<>();
+    private List<String> classNameList = new ArrayList<>();
     private Calendar calendar = Calendar.getInstance();
     private ProgressBar progressBar;
     private Date today;
     private RecyclerView todayRecyclerView;
     private TextView dateTextView;
-    String cMonth, classID;
+    String cMonth, classID, className;
 
     @SuppressLint("ValidFragment")
     public HomeFragment(String classID) {
@@ -65,6 +66,34 @@ public class HomeFragment extends Fragment {
         this.classID = classID;
     }
 
+    @Override
+    public void onStart() {
+
+        if (classID.equals("") || classID == null){
+            DatabaseReference usersRef = firebaseHelper.getReference().child("Users");
+            DatabaseReference teacherRef = usersRef.child(firebaseHelper.getUserID());
+            teacherRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot postSnapshot : dataSnapshot.child("Classes").getChildren()) {
+
+                        classID = postSnapshot.getKey();
+                        loadTodayEvents();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        } else if (!classID.equals("") && classID != null) {
+            loadTodayEvents();
+        }
+
+        super.onStart();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,65 +113,19 @@ public class HomeFragment extends Fragment {
         String dateText = day + " de " + cMonth + ".";
         dateTextView.setText(dateText);
 
-        return overview;
-
-    }
-
-    @Override
-    public void onResume() {
         eventList.clear();
         progressBar.setVisibility(View.VISIBLE);
         todayRecyclerView.setVisibility(View.GONE);
 
-        if (!classID.equals("") && classID != null){
-            DatabaseReference eventRef = ref.child(classID);
 
-            eventRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    eventList.clear();
-                    for (DataSnapshot postSnapShot : dataSnapshot.getChildren()){
-
-                        Long dateInMillis = (Long) postSnapShot.child("Event").child("timeInMillis").getValue();
-                        calendar.setTimeInMillis(dateInMillis);
-                        Date eventDate = calendar.getTime();
-
-                        if (convertDate(eventDate).equals(convertDate(today))){
-
-                            DataSnapshot eventDataSnapshot = postSnapShot.child("Event").child("data");
-
-                            EventData eventData = new EventData();
-                            eventData.setEventKey((String) eventDataSnapshot.child("eventKey").getValue());
-                            eventData.setTitle((String) eventDataSnapshot.child("title").getValue());
-                            eventData.setEventType((String) eventDataSnapshot.child("eventType").getValue());
-                            eventData.setSubject((String) eventDataSnapshot.child("subject").getValue());
-                            eventData.setAnnotation((String) eventDataSnapshot.child("annotation").getValue());
-
-                            Event event = new Event( 1, dateInMillis, eventData);
-                            eventList.add(event);
-                            fillEventRecyclerView();
-                        }
-                    }
-                    progressBar.setVisibility(View.GONE);
-                    todayRecyclerView.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        } else {
-            progressBar.setVisibility(View.GONE);
-        }
 
         todayRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(),
                 todayRecyclerView,
                 new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                       Event event = eventList.get(position);
-                       EventData eventData = (EventData) event.getData();
+                        Event event = eventList.get(position);
+                        EventData eventData = (EventData) event.getData();
 
                         Intent intent = new Intent(getActivity(), EventBodyActivity.class);
                         intent.putExtra("operation", "View&Edit");
@@ -166,12 +149,13 @@ public class HomeFragment extends Fragment {
                     }
                 }));
 
-        super.onResume();
+        return overview;
+
     }
 
     public void fillEventRecyclerView(){
 
-        EventAdapter adapter = new EventAdapter(eventList);
+        EventAdapter adapter = new EventAdapter(eventList, classNameList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         todayRecyclerView.setLayoutManager(layoutManager);
         todayRecyclerView.setHasFixedSize(true);
@@ -186,6 +170,48 @@ public class HomeFragment extends Fragment {
     public String convertDate(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("pt","BR"));
         return sdf.format(date);
+    }
+
+    public void loadTodayEvents(){
+
+        eventList.clear();
+        DatabaseReference eventRef = ref.child(classID);
+        eventRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (final DataSnapshot postSnapShot : dataSnapshot.getChildren()){
+
+                    Long dateInMillis = (Long) postSnapShot.child("Event").child("timeInMillis").getValue();
+                    calendar.setTimeInMillis(dateInMillis);
+                    Date eventDate = calendar.getTime();
+
+                    if (convertDate(eventDate).equals(convertDate(today))){
+
+                        DataSnapshot eventDataSnapshot = postSnapShot.child("Event").child("data");
+
+                        EventData eventData = new EventData();
+                        eventData.setEventKey((String) eventDataSnapshot.child("eventKey").getValue());
+                        eventData.setTitle((String) eventDataSnapshot.child("title").getValue());
+                        eventData.setEventType((String) eventDataSnapshot.child("eventType").getValue());
+                        eventData.setSubject((String) eventDataSnapshot.child("subject").getValue());
+                        eventData.setAnnotation((String) eventDataSnapshot.child("annotation").getValue());
+
+                        Event event = new Event( 1, dateInMillis, eventData);
+                        eventList.add(event);
+                        fillEventRecyclerView();
+
+                    }
+                }
+                progressBar.setVisibility(View.GONE);
+                todayRecyclerView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     public void findMonth(int month){
