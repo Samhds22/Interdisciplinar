@@ -71,7 +71,7 @@ public class JoinClassActivity extends AppCompatActivity {
 
 
         final DatabaseReference studentsRef = ref.child("Users");
-        studentsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        studentsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){

@@ -14,58 +14,76 @@
         <EditText
             android:id="@+id/class_name_edit"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingLeft="30dp"
-            android:paddingStart="30dp"
-            android:paddingRight="0dp"
-            android:paddingEnd="0dp"
-            android:textSize="30sp"
+            android:layout_height="100dp"
+            android:hint="@string/create_className"
+            android:textSize="25sp"
             android:textColor="@color/colorWhite"
+            android:background="#c62918"
+            android:paddingLeft="20dp"
+            android:paddingStart="20dp"
+            android:paddingRight="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginBottom="20dp"
             android:textColorHint="@color/colorWhite"
-            android:inputType="textPersonName"
-            android:text="@string/class_name"
-            app:layout_constraintEnd_toEndOf="@+id/course_edit"
-            app:layout_constraintTop_toBottomOf="@+id/course_edit"
-            android:background="@color/colorPrimary"/>
+            android:inputType="text"
+            android:singleLine="true"/>
+
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/college_edit"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:layout_marginTop="68dp"
-        android:enabled="false"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/border_rounded_main_fields"/>
-
-    <EditText
-        android:id="@+id/course_edit"
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:layout_marginTop="24dp"
-        android:ems="10"
-        android:enabled="false"
-        android:inputType="textPersonName"
-        android:text="Name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/college_edit"
-        android:background="@drawable/border_rounded_main_fields"/>
-
-    <Button
-        android:id="@+id/save_class_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="61dp"
-        android:text="@string/save_button"
-        android:textColor="@color/colorWhite"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/class_name_edit"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
         android:layout_gravity="center"
-        android:background="@drawable/border_rounded_button"/>
+        android:gravity="center"
+        android:paddingLeft="25dp"
+        android:paddingRight="25dp">
 
+        <EditText
+            android:id="@+id/college_edit"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="68dp"
+            android:enabled="false"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="0dp"
+            android:background="@drawable/border_rounded_main_fields"
+            android:paddingStart="10dp"
+            android:paddingEnd="0dp" />
+
+        <EditText
+            android:id="@+id/course_edit"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="24dp"
+            android:ems="10"
+            android:enabled="false"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/college_edit"
+            android:paddingLeft="10dp"
+            android:paddingRight="0dp"
+            android:background="@drawable/border_rounded_main_fields"
+            android:paddingStart="10dp"
+            android:paddingEnd="0dp" />
+
+        <Button
+            android:id="@+id/save_class_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="61dp"
+            android:background="@drawable/border_rounded_button"
+            android:text="@string/create"
+            android:textColor="@color/colorWhite"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/class_name_edit" />
+
+    </LinearLayout>
 </LinearLayout>

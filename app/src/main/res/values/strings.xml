@@ -93,5 +93,10 @@
     <string name="students">Alunos</string>
     <string name="teachers">Professores</string>
     <string name="empty_class">"No momento você não está em nenhuma turma. Clique no botão abaixo para encontrar novas turmas."</string>
+    <string name="empty_annotation">Nenhuma anotação por enquando...</string>
+    <string name="inser_title">Insira um título</string>
+    <string name="create_className">Dê um nome á sala</string>
+    <string name="create">Criar</string>
+    <string name="today">"Hoje,"</string>
 
 </resources>

@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:paddingLeft="12dp"
     android:paddingRight="12dp"
-    android:paddingTop="30dp">
+    android:paddingTop="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
                 android:layout_width="40dp"
                 android:layout_height="100dp"
                 android:layout_weight="100"
-                android:src="@drawable/add_photo"
+                android:src="@drawable/default_profile_image"
                 android:layout_gravity="center"/>
 
             <LinearLayout
@@ -37,7 +37,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/name"
-                    android:layout_marginLeft="10dp"/>
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginStart="15dp"/>
 
                 <EditText
                     android:id="@+id/name_edit"
@@ -54,7 +55,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/last_name"/>
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/last_name"
+                    android:layout_marginStart="15dp"/>
 
                 <EditText
                     android:layout_width="match_parent"
@@ -69,35 +73,67 @@
                     tools:ignore="LabelFor,RtlSymmetry" />
             </LinearLayout>
         </LinearLayout>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/nickname"
+            android:layout_marginStart="15dp"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/date_of_birth"
+            android:layout_marginStart="15dp"
+            android:layout_weight="0.5"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/nickname"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/border_rounded_main_fields"
+            android:paddingLeft="12dp"
+            android:inputType=""
+            android:layout_weight="1.4"
+            android:singleLine="true"
+            android:paddingStart="12dp" />
 
-            <EditText
-                android:id="@+id/nickname"
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:layout_margin="5dp"
-                android:background="@drawable/border_rounded_main_fields"
-                android:hint= "@string/nickname"
-                android:paddingLeft="12dp"
-                android:inputType=""
-                android:layout_weight="1.4"
-                android:singleLine="true"/>
+        <EditText
+            android:id="@+id/date_of_birth"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/border_rounded_main_fields"
+            android:paddingLeft="12dp"
+            android:inputType="date"
+            android:layout_weight="2"
+            android:singleLine="true"/>
+    </LinearLayout>
 
-            <EditText
-                android:id="@+id/date_of_birth"
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:layout_margin="5dp"
-                android:background="@drawable/border_rounded_main_fields"
-                android:hint= "@string/date_of_birth"
-                android:paddingLeft="12dp"
-                android:inputType="date"
-                android:layout_weight="2"
-                android:singleLine="true"/>
-        </LinearLayout>
+</LinearLayout>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -116,18 +152,32 @@
 
         </android.support.design.widget.TextInputLayout>
 
-
-        <AutoCompleteTextView
-            android:id="@+id/email_edit"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_margin="5dp"
-            android:background="@drawable/border_rounded_main_fields"
-            android:hint="@string/email"
-            android:inputType="textEmailAddress"
-            android:maxLines="1"
-            android:paddingLeft="12dp"
-            android:singleLine="true"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/email"
+                android:layout_marginStart="15dp"
+                android:layout_weight="0.5"/>
+
+            <AutoCompleteTextView
+                android:id="@+id/email_edit"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/border_rounded_main_fields"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                android:paddingLeft="12dp"
+                android:singleLine="true"/>
+        </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"

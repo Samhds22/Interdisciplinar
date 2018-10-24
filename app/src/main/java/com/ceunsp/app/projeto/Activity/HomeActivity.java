@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,6 +19,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ceunsp.app.projeto.AnotacaoActivity;
+import com.ceunsp.app.projeto.AnotacoesViewActivity;
+import com.ceunsp.app.projeto.Fragments.HomeFragment;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.R;
 
@@ -47,12 +51,15 @@ public class HomeActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         preferences = getSharedPreferences(PREFERENCES, 0);
 
-        /*userNicknameTextView = findViewById(R.id.user_nickname_TextView);
-        userEmailTextView    = findViewById(R.id.user_email_TextView);
-        userImageView        = findViewById(R.id.user_imageView);
 
-        userNicknameTextView.setText("");
-        userEmailTextView.setText("");*/
+        if (preferences.getString("userType", "").equals("Aluno")){
+            HomeFragment homeFragment = new HomeFragment(preferences.getString("classID", ""));
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.content_frame, homeFragment);
+            transaction.commit();
+        }
+
+
     }
 
     @Override
@@ -107,18 +114,25 @@ public class HomeActivity extends AppCompatActivity
         if (id == R.id.nav_schedule) {
 
             if (preferences.getString("userType", "").equals("Aluno")) {
+
                 loadStudentClass(preferences);
-            }else if (preferences.getString("userType", "").equals("Professor")) {
+
+            } else if (preferences.getString("userType", "").equals("Professor")) {
+
                 Intent teacherIntent = new Intent(getApplicationContext(), TeacherClassesActivity.class);
                 startActivity(teacherIntent);
+
             }
 
         } else if (id == R.id.nav_annotation) {
 
+            Intent intent = new Intent(getApplicationContext(), AnotacoesViewActivity.class);
+            startActivity(intent);
+
         } else if (id == R.id.nav_info) {
 
         } else if (id == R.id.nav_exit) {
-            SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, 0 );
+            SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, 0);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             removeAllPreferences(editor);
             firebaseHelper.getAuth().signOut();
@@ -130,19 +144,19 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
-    public void loadStudentClass(SharedPreferences preferences){
+    public void loadStudentClass(SharedPreferences preferences) {
 
-        if (preferences.getString("classID", "").equals("")){
+        if (preferences.getString("classID", "").equals("")) {
             Intent intentNewClass = new Intent(getApplicationContext(), StudentClassActivity.class);
             startActivity(intentNewClass);
-        }else {
+        } else {
             Intent intentCalendar = new Intent(getApplicationContext(), CalendarMainActivity.class);
             intentCalendar.putExtra("classID", preferences.getString("classID", ""));
             startActivity(intentCalendar);
         }
     }
 
-    public void removeAllPreferences(SharedPreferences.Editor editor){
+    public void removeAllPreferences(SharedPreferences.Editor editor) {
 
         editor.remove("userID");
         editor.remove("name");
@@ -156,5 +170,5 @@ public class HomeActivity extends AppCompatActivity
         editor.apply();
         editor.commit();
     }
-}
 
+}

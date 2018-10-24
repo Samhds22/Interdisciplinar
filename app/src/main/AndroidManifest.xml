@@ -79,6 +79,15 @@
             android:screenOrientation="portrait" />
         <activity android:name=".Activity.SearchClassesActivity"
             android:screenOrientation="portrait" ></activity>
+        <activity
+            android:name=".AtualizarAnotacaoActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".AnotacoesViewActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".AnotacaoActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

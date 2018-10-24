@@ -1,12 +1,17 @@
 package com.ceunsp.app.projeto.Activity;
 
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Model.CollegeClass;
@@ -20,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
 
 public class NewClassActivity extends AppCompatActivity {
 
@@ -32,12 +38,19 @@ public class NewClassActivity extends AppCompatActivity {
     private EditText classNameEdit;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_class);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setElevation(0);
+        getSupportActionBar().setTitle("");
+
         preferences = getSharedPreferences(PREFERENCES, 0 );
         classNameEdit = findViewById(R.id.class_name_edit);
+
 
         EditText collegeEdit = findViewById(R.id.college_edit);
         college  = preferences.getString("college", "");
@@ -57,18 +70,26 @@ public class NewClassActivity extends AppCompatActivity {
                 creationDate = GetCurrentDate();
                 CleanUpStrings(college, course);
 
-                DatabaseReference classRef = ref.child("CollegeClass").child(college).child(course);
-                DatabaseReference pushKey = classRef.push();
-                String classID = pushKey.getKey();
+                if (!className.isEmpty()){
 
-                CollegeClass collegeClass = new CollegeClass(college, course,
-                        className, userName, creationDate, classID);
-                pushKey.setValue(collegeClass);
+                    DatabaseReference classRef = ref.child("CollegeClass").child(college).child(course);
+                    DatabaseReference pushKey = classRef.push();
+                    String classID = pushKey.getKey();
 
-                DatabaseReference userRef = ref.child("Users").child(userID).child("Student");
-                userRef.child("classID").setValue(classID);
-                saveInPreferences(classID);
-                finish();
+                    CollegeClass collegeClass = new CollegeClass(college, course,
+                            className, userName, creationDate, classID);
+                    pushKey.setValue(collegeClass);
+
+                    DatabaseReference userRef = ref.child("Users").child(userID).child("Student");
+                    userRef.child("classID").setValue(classID);
+                    saveInPreferences(classID);
+                    finish();
+
+                } else {
+                    Snackbar.make(v, "Preencha o nome da sala antes de continuar", 20).show();
+                }
+
+
             }
         });
     }
@@ -95,5 +116,15 @@ public class NewClassActivity extends AppCompatActivity {
         editor.putString("classID", classID);
         editor.apply();
         editor.commit();
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            default:break;
+        }
+        return true;
     }
 }
