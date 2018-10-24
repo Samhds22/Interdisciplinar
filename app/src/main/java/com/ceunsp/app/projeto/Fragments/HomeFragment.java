@@ -3,6 +3,7 @@ package com.ceunsp.app.projeto.Fragments;
 
 import android.annotation.SuppressLint;
 import android.app.usage.UsageEvents;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,14 +14,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.ceunsp.app.projeto.Activity.EventBodyActivity;
 import com.ceunsp.app.projeto.Activity.JoinClassActivity;
 import com.ceunsp.app.projeto.Helpers.EventAdapter;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
+import com.ceunsp.app.projeto.Helpers.RecyclerItemClickListener;
 import com.ceunsp.app.projeto.Helpers.UsersAdapter;
 import com.ceunsp.app.projeto.Model.EventData;
 import com.ceunsp.app.projeto.R;
@@ -86,7 +90,7 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onResume() {
-
+        eventList.clear();
         progressBar.setVisibility(View.VISIBLE);
         todayRecyclerView.setVisibility(View.GONE);
 
@@ -111,6 +115,8 @@ public class HomeFragment extends Fragment {
                             eventData.setEventKey((String) eventDataSnapshot.child("eventKey").getValue());
                             eventData.setTitle((String) eventDataSnapshot.child("title").getValue());
                             eventData.setEventType((String) eventDataSnapshot.child("eventType").getValue());
+                            eventData.setSubject((String) eventDataSnapshot.child("subject").getValue());
+                            eventData.setAnnotation((String) eventDataSnapshot.child("annotation").getValue());
 
                             Event event = new Event( 1, dateInMillis, eventData);
                             eventList.add(event);
@@ -130,6 +136,35 @@ public class HomeFragment extends Fragment {
             progressBar.setVisibility(View.GONE);
         }
 
+        todayRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(),
+                todayRecyclerView,
+                new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                       Event event = eventList.get(position);
+                       EventData eventData = (EventData) event.getData();
+
+                        Intent intent = new Intent(getActivity(), EventBodyActivity.class);
+                        intent.putExtra("operation", "View&Edit");
+                        intent.putExtra("eventKey", eventData.getEventKey());
+                        intent.putExtra("userClassID", classID);
+                        intent.putExtra("title", eventData.getTitle());
+                        intent.putExtra("date", event.getTimeInMillis());
+                        intent.putExtra("subject", eventData.getSubject());
+                        intent.putExtra("annotation", eventData.getAnnotation());
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+
+                    }
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    }
+                }));
 
         super.onResume();
     }

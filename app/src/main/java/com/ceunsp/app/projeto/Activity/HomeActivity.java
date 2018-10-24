@@ -205,6 +205,7 @@ public class HomeActivity extends AppCompatActivity
             public void onFailure(@NonNull Exception e) {
 
                 userImageView.setImageResource(R.drawable.default_profile_image);
+
             }
         });
 
