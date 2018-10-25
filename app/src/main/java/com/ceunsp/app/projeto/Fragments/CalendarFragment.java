@@ -262,6 +262,9 @@ public class CalendarFragment extends Fragment {
 
     private void loadEvents(Event event) {
         compactCalendarView.addEvent(event);
+        Calendar aux = Calendar.getInstance();
+        aux.setTimeInMillis(System.currentTimeMillis());
+        RefreshListView(aux.getTime());
     }
 
     void RefreshListView(Date dateClicked){
