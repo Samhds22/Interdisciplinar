@@ -115,12 +115,6 @@ public class EventBodyActivity extends AppCompatActivity {
             }
         }
 
-        titleEventEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                titleEventEdit.setHint("");
-            }
-        });
 
         dateEventEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -234,8 +228,15 @@ public class EventBodyActivity extends AppCompatActivity {
     public void createEvent(View v, String eventTitle, String annotation,
                             String subject, String eventType){
 
-        if (!eventTitle.isEmpty()){
+        if (eventTitle.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "Insira o titulo para continuar.",
+                    Toast.LENGTH_LONG).show();
 
+        } else if (typeSpinner.getSelectedItemId() == 0) {
+            Toast.makeText(getApplicationContext(), "Selecione o tipo do evento!",
+                    Toast.LENGTH_LONG).show();
+
+        }else {
             DatabaseReference pushKey = ref.child(userClassID).push();
             EventData eventData = new EventData();
             eventData.setCreationDate(getCurrentDate());
@@ -252,9 +253,6 @@ public class EventBodyActivity extends AppCompatActivity {
             Snackbar.make(v, "Evento criado com sucesso!", Snackbar.LENGTH_LONG).show();
             createHistoric(eventTitle, eventType, pushKey.getKey(), "create");
             finish();
-
-        }else {
-            Snackbar.make(v, "Insira o titulo para continuar.", Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -344,14 +342,8 @@ public class EventBodyActivity extends AppCompatActivity {
     }
 
     public boolean checkPermission(DataSnapshot dataSnapshot){
-
         String cretorID = (String) dataSnapshot.child("data").child("creatorID").getValue();
-
-        if (userID.equals(cretorID)){
-            return true;
-        } else {
-            return false;
-        }
+        return userID.equals(cretorID);
     }
 
     public void showDeleteDialog(){

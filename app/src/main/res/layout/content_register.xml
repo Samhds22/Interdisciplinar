@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/photo_image"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:layout_weight="100"
+            android:src="@drawable/default_profile_image"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".Activity.RegisterActivity"
+            android:orientation="vertical"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="20dp"
+            tools:ignore="UselessParent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="100">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/name"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginStart="15dp"
+                            android:paddingBottom="5dp"/>
+                        <EditText
+                            android:id="@+id/name_edit"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:background="@drawable/border_rounded_main_fields"
+                            android:paddingLeft="12dp"
+                            android:paddingStart="12dp"
+                            android:inputType=""
+                            android:layout_weight="1"
+                            android:singleLine="true"
+                            tools:ignore="LabelFor,NestedWeights,RtlSymmetry"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/last_name"
+                            android:layout_marginStart="15dp"
+                            android:paddingBottom="5dp"/>
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:id="@+id/last_name_edit"
+                            android:background="@drawable/border_rounded_main_fields"
+                            android:paddingLeft="12dp"
+                            android:paddingStart="12dp"
+                            android:layout_weight="1"
+                            android:inputType=""
+                            android:singleLine="true"
+                            tools:ignore="LabelFor,RtlSymmetry"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/nickname"
+                            android:layout_marginStart="15dp"
+                            android:layout_weight="1"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/date_of_birth"
+                            android:layout_marginStart="15dp"
+                            android:layout_weight="0.5"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+                        <EditText
+                            android:id="@+id/nickname"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_margin="5dp"
+                            android:background="@drawable/border_rounded_main_fields"
+                            android:paddingLeft="12dp"
+                            android:inputType=""
+                            android:layout_weight="1.4"
+                            android:singleLine="true"
+                            android:paddingStart="12dp"
+                            tools:ignore="LabelFor,RtlSymmetry" />
+                        <EditText
+                            android:id="@+id/date_of_birth"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_margin="5dp"
+                            android:background="@drawable/border_rounded_main_fields"
+                            android:paddingLeft="12dp"
+                            android:inputType="date"
+                            android:layout_weight="2"
+                            android:singleLine="true"
+                            tools:ignore="LabelFor,RtlSymmetry"
+                            android:paddingStart="12dp" />
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:text="@string/user_type"
+                        android:layout_marginStart="15dp"
+                        android:layout_weight="0.5"
+                        tools:ignore="Suspicious0dp"
+                        android:layout_marginLeft="15dp"
+                        android:paddingTop="4dp"/>
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <Spinner
+                            android:id="@+id/user_type_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/border_rounded_main_fields"
+                            android:hint="@string/course"
+                            android:paddingLeft="12dp"
+                            android:paddingStart="12dp"
+                            tools:ignore="RtlSymmetry" />
+                    </android.support.design.widget.TextInputLayout>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/email"
+                        android:layout_marginStart="15dp"
+                        android:layout_weight="0.5"/>
+                    <AutoCompleteTextView
+                        android:id="@+id/email_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/border_rounded_main_fields"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1"
+                        android:paddingLeft="12dp"
+                        android:singleLine="true"
+                        tools:ignore="LabelFor,RtlSymmetry"
+                        android:paddingStart="12dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/password"
+                            android:layout_marginStart="15dp"
+                            android:layout_weight="1"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/password_confirm"
+                            android:layout_marginStart="15dp"
+                            android:layout_weight="0.9"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <EditText
+                            android:id="@+id/password_edit"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_margin="5dp"
+                            android:background="@drawable/border_rounded_main_fields"
+                            android:imeActionId="6"
+                            android:imeActionLabel="@string/action_sign_in_short"
+                            android:imeOptions="actionUnspecified"
+                            android:inputType="textPassword"
+                            android:maxLines="1"
+                            android:paddingLeft="12dp"
+                            android:singleLine="true"
+                            android:layout_weight="1"
+                            android:paddingStart="12dp"
+                            tools:ignore="RtlSymmetry" />
+                        <EditText
+                            android:id="@+id/password_confirm_edit"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_margin="5dp"
+                            android:background="@drawable/border_rounded_main_fields"
+                            android:imeActionId="6"
+                            android:imeActionLabel="@string/action_sign_in_short"
+                            android:imeOptions="actionUnspecified"
+                            android:inputType="textPassword"
+                            android:maxLines="1"
+                            android:paddingLeft="12dp"
+                            android:singleLine="true"
+                            android:layout_weight="1"
+                            android:paddingStart="12dp"
+                            tools:ignore="RtlSymmetry" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_gravity="bottom|end">
+
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</LinearLayout>

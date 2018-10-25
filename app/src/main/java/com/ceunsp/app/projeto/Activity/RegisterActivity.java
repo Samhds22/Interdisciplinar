@@ -1,5 +1,6 @@
 package com.ceunsp.app.projeto.Activity;
 
+import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -12,9 +13,11 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -57,16 +60,20 @@ public class RegisterActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private CircleImageView photoImage;
     private Spinner userTypeSpinner;
-    private Button saveButton;
+    private FloatingActionButton saveButton;
     private String  userID;
     private Uri filePath;
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Novo usuário");
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setElevation(0);
 
         nameEdit        = findViewById(R.id.name_edit);
         lastNameEdit    = findViewById(R.id.last_name_edit);
@@ -363,5 +370,15 @@ public class RegisterActivity extends AppCompatActivity {
     public void hideProgressBar(){
         saveButton.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            default:break;
+        }
+        return true;
     }
 }

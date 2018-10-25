@@ -1,5 +1,6 @@
 package com.ceunsp.app.projeto.Activity;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -119,6 +120,8 @@ public class HomeActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -139,18 +142,22 @@ public class HomeActivity extends AppCompatActivity
             }
 
         } else if (id == R.id.nav_annotation) {
-
             Intent intent = new Intent(getApplicationContext(), AnnotationsActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_info) {
 
-        } else if (id == R.id.nav_exit) {
+        } else if (id == R.id.nav_logout) {
             SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, 0);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             removeAllPreferences(editor);
             firebaseHelper.getAuth().signOut();
+            Intent intentLogin = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intentLogin);
             finish();
+
+        } else if (id == R.id.nav_exit) {
+            finishAffinity();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

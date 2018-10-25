@@ -99,5 +99,6 @@
     <string name="create">Criar</string>
     <string name="today">"Hoje,"</string>
     <string name="empty_event">Nada programado para hoje!</string>
+    <string name="user_type">Tipo de usuário</string>
 
 </resources>
