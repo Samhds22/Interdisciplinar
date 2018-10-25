@@ -1,5 +1,6 @@
 package com.ceunsp.app.projeto.Helpers;
 
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,11 +16,10 @@ import java.util.List;
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.MyViewHolder> {
 
     private List<Event> eventList;
-    private List<String> classNameList;
 
-    public EventAdapter(List<Event> list, List<String> classNameList){
+
+    public EventAdapter(List<Event> list){
         this.eventList = list;
-        this.classNameList = classNameList;
     }
 
     @NonNull
@@ -38,14 +38,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.MyViewHolder
         holder.titleText.setText(eventData.getTitle());
         holder.typeText.setText(eventData.getEventType());
 
-        if (!classNameList.isEmpty()){
-            holder.classNameText.setText(classNameList.get(position));
-            holder.classNameText.setVisibility(View.VISIBLE);
-
-        } else {
-            holder.classNameText.setVisibility(View.GONE);
-        }
-
+        holder.classNameText.setText(eventData.getClassName());
     }
 
     @Override

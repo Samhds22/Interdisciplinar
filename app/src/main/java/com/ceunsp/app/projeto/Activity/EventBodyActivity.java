@@ -42,7 +42,7 @@ public class EventBodyActivity extends AppCompatActivity {
 
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
     private EditText dateEventEdit, subjectEdit, titleEventEdit, annotationEdit;
-    private String userClassID, userID, eventKey;
+    private String userClassID, userID, eventKey, className;
     private SharedPreferences preferences;
     private Spinner typeSpinner;
     private Calendar calendar;
@@ -92,6 +92,27 @@ public class EventBodyActivity extends AppCompatActivity {
                 setSpinner(bundle.getString("eventType"));
                 titleEventEdit.setEnabled(false);
             }
+
+            DatabaseReference classRef = firebaseHelper.getReference().child("CollegeClass");
+            classRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot collegeSnapshot : dataSnapshot.getChildren()){
+                        for (DataSnapshot courseSnapshot : collegeSnapshot.getChildren()){
+                            for (DataSnapshot classSnapshot : courseSnapshot.getChildren()){
+                                if (classSnapshot.getKey().equals(userClassID)){
+                                    className = (String) classSnapshot.child("className").getValue();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
 
         titleEventEdit.setOnClickListener(new View.OnClickListener() {
@@ -224,6 +245,8 @@ public class EventBodyActivity extends AppCompatActivity {
             eventData.setTitle(eventTitle);
             eventData.setSubject(subject);
             eventData.setEventType(eventType);
+            eventData.setClassName(className);
+
 
             Event event = new Event(R.color.colorAccent, calendar.getTimeInMillis(), eventData);
             pushKey.child("Event").setValue(event);
