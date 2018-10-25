@@ -24,7 +24,7 @@
     <include layout="@layout/content_home" />
 
     <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/menu"
+        android:id="@+id/float_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
@@ -66,39 +66,26 @@
         app:menu_labels_position="left"
         app:menu_openDirection="up"
         app:menu_backgroundColor="@android:color/transparent"
-        app:menu_fab_label="Cadastrar">
+        android:layout_alignParentEnd="true">
+
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab"
+            android:id="@+id/fabEvent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="openEventView"
+            app:fab_label="Novo evento"
+            app:fab_size="mini"
+            android:src="@drawable/ic_event_24dp"/>
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabAnnotation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_annotation_24dp"
             app:fab_size="mini"
-            app:fab_label="Provas" />
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_annotation_24dp"
-            app:fab_size="mini"
-            app:fab_label="Trabalhos" />
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_annotation_24dp"
-            app:fab_size="mini"
-            app:fab_label="eventos" />
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_annotation_24dp"
-            app:fab_size="mini"
-            app:fab_label="anotações" />
+            app:fab_label="Nova anotação"
+            android:onClick="openAnonnationView"/>
 
     </com.github.clans.fab.FloatingActionMenu>
 

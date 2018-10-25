@@ -16,20 +16,17 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.ceunsp.app.projeto.Fragments.HomeFragment;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.R;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.StorageReference;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
@@ -39,7 +36,8 @@ public class HomeActivity extends AppCompatActivity
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
     public TextView userNicknameTextView, userEmailTextView;
     private static final String PREFERENCES = "Preferences";
-    SharedPreferences preferences;
+    private SharedPreferences preferences;
+    private FloatingActionMenu floatMenu;
     public CircleImageView userImageView;
     private boolean exit = false;
 
@@ -74,6 +72,7 @@ public class HomeActivity extends AppCompatActivity
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content_frame, homeFragment);
         transaction.commit();
+
     }
 
     @Override
@@ -102,24 +101,6 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @SuppressWarnings("StatementWithEmptyBody")
@@ -143,6 +124,7 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_annotation) {
             Intent intent = new Intent(getApplicationContext(), AnnotationsActivity.class);
+            intent.putExtra("alteracao", "nao");
             startActivity(intent);
 
         } else if (id == R.id.nav_info) {
@@ -158,6 +140,17 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_exit) {
             finishAffinity();
+
+        } else if (id == R.id.nav_account_settings) {
+            Intent intentUserSettings = new Intent(getApplicationContext() ,RegisterActivity.class);
+            intentUserSettings.putExtra("operation", "View&Edit");
+            intentUserSettings.putExtra("name", preferences.getString("name", ""));
+            intentUserSettings.putExtra("lastName", preferences.getString("lastName", ""));
+            intentUserSettings.putExtra("nickname", preferences.getString("nickname", ""));
+            intentUserSettings.putExtra("dateOfBirth", preferences.getString("dateOfBirth", ""));
+            intentUserSettings.putExtra("userType", preferences.getString("dateOfBirth", ""));
+            intentUserSettings.putExtra("email", preferences.getString("email", ""));
+            startActivity(intentUserSettings);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -221,4 +214,14 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
+    public void openAnonnationView(View view){
+        Intent intentAnnotation = new Intent(getApplicationContext(), AnnotationsActivity.class);
+        intentAnnotation.putExtra("alteracao", "nao");
+        startActivity(intentAnnotation);
+    }
+
+    public void openEventView(View view) {
+        Intent intentEvent = new Intent(getApplicationContext(), EventBodyActivity.class);
+        startActivity(intentEvent);
+    }
 }

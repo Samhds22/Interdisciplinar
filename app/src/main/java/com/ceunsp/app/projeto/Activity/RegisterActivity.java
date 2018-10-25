@@ -1,5 +1,6 @@
 package com.ceunsp.app.projeto.Activity;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -64,6 +65,7 @@ public class RegisterActivity extends AppCompatActivity {
     private String  userID;
     private Uri filePath;
 
+    @SuppressLint("SetTextI18n")
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -86,6 +88,17 @@ public class RegisterActivity extends AppCompatActivity {
         saveButton      = findViewById(R.id.save_button);
         photoImage      = findViewById(R.id.photo_image);
         progressBar     = findViewById(R.id.register_progressBar);
+
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null){
+
+            nameEdit.setText(bundle.getString("name"));
+            lastNameEdit.setText(bundle.getString("lastName"));
+            nicknameEdit.setText(bundle.getString("nickname"));
+            dtBirthEdit.setText(bundle.getString("dateOfBirth"));
+            emailEdit.setText(bundle.getString("email"));
+        }
 
         calendar.setTimeInMillis(System.currentTimeMillis());
         LoadSpinner();

@@ -111,13 +111,15 @@ public class AnnotationsActivity extends AppCompatActivity {
                 String KeyUsu = anot.getKey();
                 String desc = anot.getDescAnotacao();
                 String titul = anot.getTituloAnotacao();
+                String permissao = "permitido";
 
-                Intent intent = new Intent(getApplicationContext(), AtualizarAnotacaoActivity.class);
+                Intent intent = new Intent(getApplicationContext(), NewAnnotationActivity.class);
                 intent.putExtra("usuario", usuarioAti);
                 intent.putExtra("key", KeyUsu);
                 intent.putExtra("desc", desc);
                 intent.putExtra("titul", titul);
                 intent.putExtra("position", position);
+                intent.putExtra("permissao", permissao);
                 startActivity( intent );
 
             }
@@ -195,7 +197,9 @@ public class AnnotationsActivity extends AppCompatActivity {
     }
 
     public void chamaanotacoes(View view){
+            String alteracao = "nao";
         Intent intent = new Intent(getApplicationContext(), NewAnnotationActivity.class);
+            intent.putExtra("alteracao", alteracao);
         startActivity(intent);
     }
 

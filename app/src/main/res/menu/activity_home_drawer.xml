@@ -12,10 +12,15 @@
             android:id="@+id/nav_annotation"
             android:icon="@drawable/ic_annotation_24dp"
             android:title="@string/item_menu2" />
+
         <item
-            android:id="@+id/nav_info"
-            android:icon="@drawable/ic_info_24dp"
-            android:title="@string/item_menu3"/>
+            android:id="@+id/nav_account_settings"
+            android:icon="@drawable/ic_account_settings_24dp"
+            android:title="@string/account_settings"/>
+    </group>
+
+    <group android:checkableBehavior="single"
+        android:menuCategory="alternative">
         <item
             android:id="@+id/nav_exit"
             android:icon="@drawable/ic_exit_24dp"
@@ -23,7 +28,11 @@
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout_24dp"
-            android:title="@string/item_menu4"/>
+            android:title="@string/logout"/>
+        <item
+            android:id="@+id/nav_info"
+            android:icon="@drawable/ic_about_24dp"
+            android:title="@string/item_menu3"/>
     </group>
 
 

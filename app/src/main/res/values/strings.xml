@@ -100,5 +100,7 @@
     <string name="today">"Hoje,"</string>
     <string name="empty_event">Nada programado para hoje!</string>
     <string name="user_type">Tipo de usuário</string>
+    <string name="logout">Logout</string>
+    <string name="account_settings">Conta</string>
 
 </resources>
