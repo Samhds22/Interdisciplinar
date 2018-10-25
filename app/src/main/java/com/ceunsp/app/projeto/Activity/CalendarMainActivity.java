@@ -3,7 +3,6 @@ package com.ceunsp.app.projeto.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -85,6 +84,8 @@ public class CalendarMainActivity extends AppCompatActivity {
             super.onOptionsItemSelected(item);
 
         } else if (id == android.R.id.home){
+            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+            startActivity(intent);
             finish();
 
         } else if (id == R.id.action_people) {
@@ -145,4 +146,13 @@ public class CalendarMainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+
+        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+        startActivity(intent);
+        finish();
+
+        super.onBackPressed();
+    }
 }

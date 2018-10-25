@@ -80,6 +80,27 @@ public class EventBodyActivity extends AppCompatActivity {
                 userClassID = bundle.getString("userClassID");
                 setSpinner(null);
 
+                DatabaseReference classRef = firebaseHelper.getReference().child("CollegeClass");
+                classRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot collegeSnapshot : dataSnapshot.getChildren()){
+                            for (DataSnapshot courseSnapshot : collegeSnapshot.getChildren()){
+                                for (DataSnapshot classSnapshot : courseSnapshot.getChildren()){
+                                    if (classSnapshot.getKey().equals(userClassID)){
+                                        className = (String) classSnapshot.child("className").getValue();
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
             } else if (Objects.equals(bundle.getString("operation"), "View&Edit")){
 
                 deleteButtom.setVisibility(View.VISIBLE);
@@ -92,27 +113,6 @@ public class EventBodyActivity extends AppCompatActivity {
                 setSpinner(bundle.getString("eventType"));
                 titleEventEdit.setEnabled(false);
             }
-
-            DatabaseReference classRef = firebaseHelper.getReference().child("CollegeClass");
-            classRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot collegeSnapshot : dataSnapshot.getChildren()){
-                        for (DataSnapshot courseSnapshot : collegeSnapshot.getChildren()){
-                            for (DataSnapshot classSnapshot : courseSnapshot.getChildren()){
-                                if (classSnapshot.getKey().equals(userClassID)){
-                                    className = (String) classSnapshot.child("className").getValue();
-                                }
-                            }
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
         }
 
         titleEventEdit.setOnClickListener(new View.OnClickListener() {
@@ -247,7 +247,6 @@ public class EventBodyActivity extends AppCompatActivity {
             eventData.setEventType(eventType);
             eventData.setClassName(className);
 
-
             Event event = new Event(R.color.colorAccent, calendar.getTimeInMillis(), eventData);
             pushKey.child("Event").setValue(event);
             Snackbar.make(v, "Evento criado com sucesso!", Snackbar.LENGTH_LONG).show();
@@ -310,7 +309,8 @@ public class EventBodyActivity extends AppCompatActivity {
                 if (checkPermission(dataSnapshot)){
                     showDeleteDialog();
                 } else {
-                    Snackbar.make(v,"Você não tem permissão para apagar este evento",
+                    Toast.makeText(getApplicationContext(),
+                            "Você não tem permissão para apagar este evento",
                             Toast.LENGTH_LONG).show();
                 }
             }
@@ -332,7 +332,7 @@ public class EventBodyActivity extends AppCompatActivity {
                 if (checkPermission(dataSnapshot)){
                     showUpdateDialog(eventTitle, annotation, subject, eventType);
                 } else {
-                    Snackbar.make(v,"Você não tem permissão para alterar este evento",
+                    Toast.makeText(getApplicationContext(),"Você não tem permissão para alterar este evento",
                             Toast.LENGTH_LONG).show();
                 }
             }

@@ -2,9 +2,7 @@ package com.ceunsp.app.projeto.Fragments;
 
 
 import android.annotation.SuppressLint;
-import android.app.usage.UsageEvents;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -17,15 +15,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ceunsp.app.projeto.Activity.EventBodyActivity;
-import com.ceunsp.app.projeto.Activity.JoinClassActivity;
 import com.ceunsp.app.projeto.Helpers.EventAdapter;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Helpers.RecyclerItemClickListener;
-import com.ceunsp.app.projeto.Helpers.UsersAdapter;
 import com.ceunsp.app.projeto.Model.EventData;
 import com.ceunsp.app.projeto.R;
 import com.github.sundeepk.compactcalendarview.domain.Event;
@@ -33,55 +29,43 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-
 import java.text.SimpleDateFormat;
-import java.time.Month;
-import java.time.MonthDay;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * A simple {@link Fragment} subclass.
- */
+
 @SuppressLint("ValidFragment")
 public class HomeFragment extends Fragment {
 
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
     private DatabaseReference ref = firebaseHelper.getReference().child("ClassCalendar");
-    private List<Event> eventList = new ArrayList<>();
-    private List<String> classNameList = new ArrayList<>();
     private Calendar calendar = Calendar.getInstance();
+    private List<Event> eventList = new ArrayList<>();
+    private String cMonth, classID, userType;
+    private RecyclerView todayRecyclerView;
+    private TextView emptyEventText;
     private ProgressBar progressBar;
     private Date today;
-    private RecyclerView todayRecyclerView;
-    private TextView dateTextView;
-    String cMonth, classID, className;
 
     @SuppressLint("ValidFragment")
-    public HomeFragment(String classID) {
+    public HomeFragment(String classID, String userType) {
 
         this.classID = classID;
+        this.userType = userType;
     }
 
     @Override
-    public void onStart() {
-
-        fillEventRecyclerView();
-
-        super.onStart();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View overview =  inflater.inflate(R.layout.fragment_home, container, false);
 
         todayRecyclerView = overview.findViewById(R.id.today_recyclerView);
-        progressBar       = overview.findViewById(R.id.home_progressBar);
-        dateTextView      = overview.findViewById(R.id.date_textView);
+        progressBar = overview.findViewById(R.id.home_progressBar);
+        emptyEventText = overview.findViewById(R.id.empty_event);
+        TextView dateTextView = overview.findViewById(R.id.date_textView);
 
         calendar.setTimeInMillis(System.currentTimeMillis());
         today = calendar.getTime();
@@ -96,35 +80,14 @@ public class HomeFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         todayRecyclerView.setVisibility(View.GONE);
 
-        eventList.clear();
-        if (classID.equals("") || classID == null){
-            DatabaseReference usersRef = firebaseHelper.getReference().child("Users");
-            DatabaseReference teacherRef = usersRef.child(firebaseHelper.getUserID());
-            teacherRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot postSnapshot : dataSnapshot.child("Classes").getChildren()) {
-
-                        classID = postSnapshot.getKey();
-                        loadTodayEvents();
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-        } else if (!classID.equals("") && classID != null) {
-            loadTodayEvents();
-        }
+        loadTodayEvents();
 
         todayRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(),
                 todayRecyclerView,
                 new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
+
                         Event event = eventList.get(position);
                         EventData eventData = (EventData) event.getData();
 
@@ -155,10 +118,42 @@ public class HomeFragment extends Fragment {
     }
 
     public void loadTodayEvents(){
-
         eventList.clear();
+        if (classID.equals("") || classID == null){
+            DatabaseReference usersRef = firebaseHelper.getReference().child("Users");
+            DatabaseReference teacherRef = usersRef.child(firebaseHelper.getUserID());
+            teacherRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()){
+                        for (DataSnapshot postSnapshot : dataSnapshot.child("Classes").getChildren()){
+                            classID = postSnapshot.getKey();
+                            loadData();
+                        }
+                        if (classID.equals("") || classID.isEmpty() || (classID) == null){
+                            emptyEvents();
+                        }
+
+                    } else {
+                        emptyEvents();
+                    }
+
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    failure();
+                }
+            });
+
+        } else if (!classID.equals("") && classID != null) {
+            loadData();
+        }
+    }
+
+    public void loadData(){
+
         DatabaseReference eventRef = ref.child(classID);
-        eventRef.addValueEventListener(new ValueEventListener() {
+        eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
@@ -169,38 +164,40 @@ public class HomeFragment extends Fragment {
                         Date eventDate = calendar.getTime();
 
                         if (convertDate(eventDate).equals(convertDate(today))){
-
                             DataSnapshot eventDataSnapshot = postSnapShot.child("Event").child("data");
 
                             EventData eventData = new EventData();
-                            eventData.setClassName((String) eventDataSnapshot.child("className").getValue());
                             eventData.setEventKey((String) eventDataSnapshot.child("eventKey").getValue());
                             eventData.setTitle((String) eventDataSnapshot.child("title").getValue());
                             eventData.setEventType((String) eventDataSnapshot.child("eventType").getValue());
                             eventData.setSubject((String) eventDataSnapshot.child("subject").getValue());
                             eventData.setAnnotation((String) eventDataSnapshot.child("annotation").getValue());
 
+                            if (userType.equals("Professor")) {
+                                eventData.setClassName((String) eventDataSnapshot.child("className").getValue());
+                            }
+
                             Event event = new Event( 1, dateInMillis, eventData);
                             eventList.add(event);
                             fillEventRecyclerView();
-
                         }
                     }
                     progressBar.setVisibility(View.GONE);
                     todayRecyclerView.setVisibility(View.VISIBLE);
-                } else {
-                    progressBar.setVisibility(View.GONE);
-                    todayRecyclerView.setVisibility(View.VISIBLE);
                 }
+
+                if (eventList.isEmpty()){
+                    emptyEvents();
+                }
+
             }
 
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                failure();
             }
         });
-
     }
 
     public void fillEventRecyclerView(){
@@ -264,4 +261,16 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    public void failure(){
+        Toast.makeText(getActivity(), "Falha ao carregar os dados, verifique sua conexão",
+                Toast.LENGTH_LONG).show();
+    }
+
+    public void emptyEvents(){
+        progressBar.setVisibility(View.GONE);
+        todayRecyclerView.setVisibility(View.VISIBLE);
+        emptyEventText.setVisibility(View.VISIBLE);
+    }
+
 }
+

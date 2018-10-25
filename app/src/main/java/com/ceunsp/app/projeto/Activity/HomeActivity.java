@@ -66,7 +66,10 @@ public class HomeActivity extends AppCompatActivity
         userEmailTextView.setText(preferences.getString("email", ""));
         retrieveProfilePhoto();
 
-        HomeFragment homeFragment = new HomeFragment(preferences.getString("classID", ""));
+        HomeFragment homeFragment = new HomeFragment
+                (preferences.getString("classID", "")
+                ,preferences.getString("userType", ""));
+
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content_frame, homeFragment);
         transaction.commit();
@@ -131,6 +134,7 @@ public class HomeActivity extends AppCompatActivity
 
                 Intent teacherIntent = new Intent(getApplicationContext(), TeacherClassesActivity.class);
                 startActivity(teacherIntent);
+                finish();
 
             }
 
@@ -159,10 +163,12 @@ public class HomeActivity extends AppCompatActivity
         if (preferences.getString("classID", "").equals("")) {
             Intent intentNewClass = new Intent(getApplicationContext(), StudentClassActivity.class);
             startActivity(intentNewClass);
+            finish();
         } else {
             Intent intentCalendar = new Intent(getApplicationContext(), CalendarMainActivity.class);
             intentCalendar.putExtra("classID", preferences.getString("classID", ""));
             startActivity(intentCalendar);
+            finish();
         }
     }
 

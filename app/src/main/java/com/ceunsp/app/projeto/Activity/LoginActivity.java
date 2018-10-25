@@ -188,6 +188,8 @@ public class LoginActivity extends AppCompatActivity {
             Intent intentHome = new Intent(getApplicationContext(), HomeActivity.class);
             startActivity(intentHome);
         }
+
+        finish();
     }
 
     public  boolean checkConnection() {
