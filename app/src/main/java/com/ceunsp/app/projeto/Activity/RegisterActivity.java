@@ -2,11 +2,14 @@ package com.ceunsp.app.projeto.Activity;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
@@ -16,6 +19,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -25,6 +29,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -36,17 +41,18 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.regex.Pattern;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -58,11 +64,12 @@ public class RegisterActivity extends AppCompatActivity {
     private static final String PREFERENCES = "Preferences";
     private Calendar calendar = Calendar.getInstance();
     private final int PICK_IMAGE_REQUEST = 71;
-    private ProgressBar progressBar;
-    private CircleImageView photoImage;
-    private Spinner userTypeSpinner;
     private FloatingActionButton saveButton;
+    private CircleImageView photoImage;
+    private ProgressBar progressBar;
+    private Spinner userTypeSpinner;
     private String  userID;
+    private Bundle bundle;
     private Uri filePath;
 
     @SuppressLint("SetTextI18n")
@@ -89,19 +96,43 @@ public class RegisterActivity extends AppCompatActivity {
         photoImage      = findViewById(R.id.photo_image);
         progressBar     = findViewById(R.id.register_progressBar);
 
-        Bundle bundle = getIntent().getExtras();
+        bundle = getIntent().getExtras();
 
-        if (bundle != null){
+        if (bundle != null && bundle.getString("operation").equals("View&Edit")){
+
+            getSupportActionBar().setTitle("Configurações de conta");
 
             nameEdit.setText(bundle.getString("name"));
             lastNameEdit.setText(bundle.getString("lastName"));
             nicknameEdit.setText(bundle.getString("nickname"));
             dtBirthEdit.setText(bundle.getString("dateOfBirth"));
+            setSpinner(bundle.getString("userType"));
             emailEdit.setText(bundle.getString("email"));
-        }
 
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        LoadSpinner();
+            byte[] bytes = bundle.getByteArray("photo");
+            if (bytes != null){
+                Bitmap bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                photoImage.setImageBitmap(bitmapImage);
+            }
+
+            emailEdit.setEnabled(false);
+            LinearLayout passwordLayout = findViewById(R.id.password_layout);
+            Button changePasswordEdit   = findViewById(R.id.change_password);
+            changePasswordEdit.setVisibility(View.VISIBLE);
+            passwordLayout.setVisibility(View.GONE);
+
+            changePasswordEdit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showChangePassword();
+                }
+            });
+
+        } else {
+
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            LoadSpinner();
+        }
 
         dtBirthEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -155,30 +186,174 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String email       = emailEdit.getText().toString();
-                String password    = passwordEdit.getText().toString();
-                String name        = nameEdit.getText().toString();
-                String lastName    = lastNameEdit.getText().toString();
-                String nickname    = nicknameEdit.getText().toString();
-                String dateOfBirth = dtBirthEdit.getText().toString();
-                String userType    = userTypeSpinner.getSelectedItem().toString();
-                String pwConfirm   = pwConfirmEdit.getText().toString();
+                if (bundle != null && bundle.getString("operation").equals("View&Edit")){
 
-                if (checkConnection()){
+                    showUpdateDialog();
 
-                    if (tryToRegister(name, lastName, nickname, dateOfBirth, email, password, pwConfirm)) {
-                        showProgressBar();
-                        createUser( v ,email, password, name, lastName, nickname, dateOfBirth, userType);
-                    } else {
-                        hideProgressBar();
+                } else {
+
+                    String email       = emailEdit.getText().toString();
+                    String password    = passwordEdit.getText().toString();
+                    String name        = nameEdit.getText().toString();
+                    String lastName    = lastNameEdit.getText().toString();
+                    String nickname    = nicknameEdit.getText().toString();
+                    String dateOfBirth = dtBirthEdit.getText().toString();
+                    String userType    = userTypeSpinner.getSelectedItem().toString();
+                    String pwConfirm   = pwConfirmEdit.getText().toString();
+
+                    if (checkConnection()){
+
+                        if (tryToRegister(name, lastName, nickname, dateOfBirth, email, password, pwConfirm)) {
+                            showProgressBar();
+                            createUser( v ,email, password, name, lastName, nickname, dateOfBirth, userType);
+                        } else {
+                            hideProgressBar();
+                        }
+
+                    } else{
+                        Toast.makeText(getApplicationContext(), "Sem conexão", Toast.LENGTH_LONG)
+                                .show();
                     }
-
-                } else{
-                    Toast.makeText(getApplicationContext(), "Sem conexão", Toast.LENGTH_LONG)
-                            .show();
                 }
             }
         });
+    }
+
+    public void showUpdateDialog(){
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
+            builder.setTitle(R.string.title4);
+            builder.setMessage(R.string.message4);
+
+            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener(){
+                public void onClick(DialogInterface dialog, int id) {
+                    showProgressBar();
+                    updateUser();
+                }
+            });
+
+            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    closeContextMenu();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+    }
+
+    public void updateUser(){
+
+        DatabaseReference userRef = firebaseHelper.getReference()
+                .child("Users").child(firebaseHelper.getUserID());
+
+
+        final String name, lastName,nickname, dateOfBirth, userType, email;
+
+        name        = nameEdit.getText().toString();
+        lastName    = lastNameEdit.getText().toString();
+        nickname    = nicknameEdit.getText().toString();
+        dateOfBirth = dtBirthEdit.getText().toString();
+        userType    = userTypeSpinner.getSelectedItem().toString();
+        email       = emailEdit.getText().toString();
+
+
+        Map<String, Object> userUpdate = new HashMap<>();
+        userUpdate.put("name"       , name        );
+        userUpdate.put("lastName"   , lastName    );
+        userUpdate.put("nickname"   , nickname    );
+        userUpdate.put("dateOfBirth", dateOfBirth );
+        userUpdate.put("userType"   , userType    );
+
+        userRef.updateChildren(userUpdate).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                Toast.makeText(getApplicationContext(),
+                        "Falha ao atualizar informações, verifique suas conexão",
+                        Toast.LENGTH_LONG).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+                Toast.makeText(getApplicationContext(), "Dados atualizados com sucesso!",
+                        Toast.LENGTH_LONG).show();
+
+                saveInPreferences(firebaseHelper.getUserID(), name, lastName,
+                        nickname, dateOfBirth, userType, email);
+
+                finish();
+            }
+        });
+    }
+
+    public void showChangePassword(){
+
+        final View v = getLayoutInflater().inflate(R.layout.alert_dialog_change_password, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
+        builder.setView(v);
+        builder.setTitle("Alteração de senha");
+
+        builder.setPositiveButton("Alterar", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int id) {
+
+                EditText passwordEdit = v.findViewById(R.id.password_alert_edit);
+                EditText confirmEdit  = v.findViewById(R.id.password_alert_confirm_edit);
+
+
+                if (isValidPasswords(passwordEdit, confirmEdit)){
+                    firebaseHelper.getAuth().getCurrentUser().updatePassword(passwordEdit.getText().toString());
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                closeContextMenu();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public boolean isValidPasswords(EditText passwordEdit, EditText confirmEdit){
+
+        AlertDialog.Builder alertError = new AlertDialog.Builder(RegisterActivity.this);
+        String password = passwordEdit.getText().toString();
+        String confirm  = passwordEdit.getText().toString();
+        String message  = "";
+        Boolean cancel  = true;
+
+        if (password.equals("") || password == null) {
+            cancel = false;
+            message = "Digite a senha";
+
+        } else if (confirm.equals("") || confirm == null) {
+            cancel = false;
+            message = "É obrigatória a confirmação da senha";
+
+        } else if (!confirm.equals(password)) {
+            cancel = false;
+            message = "Senhas não conferem";
+
+        } else if (password.length() < 6) {
+            cancel = false;
+            message = "Mínimo de 6 caracteres";
+        }
+
+        alertError.setIcon(R.drawable.ic_error_);
+        alertError.setTitle("Erro");
+        alertError.setMessage(message);
+
+        alertError.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                closeContextMenu();
+            }
+        });
+
+        AlertDialog dialog = alertError.create();
+        dialog.show();
+        return cancel;
     }
 
     @Override
@@ -393,5 +568,16 @@ public class RegisterActivity extends AppCompatActivity {
             default:break;
         }
         return true;
+    }
+
+    public void setSpinner(String selected){
+        String[] eventType = getResources().getStringArray(R.array.user_type);
+        ArrayAdapter<String> adapterCollege = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, eventType);
+        adapterCollege.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        userTypeSpinner.setAdapter(adapterCollege);
+        if (selected != null) {
+            int position = adapterCollege.getPosition(selected);
+            userTypeSpinner.setSelection(position);
+        }
     }
 }

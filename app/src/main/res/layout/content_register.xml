@@ -204,6 +204,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/password_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -249,7 +250,7 @@
                             android:singleLine="true"
                             android:layout_weight="1"
                             android:paddingStart="12dp"
-                            tools:ignore="RtlSymmetry" />
+                            tools:ignore="LabelFor,RtlSymmetry"/>
                         <EditText
                             android:id="@+id/password_confirm_edit"
                             android:layout_width="match_parent"
@@ -265,7 +266,7 @@
                             android:singleLine="true"
                             android:layout_weight="1"
                             android:paddingStart="12dp"
-                            tools:ignore="RtlSymmetry" />
+                            tools:ignore="LabelFor,RtlSymmetry" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -273,9 +274,20 @@
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_gravity="bottom|end">
+                    android:layout_gravity="start"
+                    android:layout_margin="10dp">
+
+                    <Button
+                        android:id="@+id/change_password"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/border_rounded_button"
+                        android:text="@string/change_password"
+                        android:padding="5dp"
+                        android:textColor="@color/colorWhite"
+                        android:visibility="gone"/>
 
                 </LinearLayout>
             </LinearLayout>

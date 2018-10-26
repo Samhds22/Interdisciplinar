@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.ceunsp.app.projeto.Fragments.HomeFragment;
@@ -27,6 +29,9 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.StorageReference;
+
+import java.io.ByteArrayOutputStream;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
@@ -148,8 +153,10 @@ public class HomeActivity extends AppCompatActivity
             intentUserSettings.putExtra("lastName", preferences.getString("lastName", ""));
             intentUserSettings.putExtra("nickname", preferences.getString("nickname", ""));
             intentUserSettings.putExtra("dateOfBirth", preferences.getString("dateOfBirth", ""));
-            intentUserSettings.putExtra("userType", preferences.getString("dateOfBirth", ""));
+            intentUserSettings.putExtra("userType", preferences.getString("userType", ""));
             intentUserSettings.putExtra("email", preferences.getString("email", ""));
+
+            intentUserSettings.putExtra("photo", convertImageViewToByteArray(userImageView));
             startActivity(intentUserSettings);
         }
 
@@ -157,6 +164,15 @@ public class HomeActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public byte[] convertImageViewToByteArray(CircleImageView image){
+        Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        return stream.toByteArray();
+    }
+
+
 
     public void loadStudentClass(SharedPreferences preferences) {
 
@@ -188,7 +204,7 @@ public class HomeActivity extends AppCompatActivity
         editor.commit();
     }
 
-    public void retrieveProfilePhoto(){
+    public Bitmap retrieveProfilePhoto(){
 
         final Bitmap[] bitmap = new Bitmap[1];
 
@@ -212,6 +228,7 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
+        return bitmap[0];
     }
 
     public void openAnonnationView(View view){
