@@ -19,19 +19,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.ceunsp.app.projeto.Fragments.HomeFragment;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.R;
-import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.StorageReference;
-
 import java.io.ByteArrayOutputStream;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
@@ -42,7 +38,6 @@ public class HomeActivity extends AppCompatActivity
     public TextView userNicknameTextView, userEmailTextView;
     private static final String PREFERENCES = "Preferences";
     private SharedPreferences preferences;
-    private FloatingActionMenu floatMenu;
     public CircleImageView userImageView;
     private boolean exit = false;
 
@@ -204,7 +199,7 @@ public class HomeActivity extends AppCompatActivity
         editor.commit();
     }
 
-    public Bitmap retrieveProfilePhoto(){
+    public void retrieveProfilePhoto(){
 
         final Bitmap[] bitmap = new Bitmap[1];
 
@@ -228,7 +223,6 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-        return bitmap[0];
     }
 
     public void openAnonnationView(View view){
@@ -239,6 +233,10 @@ public class HomeActivity extends AppCompatActivity
 
     public void openEventView(View view) {
         Intent intentEvent = new Intent(getApplicationContext(), EventBodyActivity.class);
+        intentEvent.putExtra("operation", "create");
+        intentEvent.putExtra("date", System.currentTimeMillis());
+        intentEvent.putExtra("userClassID", preferences.getString("classID", ""));
+        intentEvent.putExtra("userID", firebaseHelper.getUserID());
         startActivity(intentEvent);
     }
 }

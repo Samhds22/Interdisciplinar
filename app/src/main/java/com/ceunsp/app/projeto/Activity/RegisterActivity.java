@@ -2,7 +2,6 @@ package com.ceunsp.app.projeto.Activity;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,7 +29,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
@@ -53,7 +51,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Pattern;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -66,7 +63,7 @@ public class RegisterActivity extends AppCompatActivity {
     private final int PICK_IMAGE_REQUEST = 71;
     private FloatingActionButton saveButton;
     private CircleImageView photoImage;
-    private ProgressBar progressBar;
+    private LinearLayout progressBar;
     private Spinner userTypeSpinner;
     private String  userID;
     private Bundle bundle;
@@ -187,8 +184,9 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 if (bundle != null && bundle.getString("operation").equals("View&Edit")){
-
-                    showUpdateDialog();
+                    if (checkConnection()){
+                        showUpdateDialog();
+                    }
 
                 } else {
 
@@ -203,7 +201,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                     if (checkConnection()){
 
-                        if (tryToRegister(name, lastName, nickname, dateOfBirth, email, password, pwConfirm)) {
+                        if (isValidFields(v, name, lastName, nickname, email, password, pwConfirm)) {
                             showProgressBar();
                             createUser( v ,email, password, name, lastName, nickname, dateOfBirth, userType);
                         } else {
@@ -289,20 +287,35 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void showChangePassword(){
 
-        final View v = getLayoutInflater().inflate(R.layout.alert_dialog_change_password, null);
+        @SuppressLint("InflateParams") final View v = getLayoutInflater().inflate(R.layout.alert_dialog_change_password, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
         builder.setView(v);
         builder.setTitle("Alteração de senha");
 
         builder.setPositiveButton("Alterar", new DialogInterface.OnClickListener(){
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             public void onClick(DialogInterface dialog, int id) {
 
                 EditText passwordEdit = v.findViewById(R.id.password_alert_edit);
                 EditText confirmEdit  = v.findViewById(R.id.password_alert_confirm_edit);
 
 
-                if (isValidPasswords(passwordEdit, confirmEdit)){
-                    firebaseHelper.getAuth().getCurrentUser().updatePassword(passwordEdit.getText().toString());
+                if (validPwdFields(passwordEdit, confirmEdit)){
+                    firebaseHelper.getAuth().getCurrentUser().updatePassword
+                            (passwordEdit.getText().toString())
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()){
+                                firebaseHelper.getAuth().signOut();
+                                finishAffinity();
+                                Intent intentLogin = new Intent(getApplicationContext(), LoginActivity.class);
+                                startActivity(intentLogin);
+
+                            }
+                        }
+                    });
+
                 }
             }
         });
@@ -316,44 +329,57 @@ public class RegisterActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public boolean isValidPasswords(EditText passwordEdit, EditText confirmEdit){
+    public boolean validPwdFields(EditText passwordEdit, EditText confirmEdit){
 
         AlertDialog.Builder alertError = new AlertDialog.Builder(RegisterActivity.this);
         String password = passwordEdit.getText().toString();
-        String confirm  = passwordEdit.getText().toString();
+        String confirm  = confirmEdit.getText().toString();
         String message  = "";
-        Boolean cancel  = true;
+        String title    = "";
+        Boolean cancel  = false;
+
+        alertError.setIcon(R.drawable.ic_error_);
 
         if (password.equals("") || password == null) {
-            cancel = false;
-            message = "Digite a senha";
+            cancel  = true;
+            title   = "Erro";
+            message = "Digite uma nova senha e em seguida digite-a novamente para confirmar.";
 
         } else if (confirm.equals("") || confirm == null) {
-            cancel = false;
+            cancel  = true;
+            title   = "Erro";
             message = "É obrigatória a confirmação da senha";
 
         } else if (!confirm.equals(password)) {
-            cancel = false;
+            cancel  = true;
+            title   = "Erro";
             message = "Senhas não conferem";
 
         } else if (password.length() < 6) {
-            cancel = false;
+            cancel  = true;
+            title   = "Erro";
             message = "Mínimo de 6 caracteres";
+
+        } else {
+            title   = "Sucesso";
+            message = "Sua senha foi alterada, realize um novo login";
+            alertError.setIcon(R.drawable.ic_check_green_24dp);
         }
 
-        alertError.setIcon(R.drawable.ic_error_);
-        alertError.setTitle("Erro");
+        alertError.setTitle(title);
         alertError.setMessage(message);
-
         alertError.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             public void onClick(DialogInterface dialog, int id) {
                 closeContextMenu();
+
             }
         });
 
         AlertDialog dialog = alertError.create();
         dialog.show();
-        return cancel;
+
+        return !cancel;
     }
 
     @Override
@@ -363,7 +389,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    public boolean tryToRegister(String name, String lastname, String nickname, String dateOfBirth,
+    public boolean isValidFields(View view,String name, String lastname, String nickname,
                                  String email, String password, String pwConfirm){
 
             nameEdit.setError(null);
@@ -376,34 +402,57 @@ public class RegisterActivity extends AppCompatActivity {
         boolean cancel = false;
         View focusView = null;
 
-        if (TextUtils.isEmpty(email)) {
-            emailEdit.setError(getString(R.string.error_field_required));
-            focusView = emailEdit;
-            cancel = true;
-        } else if (!isValidEmail(email)) {
-            emailEdit.setError(getString(R.string.error_invalid_email));
-            focusView = emailEdit;
-            cancel = true;
-        }
-
         if (TextUtils.isEmpty(name)) {
-            nameEdit.setError(getString(R.string.error_field_required));
+            Snackbar.make(view, R.string.error_name_required, Snackbar.LENGTH_LONG).show();
             focusView = nameEdit;
             cancel = true;
-        } else if (!isValidName(name)){
-            nameEdit.setError(getString(R.string.error_invalid_name));
-            focusView = nameEdit;
-            cancel = true;
-        }
 
-        if (TextUtils.isEmpty(password)){
-            passwordEdit.setError(getString(R.string.error_field_required));
+        }else if (TextUtils.isEmpty(lastname)) {
+            Snackbar.make(view, R.string.error_last_name_required, Snackbar.LENGTH_LONG).show();
+            focusView = lastNameEdit;
+            cancel = true;
+
+        } else if (TextUtils.isEmpty(nickname)) {
+            Snackbar.make(view, R.string.error_nickname_required, Snackbar.LENGTH_LONG).show();
+            focusView = nicknameEdit;
+            cancel = true;
+
+        } else if (userTypeSpinner.getSelectedItemId() == 0){
+            Snackbar.make(view, R.string.select_user_type, Snackbar.LENGTH_LONG).show();
+            cancel = true;
+
+        } else if (TextUtils.isEmpty(email)) {
+            Snackbar.make(view, R.string.error_empty_email, Snackbar.LENGTH_LONG).show();
+            focusView = emailEdit;
+            cancel = true;
+
+        }else if (!isValidEmail(email)) {
+            Snackbar.make(view, R.string.error_invalid_email, Snackbar.LENGTH_LONG).show();
+            focusView = emailEdit;
+            cancel = true;
+
+        } else if (TextUtils.isEmpty(password)){
+            Snackbar.make(view, R.string.error_required_password, Snackbar.LENGTH_LONG).show();
             focusView = passwordEdit;
             cancel = true;
+
         } else if (!isValidPassword(password)){
-            passwordEdit.setError(getString(R.string.error_invalid_password));
+            Snackbar.make(view, R.string.error_invalid_password, Snackbar.LENGTH_LONG).show();
             focusView = passwordEdit;
             cancel = true;
+
+        } else if (TextUtils.isEmpty(pwConfirm)){
+            Snackbar.make(view, R.string.error_confirm_password, Snackbar.LENGTH_LONG).show();
+            focusView = pwConfirmEdit;
+            cancel = true;
+
+        } else if (!pwConfirm.equals(password)){
+            Snackbar.make(view, R.string.error_passwords_not_match, Snackbar.LENGTH_LONG).show();
+            passwordEdit.setText("");
+            pwConfirmEdit.setText("");
+            focusView = passwordEdit;
+            cancel = true;
+
         }
         if (cancel) {
             focusView.requestFocus();
@@ -420,16 +469,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private boolean isValidEmail(String email) {
         return email.contains("@") && email.contains(".");
-    }
-
-    public static boolean isValidName(String target) {
-        return Pattern.compile("^(?=.*[a-zA-Z가-힣])[a-zA-Z가-힣]{1,}$").matcher(target).matches();
-
-    }
-
-    public static boolean isValidNickName(String target) {
-        return target.length() > 4;
-        //return Pattern.compile("^(?=.*[a-zA-Z\\d])[a-zA-Z0-9가-힣]{2,12}$|^[가-힣]$").matcher(target).matches();
     }
 
     private void LoadSpinner(){

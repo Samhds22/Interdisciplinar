@@ -9,11 +9,18 @@
     <string name="prompt_password">Senha</string>
     <string name="action_sign_in">Entrar</string>
     <string name="action_sign_in_short">Cadastre-se</string>
-    <string name="error_invalid_email">Este é um email inválido</string>
-    <string name="error_invalid_password">Senha inválida.</string>
+    <string name="error_invalid_email">Email inválido</string>
+    <string name="error_empty_email">O campo ""email"" não pode estar vazio</string>
+    <string name="error_invalid_password">Mínimo de 6 caractéres</string>
+    <string name="select_user_type">Selecione o tipo de usuário</string>
+    <string name="error_confirm_password">Confirme sua senha</string>
+    <string name="error_passwords_not_match">Senhas não conferem</string>
     <string name="error_invalid_name">Não pode conter numeros ou caracteres especiais</string>
     <string name="error_incorrect_password">Senha incorreta!</string>
-    <string name="error_field_required">Necessário informar este campo</string>
+    <string name="error_name_required">Digite seu nome</string>
+    <string name="error_last_name_required">Digite seu sobrenome</string>
+    <string name="error_nickname_required">Crie um apelido</string>
+    <string name="error_required_password">Crie uma senha</string>
     <string name="permission_rationale">"Necessria a permissão aos seus contatos."
     </string>
     <string name="title_activity_home">Home</string>
@@ -28,11 +35,11 @@
     <string name="item_menu3">Sobre</string>
     <string name="item_menu4">Sair</string>
     <string-array name="event_type">
-        <item>Tipo</item>
+        <item>(Selecione o tipo do evento)</item>
         <item>Prova</item>
         <item>Projeto</item>
         <item>Trabalho</item>
-        <item>lembrete</item>
+        <item>Outros</item>
     </string-array>
     <string-array name="colleges">
         <item>Selecione sua faculdade</item>
@@ -46,6 +53,7 @@
         <item>Ciencias da Computação</item>
     </string-array>
     <string-array name="user_type">
+        <item>(Selecione o tipo de usuário)</item>
         <item>Aluno</item>
         <item>Professor</item>
     </string-array>
@@ -105,5 +113,7 @@
     <string name="logout">Logout</string>
     <string name="account_settings">Conta</string>
     <string name="change_password">Mudar senha</string>
+    <string name="reset_password">Esqueci minha senha</string>
+    <string name="create_account">Crie sua conta agora</string>
 
 </resources>

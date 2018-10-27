@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -100,11 +100,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:layout_marginLeft="35dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginRight="35dp"
-                android:text="Crie sua conta agora"
+                android:text="@string/create_account"
                 style="?attr/buttonBarButtonStyle"/>
 
+
         </LinearLayout>
+
+
     </ScrollView>
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

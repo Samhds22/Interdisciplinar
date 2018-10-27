@@ -19,7 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ceunsp.app.projeto.Helpers.AnnotationAdapter;
-import com.ceunsp.app.projeto.AtualizarAnotacaoActivity;
 import com.ceunsp.app.projeto.Helpers.FirebaseConfig;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Helpers.RecyclerItemClickListener;
