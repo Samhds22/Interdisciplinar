@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.ceunsp.app.projeto.Helpers.FirebaseConfig;
 import com.ceunsp.app.projeto.Model.Annotation;
 import com.ceunsp.app.projeto.R;
@@ -23,10 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -51,7 +47,6 @@ public class NewAnnotationActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("");
         getSupportActionBar().setElevation(0);
 
-
         titleEdit = findViewById(R.id.title_annotation_edit);
         bodyEdit  = findViewById(R.id.AnotacaoDesc_editText);
         titulo = findViewById(R.id.title_annotation_edit);
@@ -69,7 +64,6 @@ public class NewAnnotationActivity extends AppCompatActivity {
 
             }
         };
-
 
         final Bundle dados1 = getIntent().getExtras();
         final String alteracao = dados1.getString("alteracao");
@@ -117,10 +111,7 @@ public class NewAnnotationActivity extends AppCompatActivity {
     private void saveAnnotation(String title, String body) {
 
         DatabaseReference referencia = FirebaseDatabase.getInstance().getReference();
-        String creationDate = GetCurrentDate();
         String UserAtivo  = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-
-
         DatabaseReference anotacoesdb = referencia.child("Anotacoes").child(UserAtivo);
         DatabaseReference pushKey = anotacoesdb.push();
         String anotID = pushKey.getKey();
@@ -129,8 +120,8 @@ public class NewAnnotationActivity extends AppCompatActivity {
         pushKey.setValue(novaAnotacao);
 
         Intent intent = new Intent(getApplicationContext(), AnnotationsActivity.class);
-        startActivity(intent);
-
+        startActivity( intent );
+        finish();
     }
 
     @Override
@@ -148,17 +139,14 @@ public class NewAnnotationActivity extends AppCompatActivity {
         }
     }
 
-    public String GetCurrentDate(){
-
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("pt","BR"));
-        return sdf.format(calendar.getTime());
-    }
-
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+
+                Intent intent = new Intent(getApplicationContext(), AnnotationsActivity.class);
+                startActivity( intent );
                 finish();
+
                 break;
             default:break;
         }
@@ -194,11 +182,20 @@ public class NewAnnotationActivity extends AppCompatActivity {
         AnotacaoUpdate.put("tituloAnotacao", a);
         AnotacaoUpdate.put("descAnotacao", b);
 
-
         anotref.updateChildren(AnotacaoUpdate);
 
         Intent intent = new Intent(getApplicationContext(), AnnotationsActivity.class);
         startActivity( intent );
+        finish();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Intent intent = new Intent(getApplicationContext(), AnnotationsActivity.class);
+        startActivity( intent );
+        finish();
+        super.onBackPressed();
     }
 }

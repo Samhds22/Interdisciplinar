@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -37,9 +38,16 @@ public class HomeActivity extends AppCompatActivity
     private final FirebaseHelper firebaseHelper = new FirebaseHelper();
     public TextView userNicknameTextView, userEmailTextView;
     private static final String PREFERENCES = "Preferences";
+    private boolean accountSettingsIsEnable = false;
     private SharedPreferences preferences;
     public CircleImageView userImageView;
     private boolean exit = false;
+
+    @Override
+    protected void onResume() {
+        retrieveProfilePhoto();
+        super.onResume();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,16 +71,13 @@ public class HomeActivity extends AppCompatActivity
 
         userNicknameTextView.setText(preferences.getString("nickname", ""));
         userEmailTextView.setText(preferences.getString("email", ""));
-        retrieveProfilePhoto();
 
         HomeFragment homeFragment = new HomeFragment
-                (preferences.getString("classID", "")
-                ,preferences.getString("userType", ""));
+                (preferences.getString("userType", ""));
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content_frame, homeFragment);
         transaction.commit();
-
     }
 
     @Override
@@ -142,17 +147,26 @@ public class HomeActivity extends AppCompatActivity
             finishAffinity();
 
         } else if (id == R.id.nav_account_settings) {
-            Intent intentUserSettings = new Intent(getApplicationContext() ,RegisterActivity.class);
-            intentUserSettings.putExtra("operation", "View&Edit");
-            intentUserSettings.putExtra("name", preferences.getString("name", ""));
-            intentUserSettings.putExtra("lastName", preferences.getString("lastName", ""));
-            intentUserSettings.putExtra("nickname", preferences.getString("nickname", ""));
-            intentUserSettings.putExtra("dateOfBirth", preferences.getString("dateOfBirth", ""));
-            intentUserSettings.putExtra("userType", preferences.getString("userType", ""));
-            intentUserSettings.putExtra("email", preferences.getString("email", ""));
+            if (accountSettingsIsEnable){
 
-            intentUserSettings.putExtra("photo", convertImageViewToByteArray(userImageView));
-            startActivity(intentUserSettings);
+                Intent intentUserSettings = new Intent(getApplicationContext() ,RegisterActivity.class);
+                intentUserSettings.putExtra("operation", "View&Edit");
+                intentUserSettings.putExtra("name", preferences.getString("name", ""));
+                intentUserSettings.putExtra("lastName", preferences.getString("lastName", ""));
+                intentUserSettings.putExtra("nickname", preferences.getString("nickname", ""));
+                intentUserSettings.putExtra("dateOfBirth", preferences.getString("dateOfBirth", ""));
+                intentUserSettings.putExtra("userType", preferences.getString("userType", ""));
+                intentUserSettings.putExtra("email", preferences.getString("email", ""));
+
+                intentUserSettings.putExtra("photo", convertImageViewToByteArray(userImageView));
+                startActivity(intentUserSettings);
+
+            } else {
+
+                Toast.makeText(getApplicationContext(),
+                        "Falha ao carregar os dados, tente novamente",
+                        Snackbar.LENGTH_LONG).show();
+            }
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -212,6 +226,7 @@ public class HomeActivity extends AppCompatActivity
 
                         bitmap[0] = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         userImageView.setImageBitmap(bitmap[0]);
+                        accountSettingsIsEnable = true;
 
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -219,24 +234,27 @@ public class HomeActivity extends AppCompatActivity
             public void onFailure(@NonNull Exception e) {
 
                 userImageView.setImageResource(R.drawable.default_profile_image);
-
+                accountSettingsIsEnable = true;
             }
         });
 
     }
 
     public void openAnonnationView(View view){
-        Intent intentAnnotation = new Intent(getApplicationContext(), AnnotationsActivity.class);
+        Intent intentAnnotation = new Intent(getApplicationContext(), NewAnnotationActivity.class);
         intentAnnotation.putExtra("alteracao", "nao");
         startActivity(intentAnnotation);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void openEventView(View view) {
         Intent intentEvent = new Intent(getApplicationContext(), EventBodyActivity.class);
+        intentEvent.putExtra("sender", "homeActivity");
         intentEvent.putExtra("operation", "create");
         intentEvent.putExtra("date", System.currentTimeMillis());
         intentEvent.putExtra("userClassID", preferences.getString("classID", ""));
         intentEvent.putExtra("userID", firebaseHelper.getUserID());
+        finish();
         startActivity(intentEvent);
     }
 }

@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,7 +14,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
-
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import com.ceunsp.app.projeto.Helpers.ClassAdapter;
 import com.ceunsp.app.projeto.Helpers.RecyclerItemClickListener;
 import com.ceunsp.app.projeto.Model.CollegeClass;
@@ -57,7 +59,12 @@ public class StudentClassActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
+    protected void onStart(){
+
+        final ProgressBar progressBar      = findViewById(R.id.teste);
+        final LinearLayout rvLayout        = findViewById(R.id.recyclerView_layout);
+        final ConstraintLayout emptyLayout = findViewById(R.id.empty_layout);
+
 
         SharedPreferences preferences = getSharedPreferences(PREFERENCES, 0);
 
@@ -85,10 +92,18 @@ public class StudentClassActivity extends AppCompatActivity {
 
                             CollegeClass collegeClass = new CollegeClass(className, creator, creationDate, classID);
                             collegeClassList.add(collegeClass);
-
-                            fillRecyclerView();
                         }
                     }
+                    if (collegeClassList.isEmpty()){
+                        progressBar.setVisibility(View.GONE);
+                        emptyLayout.setVisibility(View.VISIBLE);
+
+                    } else {
+                        progressBar.setVisibility(View.GONE);
+                        rvLayout.setVisibility(View.VISIBLE);
+                        fillRecyclerView();
+                    }
+
                 }
 
                 @Override

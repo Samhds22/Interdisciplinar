@@ -1,13 +1,16 @@
 package com.ceunsp.app.projeto.Activity;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -43,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
     private SharedPreferences preferences;
     private ProgressBar progressBar;
     private ImageView logoImageView;
-    private TextView infoTextView;
+    private TextView infoTextView, forgotPwdText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,8 @@ public class LoginActivity extends AppCompatActivity {
         emailEdit      = findViewById(R.id.email_edit);
         passwordEdit   = findViewById(R.id.password_edit);
         infoTextView   = findViewById(R.id.info_textView);
+        forgotPwdText  = findViewById(R.id.forgot_password_textView);
+
 
         singInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -75,6 +80,14 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intentRegistration = new Intent(getApplicationContext(), RegisterActivity.class);
                 startActivity(intentRegistration);
+            }
+        });
+
+        TextView resettextview = findViewById(R.id.forgot_password_textView);
+        resettextview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertresetPassword();
             }
         });
     }
@@ -99,14 +112,18 @@ public class LoginActivity extends AppCompatActivity {
         boolean cancel = false;
         View focusView = null;
 
-        if (!TextUtils.isEmpty(passwordText) && !isPasswordValid(passwordText)) {
+        if (TextUtils.isEmpty(passwordText)){
+            passwordEdit.setError(getString(R.string.error_empty_password));
+            focusView = passwordEdit;
+            cancel = true;
+        } else if  (!isPasswordValid(passwordText)) {
             passwordEdit.setError(getString(R.string.error_invalid_password));
             focusView = passwordEdit;
             cancel = true;
         }
 
         if (TextUtils.isEmpty(emailText)) {
-            emailEdit.setError(getString(R.string.error_invalid_email));
+            emailEdit.setError(getString(R.string.error_empty_email));
             focusView = emailEdit;
             cancel = true;
         } else if (!isEmailValid(emailText)) {
@@ -223,10 +240,12 @@ public class LoginActivity extends AppCompatActivity {
             singInButton.setVisibility(View.GONE);
             emailEdit.setVisibility(View.GONE);
             passwordEdit.setVisibility(View.GONE);
+            forgotPwdText.setVisibility(View.GONE);
             infoTextView.setText(R.string.wait);
             progressBar.setVisibility(View.VISIBLE);
         } else {
             progressBar.setVisibility(View.GONE);
+            forgotPwdText.setVisibility(View.VISIBLE);
             logoImageView.setVisibility(View.VISIBLE);
             registerButton.setVisibility(View.VISIBLE);
             singInButton.setVisibility(View.VISIBLE);
@@ -255,6 +274,55 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString("course",  (String) dataSnapshot.child("course").getValue());
         editor.apply();
         editor.commit();
+    }
+
+    public void AlertresetPassword(){
+        @SuppressLint("InflateParams") final View v = getLayoutInflater().inflate(R.layout.alert_dialog_reset_password, null);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+
+        dialog.setView(v);
+        dialog.setTitle("Recuperação de senha");
+
+        final EditText emaileditText = v.findViewById(R.id.email_editText);
+
+        dialog.setPositiveButton("Enviar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                final String emailcont = emaileditText.getText().toString();
+
+                 if (emailcont.equals("")) {
+                    Toast.makeText(LoginActivity.this, "Insira um email valido",
+                            Toast.LENGTH_SHORT).show();
+
+                } else{
+                    auth.sendPasswordResetEmail(emailcont).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(LoginActivity.this,
+                                                "Um link de reset foi enviado para seu email," +
+                                                        " verifique sua caixa de entrada",
+                                                Toast.LENGTH_SHORT).show();
+                                    }else {
+                                        Toast.makeText(LoginActivity.this,
+                                                "Falha ao encaminhar email.",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                 }
+            }
+        });
+
+        dialog.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        AlertDialog builder = dialog.create();
+        builder.show();
     }
 }
 

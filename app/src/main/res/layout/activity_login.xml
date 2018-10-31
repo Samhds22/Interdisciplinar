@@ -32,7 +32,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="124dp"
                 app:srcCompat="@drawable/splash_logo"
-                android:layout_marginBottom="40dp"/>
+                android:layout_marginBottom="60dp"
+                android:contentDescription="@string/app_name" />
 
             <EditText
                 android:id="@+id/email_edit"
@@ -46,7 +47,9 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:paddingLeft="20dp"
-                android:paddingRight="10dp"/>
+                android:paddingRight="10dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="10dp" />
 
             <ProgressBar
                 android:id="@+id/login_progressBar"
@@ -73,7 +76,9 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:paddingLeft="20dp"
-                android:paddingRight="10dp"/>
+                android:paddingRight="10dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="10dp" />
 
             <Button
                 android:id="@+id/sign_in_button"
@@ -93,17 +98,29 @@
                 android:layout_height="wrap_content"
                 android:text="@string/not_have_Account"
                 android:textAlignment="center"
+                android:textSize="14sp"
                 android:paddingTop="25dp"/>
 
             <Button
                 android:id="@+id/reg_button"
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="35dp"
-                android:layout_marginTop="5dp"
                 android:layout_marginRight="35dp"
                 android:text="@string/create_account"
+                android:textSize="15sp"
                 style="?attr/buttonBarButtonStyle"/>
+
+            <TextView
+                android:id="@+id/forgot_password_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:textSize="14sp"
+                android:text="@string/forgot_password"
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimaryDark"
+                android:gravity="center"/>
 
 
         </LinearLayout>

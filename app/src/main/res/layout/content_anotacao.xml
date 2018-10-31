@@ -8,7 +8,6 @@
     tools:context=".Activity.NewAnnotationActivity"
     tools:showIn="@layout/activity_anotacao">
 
-
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
@@ -33,7 +32,6 @@
 
     </LinearLayout>
 
-
     <EditText
         android:id="@+id/AnotacaoDesc_editText"
         android:layout_width="match_parent"
@@ -43,16 +41,20 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
-        android:background="@drawable/border_rounded_main_fields"
+        android:background="@drawable/border_rounded_cardview"
         android:ems="10"
         android:gravity="top"
         android:inputType="textMultiLine"
+        android:paddingRight="10dp"
+        android:paddingEnd="10dp"
         android:paddingLeft="15dp"
         android:paddingTop="15dp"
-        android:singleLine="true"
+        android:singleLine="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        android:paddingStart="15dp"
+        tools:ignore="LabelFor,RtlSymmetry" />
 </android.support.constraint.ConstraintLayout>

@@ -1,6 +1,5 @@
 package com.ceunsp.app.projeto.Helpers;
 
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -36,6 +35,19 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.MyViewHolder
         EventData eventData = (EventData) event.getData();
 
         holder.titleText.setText(eventData.getTitle());
+
+        String eventType = eventData.getEventType();
+
+        if (eventType.equals("Prova")){
+            holder.typeText.setBackgroundResource(R.drawable.border_rounded_yellow);
+        } else if (eventType.equals("Trabalho")){
+            holder.typeText.setBackgroundResource(R.drawable.border_rounded_blue);
+        } else if (eventType.equals("Projeto")){
+            holder.typeText.setBackgroundResource(R.drawable.border_rounded_green);
+        } else if (eventType.equals("Outros")){
+            holder.typeText.setBackgroundResource(R.drawable.border_rounded_skyblue);
+        }
+
         holder.typeText.setText(eventData.getEventType());
 
         holder.classNameText.setText(eventData.getClassName());

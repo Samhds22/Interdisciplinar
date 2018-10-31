@@ -2,6 +2,7 @@ package com.ceunsp.app.projeto.Activity;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -23,6 +24,8 @@ import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Model.Historic;
 import com.ceunsp.app.projeto.R;
 import com.github.sundeepk.compactcalendarview.domain.Event;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,7 +49,6 @@ public class EventBodyActivity extends AppCompatActivity {
     private SharedPreferences preferences;
     private Spinner typeSpinner;
     private Calendar calendar;
-
 
     private final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("ClassCalendar");
 
@@ -225,8 +227,8 @@ public class EventBodyActivity extends AppCompatActivity {
         }
     }
 
-    public void createEvent(View v, String eventTitle, String annotation,
-                            String subject, String eventType){
+    public void createEvent(View v, final String eventTitle, String annotation,
+                            String subject, final String eventType){
 
         if (eventTitle.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Insira o titulo para continuar.",
@@ -237,7 +239,7 @@ public class EventBodyActivity extends AppCompatActivity {
                     Toast.LENGTH_LONG).show();
 
         }else {
-            DatabaseReference pushKey = ref.child(userClassID).push();
+            final DatabaseReference pushKey = ref.child(userClassID).push();
             EventData eventData = new EventData();
             eventData.setCreationDate(getCurrentDate());
             eventData.setEventKey(pushKey.getKey());
@@ -248,11 +250,33 @@ public class EventBodyActivity extends AppCompatActivity {
             eventData.setEventType(eventType);
             eventData.setClassName(className);
 
+       /*     if (preferences.getString("userType", "").equals("Professor")){
+                Calendar aux =
+            }
+*/
             Event event = new Event(R.color.colorAccent, calendar.getTimeInMillis(), eventData);
-            pushKey.child("Event").setValue(event);
-            Snackbar.make(v, "Evento criado com sucesso!", Snackbar.LENGTH_LONG).show();
-            createHistoric(eventTitle, eventType, pushKey.getKey(), "create");
-            finish();
+            pushKey.child("Event").setValue(event).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()){
+                        Bundle bundle = getIntent().getExtras();
+                        if (bundle!= null && bundle.getString("sender").equals("homeActivity")){
+                            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                            finishAffinity();
+                            startActivity(intent);
+
+                            Toast.makeText(getApplicationContext(), "Evento criado com sucesso!",
+                                    Toast.LENGTH_LONG).show();
+                            createHistoric(eventTitle, eventType, pushKey.getKey(), "create");
+
+                        } else {
+                            finish();
+                        }
+                    }
+                }
+            });
+
         }
     }
 
@@ -275,6 +299,7 @@ public class EventBodyActivity extends AppCompatActivity {
         historicRef.setValue(historic);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void updateEvent(String eventTitle, String annotation,
                             String subject, String eventType){
 
@@ -290,9 +315,18 @@ public class EventBodyActivity extends AppCompatActivity {
 
         createHistoric(eventTitle, eventType, eventKey, "update");
 
-        Toast.makeText(getApplicationContext(), "Evento atualizado com sucesso!", Snackbar.LENGTH_LONG).show();
-        finish();
+        Toast.makeText(getApplicationContext(), "Evento atualizado com sucesso!",
+                Toast.LENGTH_LONG).show();
 
+        Bundle bundle = getIntent().getExtras();
+        if (bundle!= null && bundle.getString("sender").equals("homeActivity")){
+            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+            finishAffinity();
+            startActivity(intent);
+
+        } else {
+            finish();
+        }
     }
 
 
@@ -352,6 +386,7 @@ public class EventBodyActivity extends AppCompatActivity {
         builder.setMessage(R.string.message2);
 
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             public void onClick(DialogInterface dialog, int id) {
                 deleteEvent();
             }
@@ -373,6 +408,7 @@ public class EventBodyActivity extends AppCompatActivity {
         builder.setMessage(R.string.message3);
 
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             public void onClick(DialogInterface dialog, int id) {
                 updateEvent(eventTitle, annotation, subject, eventType);
             }
@@ -386,8 +422,8 @@ public class EventBodyActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void deleteEvent(){
-
 
         DatabaseReference userClass = ref.child(userClassID).child(eventKey);
         userClass.setValue(null);
@@ -395,7 +431,14 @@ public class EventBodyActivity extends AppCompatActivity {
         DatabaseReference historicRef = ref.child(userClassID).child(eventKey);
         historicRef.setValue(null);
 
-        finish();
+        Bundle bundle = getIntent().getExtras();
+        if (bundle!= null && bundle.getString("sender").equals("homeActivity")){
+            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+            finishAffinity();
+            startActivity(intent);
+        } else {
+            finish();
+        }
     }
 
     @Override
@@ -407,6 +450,22 @@ public class EventBodyActivity extends AppCompatActivity {
             default:break;
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle!= null && bundle.getString("sender").equals("homeActivity")){
+            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            finish();
+        }
+
+        super.onBackPressed();
+
     }
 }
 

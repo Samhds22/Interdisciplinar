@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".Activity.NewAnnotationActivity">
 
-
     <include layout="@layout/content_anotacao" />
 
     <android.support.design.widget.FloatingActionButton

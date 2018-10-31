@@ -12,6 +12,7 @@
     <string name="error_invalid_email">Email inválido</string>
     <string name="error_empty_email">O campo ""email"" não pode estar vazio</string>
     <string name="error_invalid_password">Mínimo de 6 caractéres</string>
+    <string name="error_empty_password">Digite sua senha</string>
     <string name="select_user_type">Selecione o tipo de usuário</string>
     <string name="error_confirm_password">Confirme sua senha</string>
     <string name="error_passwords_not_match">Senhas não conferem</string>
@@ -77,7 +78,7 @@
     <string name="add_job">Adicionar trabalho</string>
     <string name="add_note">Adicionar anotação</string>
     <string name="title_activity_class_register">ClassRegisterActivity</string>
-    <string name="no_class_selected">Você ainda não faz parte de nenhuma turma, escolha uma das salas abaixo ou clique em ""+"" para criar uma nova turma</string>
+    <string name="no_class_selected">Escolha uma turma do seu curso para começar ou crie uma nova.</string>
     <string name="annotation">Faça aqui suas anotações</string>
     <string name="subject">Disciplina</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -114,6 +115,12 @@
     <string name="account_settings">Conta</string>
     <string name="change_password">Mudar senha</string>
     <string name="reset_password">Esqueci minha senha</string>
-    <string name="create_account">Crie sua conta agora</string>
+    <string name="create_account">Crie sua conta!</string>
+    <string name="search">Pesquisar</string>
+    <string name="not_found_classes">Nenhuma classe encontrada.</string>
+    <string name="message">Nenhuma turma disponível, crie uma nova clicando no botão</string>
+    <string name="available_classes">Turmas disponíveis para seu curso:</string>
+    <string name="insert_your_email">Digite seu email</string>
+    <string name="forgot_password">Esqueci minha senha.</string>
 
 </resources>

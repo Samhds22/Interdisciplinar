@@ -18,10 +18,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
-import com.ceunsp.app.projeto.Activity.CalendarMainActivity;
 import com.ceunsp.app.projeto.Activity.EventBodyActivity;
 import com.ceunsp.app.projeto.Model.EventData;
 import com.ceunsp.app.projeto.R;
@@ -167,6 +163,7 @@ public class CalendarFragment extends Fragment {
                     timeInMilliseconds = System.currentTimeMillis();
                 }
                 Intent intentAddEvent = new Intent(mainTabView.getContext(), EventBodyActivity.class);
+                intentAddEvent.putExtra("sender", "calendarFragment");
                 intentAddEvent.putExtra("operation", "create");
                 intentAddEvent.putExtra("date", timeInMilliseconds);
                 intentAddEvent.putExtra("userClassID", classID);
@@ -203,6 +200,7 @@ public class CalendarFragment extends Fragment {
                 }
 
                 Intent openEvent = new Intent(getContext(), EventBodyActivity.class);
+                openEvent.putExtra("sender", "calendarFragment");
                 openEvent.putExtra("userClassID", classID);
                 openEvent.putExtra("operation", "View&Edit");
                 openEvent.putExtra("title", eventData.getTitle());

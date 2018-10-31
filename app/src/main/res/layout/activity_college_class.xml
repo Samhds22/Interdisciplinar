@@ -34,4 +34,11 @@
         app:srcCompat="@drawable/ic_add_white_24dp"
         app:fab_size="normal"/>
 
+    <ProgressBar
+        android:id="@+id/teste"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"/>
+
+
 </android.support.design.widget.CoordinatorLayout>

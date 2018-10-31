@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ceunsp.app.projeto.Activity.EventBodyActivity;
+import com.ceunsp.app.projeto.Activity.HomeActivity;
 import com.ceunsp.app.projeto.Helpers.EventAdapter;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.Helpers.RecyclerItemClickListener;
@@ -51,9 +52,7 @@ public class HomeFragment extends Fragment {
     private Date today;
 
     @SuppressLint("ValidFragment")
-    public HomeFragment(String classID, String userType) {
-
-        this.classID = classID;
+    public HomeFragment(String userType) {
         this.userType = userType;
     }
 
@@ -79,7 +78,6 @@ public class HomeFragment extends Fragment {
         eventList.clear();
         progressBar.setVisibility(View.VISIBLE);
         todayRecyclerView.setVisibility(View.GONE);
-
         loadTodayEvents();
 
         todayRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(),
@@ -92,14 +90,17 @@ public class HomeFragment extends Fragment {
                         EventData eventData = (EventData) event.getData();
 
                         Intent intent = new Intent(getActivity(), EventBodyActivity.class);
+                        intent.putExtra("sender", "homeActivity");
                         intent.putExtra("operation", "View&Edit");
                         intent.putExtra("eventKey", eventData.getEventKey());
                         intent.putExtra("userClassID", classID);
                         intent.putExtra("title", eventData.getTitle());
                         intent.putExtra("date", event.getTimeInMillis());
                         intent.putExtra("subject", eventData.getSubject());
+                        intent.putExtra("eventType", eventData.getEventType());
                         intent.putExtra("annotation", eventData.getAnnotation());
                         startActivity(intent);
+                        getActivity().finish();
                     }
 
                     @Override
@@ -119,7 +120,7 @@ public class HomeFragment extends Fragment {
 
     public void loadTodayEvents(){
         eventList.clear();
-        if (classID.equals("") || classID == null){
+        if (userType.equals("Professor")){
             DatabaseReference usersRef = firebaseHelper.getReference().child("Users");
             DatabaseReference teacherRef = usersRef.child(firebaseHelper.getUserID());
             teacherRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -130,8 +131,11 @@ public class HomeFragment extends Fragment {
                             classID = postSnapshot.getKey();
                             loadData();
                         }
-                        if (classID.equals("") || classID.isEmpty() || (classID) == null){
+
+                        if (classID == null || classID.equals("")){
                             emptyEvents();
+                        } else {
+                            emptyEventText.setVisibility(View.GONE);
                         }
 
                     } else {
@@ -145,8 +149,34 @@ public class HomeFragment extends Fragment {
                 }
             });
 
-        } else if (!classID.equals("") && classID != null) {
-            loadData();
+        } else if (userType.equals("Aluno")){
+            DatabaseReference usersRef = firebaseHelper.getReference().child("Users");
+            DatabaseReference StudentRef = usersRef.child(firebaseHelper.getUserID()).child("Student");
+            StudentRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()){
+                        classID = (String) dataSnapshot.child("classID").getValue();
+                        if (!classID.equals("") && classID != null){
+                            loadData();
+                        }
+
+                        if (classID.equals("") || classID == null){
+                            emptyEvents();
+                        } else {
+                            emptyEventText.setVisibility(View.GONE);
+                        }
+
+                    } else {
+                        emptyEvents();
+                    }
+
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    failure();
+                }
+            });
         }
     }
 

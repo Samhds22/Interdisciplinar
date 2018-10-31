@@ -153,6 +153,7 @@ public class TeacherClassesActivity extends AppCompatActivity {
         });
         super.onStart();
     }
+
     public void fillRecyclerView(){
         ClassAdapter adapter = new ClassAdapter(collegeClassList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(TeacherClassesActivity.this);
@@ -160,11 +161,16 @@ public class TeacherClassesActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+
+                Intent intentHome = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(intentHome);
                 finish();
+
                 break;
             default:break;
         }
@@ -182,4 +188,13 @@ public class TeacherClassesActivity extends AppCompatActivity {
         startActivity(openCalendar);
     }
 
+    @Override
+    public void onBackPressed() {
+
+        Intent intentHome = new Intent(getApplicationContext(), HomeActivity.class);
+        startActivity(intentHome);
+        finish();
+
+        super.onBackPressed();
+    }
 }

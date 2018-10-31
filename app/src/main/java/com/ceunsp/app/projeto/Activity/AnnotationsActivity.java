@@ -120,6 +120,7 @@ public class AnnotationsActivity extends AppCompatActivity {
                 intent.putExtra("position", position);
                 intent.putExtra("permissao", permissao);
                 startActivity( intent );
+                finish();
 
             }
             @Override
@@ -196,10 +197,10 @@ public class AnnotationsActivity extends AppCompatActivity {
     }
 
     public void chamaanotacoes(View view){
-            String alteracao = "nao";
         Intent intent = new Intent(getApplicationContext(), NewAnnotationActivity.class);
-            intent.putExtra("alteracao", alteracao);
+        intent.putExtra("alteracao", "nao");
         startActivity(intent);
+        finish();
     }
 
     public void fillRecyclerView(){

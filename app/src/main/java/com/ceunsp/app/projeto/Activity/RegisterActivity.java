@@ -244,7 +244,6 @@ public class RegisterActivity extends AppCompatActivity {
         DatabaseReference userRef = firebaseHelper.getReference()
                 .child("Users").child(firebaseHelper.getUserID());
 
-
         final String name, lastName,nickname, dateOfBirth, userType, email;
 
         name        = nameEdit.getText().toString();
@@ -253,7 +252,6 @@ public class RegisterActivity extends AppCompatActivity {
         dateOfBirth = dtBirthEdit.getText().toString();
         userType    = userTypeSpinner.getSelectedItem().toString();
         email       = emailEdit.getText().toString();
-
 
         Map<String, Object> userUpdate = new HashMap<>();
         userUpdate.put("name"       , name        );
@@ -280,7 +278,7 @@ public class RegisterActivity extends AppCompatActivity {
                 saveInPreferences(firebaseHelper.getUserID(), name, lastName,
                         nickname, dateOfBirth, userType, email);
 
-                finish();
+                uploadImage();
             }
         });
     }
@@ -419,7 +417,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         } else if (userTypeSpinner.getSelectedItemId() == 0){
             Snackbar.make(view, R.string.select_user_type, Snackbar.LENGTH_LONG).show();
-            cancel = true;
+            return false;
 
         } else if (TextUtils.isEmpty(email)) {
             Snackbar.make(view, R.string.error_empty_email, Snackbar.LENGTH_LONG).show();
@@ -512,7 +510,7 @@ public class RegisterActivity extends AppCompatActivity {
                             uploadImage();
 
                         } else {
-                            Snackbar.make(v,"Falha ao criar usuário", Snackbar.LENGTH_LONG ).show();
+                            Snackbar.make(v,"Email já cadastrado.", Snackbar.LENGTH_LONG ).show();
                             hideProgressBar();
                         }
                     }
@@ -535,22 +533,25 @@ public class RegisterActivity extends AppCompatActivity {
             bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
             byte[] byteData = outputStream.toByteArray();
 
-            StorageReference ref = storageReference.child("profilePicture."+ userID);
+            StorageReference ref = storageReference.child("profilePicture."+ firebaseHelper.getUserID());
             ref.putBytes(byteData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>(){
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(getApplicationContext(), "Uploaded", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getApplicationContext(), "Failed "+e.getMessage()
+
+                            Toast.makeText(getApplicationContext(), "Falha ao carregar imagem "+e.getMessage()
                                     ,Toast.LENGTH_SHORT).show();
+
+                            finish();
                         }
                     });
         }
-        finish();
+
     }
 
 
