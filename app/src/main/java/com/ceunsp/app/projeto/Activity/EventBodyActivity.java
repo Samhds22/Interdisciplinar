@@ -250,16 +250,13 @@ public class EventBodyActivity extends AppCompatActivity {
             eventData.setEventType(eventType);
             eventData.setClassName(className);
 
-       /*     if (preferences.getString("userType", "").equals("Professor")){
-                Calendar aux =
-            }
-*/
             Event event = new Event(R.color.colorAccent, calendar.getTimeInMillis(), eventData);
             pushKey.child("Event").setValue(event).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
+
                         Bundle bundle = getIntent().getExtras();
                         if (bundle!= null && bundle.getString("sender").equals("homeActivity")){
                             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);

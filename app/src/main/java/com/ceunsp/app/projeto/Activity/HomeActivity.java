@@ -22,9 +22,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.ceunsp.app.projeto.Fragments.AboutFragment;
 import com.ceunsp.app.projeto.Fragments.HomeFragment;
 import com.ceunsp.app.projeto.Helpers.FirebaseHelper;
 import com.ceunsp.app.projeto.R;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.StorageReference;
@@ -41,6 +44,7 @@ public class HomeActivity extends AppCompatActivity
     private boolean accountSettingsIsEnable = false;
     private SharedPreferences preferences;
     public CircleImageView userImageView;
+    private FloatingActionMenu menu;
     private boolean exit = false;
 
     @Override
@@ -49,6 +53,7 @@ public class HomeActivity extends AppCompatActivity
         super.onResume();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,8 +71,8 @@ public class HomeActivity extends AppCompatActivity
 
         View headerView = navigationView.getHeaderView(0);
         userNicknameTextView = headerView.findViewById(R.id.user_nickname_TextView);
-        userEmailTextView    = headerView.findViewById(R.id.user_email_TextView);
-        userImageView        = headerView.findViewById(R.id.user_imageView);
+        userEmailTextView = headerView.findViewById(R.id.user_email_TextView);
+        userImageView = headerView.findViewById(R.id.user_imageView);
 
         userNicknameTextView.setText(preferences.getString("nickname", ""));
         userEmailTextView.setText(preferences.getString("email", ""));
@@ -78,11 +83,18 @@ public class HomeActivity extends AppCompatActivity
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content_frame, homeFragment);
         transaction.commit();
+
+        menu = findViewById(R.id.float_menu);
+        menu.showMenu(true);
+        menu.hideMenu(true);
+        menu.toggleMenu(true);
+        menu.setElevation(30);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        menu.setVisibility(View.VISIBLE);
         exit = false;
     }
 
@@ -113,14 +125,21 @@ public class HomeActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_schedule) {
+        if (id == R.id.today) {
+            menu.setVisibility(View.VISIBLE);
+            HomeFragment homeFragment = new HomeFragment
+                    (preferences.getString("userType", ""));
+
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.content_frame, homeFragment);
+            transaction.commit();
+
+        } else if (id == R.id.nav_schedule) {
 
             if (preferences.getString("userType", "").equals("Aluno")) {
-
                 loadStudentClass(preferences);
 
             } else if (preferences.getString("userType", "").equals("Professor")) {
-
                 Intent teacherIntent = new Intent(getApplicationContext(), TeacherClassesActivity.class);
                 startActivity(teacherIntent);
                 finish();
@@ -133,6 +152,13 @@ public class HomeActivity extends AppCompatActivity
             startActivity(intent);
 
         } else if (id == R.id.nav_info) {
+
+            menu.setVisibility(View.GONE);
+            AboutFragment aboutFragment = new AboutFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.content_frame, aboutFragment);
+            transaction.commit();
+
 
         } else if (id == R.id.nav_logout) {
             SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, 0);
@@ -147,9 +173,9 @@ public class HomeActivity extends AppCompatActivity
             finishAffinity();
 
         } else if (id == R.id.nav_account_settings) {
-            if (accountSettingsIsEnable){
+            if (accountSettingsIsEnable) {
 
-                Intent intentUserSettings = new Intent(getApplicationContext() ,RegisterActivity.class);
+                Intent intentUserSettings = new Intent(getApplicationContext(), RegisterActivity.class);
                 intentUserSettings.putExtra("operation", "View&Edit");
                 intentUserSettings.putExtra("name", preferences.getString("name", ""));
                 intentUserSettings.putExtra("lastName", preferences.getString("lastName", ""));
@@ -174,13 +200,12 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
-    public byte[] convertImageViewToByteArray(CircleImageView image){
-        Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+    public byte[] convertImageViewToByteArray(CircleImageView image) {
+        Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         return stream.toByteArray();
     }
-
 
 
     public void loadStudentClass(SharedPreferences preferences) {
@@ -213,14 +238,14 @@ public class HomeActivity extends AppCompatActivity
         editor.commit();
     }
 
-    public void retrieveProfilePhoto(){
+    public void retrieveProfilePhoto() {
 
         final Bitmap[] bitmap = new Bitmap[1];
 
         StorageReference storageRef = firebaseHelper.getStorage();
         final long ONE_MEGABYTE = 1024 * 1024;
-        storageRef.child("profilePicture."+ firebaseHelper.getUserID()).getBytes(ONE_MEGABYTE)
-                .addOnSuccessListener(new OnSuccessListener<byte[]>(){
+        storageRef.child("profilePicture." + firebaseHelper.getUserID()).getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
                     public void onSuccess(byte[] bytes) {
 
@@ -240,7 +265,8 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
-    public void openAnonnationView(View view){
+    public void openAnonnationView(View view) {
+
         Intent intentAnnotation = new Intent(getApplicationContext(), NewAnnotationActivity.class);
         intentAnnotation.putExtra("alteracao", "nao");
         startActivity(intentAnnotation);
@@ -248,13 +274,36 @@ public class HomeActivity extends AppCompatActivity
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void openEventView(View view) {
-        Intent intentEvent = new Intent(getApplicationContext(), EventBodyActivity.class);
-        intentEvent.putExtra("sender", "homeActivity");
-        intentEvent.putExtra("operation", "create");
-        intentEvent.putExtra("date", System.currentTimeMillis());
-        intentEvent.putExtra("userClassID", preferences.getString("classID", ""));
-        intentEvent.putExtra("userID", firebaseHelper.getUserID());
-        finish();
-        startActivity(intentEvent);
+
+        String userType = preferences.getString("userType", "");
+
+        if (userType.equals("Professor")) {
+
+            Intent teacherIntent = new Intent(getApplicationContext(), TeacherClassesActivity.class);
+            teacherIntent.putExtra("sender", "homeActivity");
+            startActivity(teacherIntent);
+            finish();
+
+
+        } else if (userType.equals("Aluno")) {
+
+            if (preferences.getString("classID", "").equals("")) {
+                Intent intentNewClass = new Intent(getApplicationContext(), StudentClassActivity.class);
+                startActivity(intentNewClass);
+                finish();
+
+            } else {
+
+                Intent intentEvent = new Intent(getApplicationContext(), EventBodyActivity.class);
+                intentEvent.putExtra("sender", "homeActivity");
+                intentEvent.putExtra("operation", "create");
+                intentEvent.putExtra("date", System.currentTimeMillis());
+                intentEvent.putExtra("userClassID", preferences.getString("classID", ""));
+                intentEvent.putExtra("userID", firebaseHelper.getUserID());
+                finish();
+                startActivity(intentEvent);
+
+            }
+        }
     }
 }

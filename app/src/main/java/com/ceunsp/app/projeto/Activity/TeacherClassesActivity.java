@@ -69,7 +69,26 @@ public class TeacherClassesActivity extends AppCompatActivity {
                 new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        openCalendar(position);
+
+                        Bundle bundle = getIntent().getExtras();
+
+                        if (bundle != null && bundle.getString("sender").equals("homeActivity")){
+
+                            CollegeClass collegeClass = collegeClassList.get(position);
+                            String classID   = collegeClass.getClassID();
+
+                            Intent intentAddEvent = new Intent(getApplicationContext(), EventBodyActivity.class);
+                            intentAddEvent.putExtra("date", System.currentTimeMillis());
+                            intentAddEvent.putExtra("operation", "create");
+                            intentAddEvent.putExtra("sender", "homeActivity");
+                            intentAddEvent.putExtra("userClassID", classID);
+
+                            startActivity(intentAddEvent);
+                            finish();
+
+                        } else {
+                            openCalendar(position);
+                        }
                     }
 
                     @Override
