@@ -67,7 +67,7 @@
     <string name="email">"Email"</string>
     <string name="password">"Crie uma senha"</string>
     <string name="password_confirm">"Digite novamente"</string>
-    <string name="title_event">Insira um título</string>
+    <string name="title_event">" "Insira um título</string>
     <string name="date_event">Data</string>
     <string name="save_button">Salvar</string>
     <string name="title_activity_main_tab2">Novo evento</string>
@@ -79,7 +79,7 @@
     <string name="add_note">Adicionar anotação</string>
     <string name="title_activity_class_register">ClassRegisterActivity</string>
     <string name="no_class_selected">Escolha uma turma do seu curso para começar ou crie uma nova.</string>
-    <string name="annotation">Faça aqui suas anotações</string>
+    <string name="annotation">Observações</string>
     <string name="subject">Disciplina</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_class">ClassActivity</string>
@@ -104,7 +104,7 @@
     <string name="students">Alunos</string>
     <string name="teachers">Professores</string>
     <string name="empty_class">"No momento você não está em nenhuma turma. Clique no botão abaixo para encontrar novas turmas."</string>
-    <string name="empty_annotation">Nenhuma anotação por enquando...</string>
+    <string name="empty_annotation">Nenhuma anotação por enquanto...</string>
     <string name="inser_title">Insira um título</string>
     <string name="create_className">Dê um nome á sala</string>
     <string name="create">Criar</string>
@@ -134,5 +134,6 @@
     <string name="about_title3">Licenças de software:</string>
     <string name="compactcalendar_license">- Compact Calendar View The MIT License (MIT) Copyright (c) [2018] [Sundeepk] Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the\'\'Softwar\'\'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED \'\'AS IS\'\', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</string>
     <string name="menu_today">Hoje</string>
+    <string name="event_Type">Tipo do evento</string>
 
 </resources>

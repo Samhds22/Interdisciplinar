@@ -26,16 +26,19 @@
             android:layout_marginBottom="20dp"
             android:textColorHint="@color/colorWhite"
             android:inputType="text"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:textCursorDrawable="@drawable/cursor_title"/>
 
     </LinearLayout>
 
     <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:layout_margin="20dp"
         android:orientation="vertical">
+
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -47,56 +50,85 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/date_event"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/subject"
+                    android:layout_margin="5dp"
+                    android:layout_weight="0.7"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
                 <EditText
                     android:id="@+id/date_event_edit"
                     android:layout_width="match_parent"
                     android:layout_height="42dp"
-                    android:layout_margin="5dp"
+                    android:layout_marginRight="5dp"
                     android:layout_weight="1.6"
                     android:background="@drawable/border_rounded_main_fields"
-                    android:hint="@string/date_event"
                     android:inputType="date"
                     android:paddingEnd="0dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="0dp"
-                    android:paddingStart="10dp" />
+                    android:paddingStart="10dp"
+                    android:layout_marginEnd="5dp"
+                    tools:ignore="LabelFor" />
 
                 <EditText
                     android:id="@+id/subject_edit"
                     android:layout_width="match_parent"
                     android:layout_height="42dp"
-                    android:layout_margin="5dp"
+                    android:layout_marginLeft="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/border_rounded_main_fields"
-                    android:hint="@string/subject"
                     android:inputType="text"
                     android:paddingEnd="0dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="0dp"
-                    android:paddingStart="10dp" />
+                    android:paddingStart="10dp"
+                    android:layout_marginStart="5dp"
+                    tools:ignore="LabelFor" />
 
             </LinearLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/event_Type"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="5dp"/>
+
             <Spinner
                 android:id="@+id/type_spinner"
-                android:layout_width="307dp"
+                android:layout_width="match_parent"
                 android:layout_height="42dp"
-                android:layout_margin="20dp"
+                android:layout_marginBottom="20dp"
                 android:background="@drawable/border_rounded_main_fields" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/annotation"
+                android:layout_margin="5dp"/>
             <EditText
                 android:id="@+id/annotation_edit"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="200dp"
                 android:background="@drawable/border_rounded_main_fields"
                 android:ems="10"
-                android:hint="@string/annotation"
                 android:inputType="textMultiLine"
-                android:paddingBottom="90dp"
-                android:paddingEnd="0dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="0dp"
-                android:paddingStart="25dp" />
+                android:padding="15dp"
+                tools:ignore="LabelFor" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -109,21 +141,27 @@
                     android:id="@+id/delete_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:padding="10dp"
                     android:background="@drawable/border_rounded_button"
+                    android:drawableStart="@drawable/ic_delete_24dp"
                     android:text="@string/delete_buttom"
                     android:textColor="@color/colorWhite"
-                    android:layout_margin="5dp"
-                    tools:ignore="ButtonStyle" />
+                    tools:ignore="ButtonStyle"
+                    android:drawableLeft="@drawable/ic_delete_24dp" />
 
                 <Button
                     android:id="@+id/save_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/border_rounded_button"
+                    android:layout_margin="5dp"
+                    android:padding="10dp"
+                    android:background="@drawable/border_rounded_green"
+                    android:drawableStart="@drawable/ic_check_white_24dp"
                     android:text="@string/save_button"
                     android:textColor="@color/colorWhite"
-                    android:layout_margin="5dp"
-                    tools:ignore="ButtonStyle" />
+                    tools:ignore="ButtonStyle"
+                    android:drawableLeft="@drawable/ic_check_white_24dp" />
 
             </LinearLayout>
         </LinearLayout>

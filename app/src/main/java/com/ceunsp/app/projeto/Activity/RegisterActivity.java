@@ -550,6 +550,8 @@ public class RegisterActivity extends AppCompatActivity {
                             finish();
                         }
                     });
+        } else {
+            finish();
         }
 
     }

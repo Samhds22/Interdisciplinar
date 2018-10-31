@@ -233,6 +233,7 @@ public class EventBodyActivity extends AppCompatActivity {
         if (eventTitle.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Insira o titulo para continuar.",
                     Toast.LENGTH_LONG).show();
+            titleEventEdit.requestFocus();
 
         } else if (typeSpinner.getSelectedItemId() == 0) {
             Toast.makeText(getApplicationContext(), "Selecione o tipo do evento!",
@@ -442,7 +443,16 @@ public class EventBodyActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+
+                Bundle bundle = getIntent().getExtras();
+                if (bundle!= null && bundle.getString("sender").equals("homeActivity")){
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    finish();
+                }
+
                 break;
             default:break;
         }

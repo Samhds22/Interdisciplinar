@@ -156,11 +156,13 @@ public class NewAnnotationActivity extends AppCompatActivity {
     public boolean validAction(View view, String title, String body){
 
         if (title.isEmpty()){
-            Snackbar.make(view, "Preencha o título para continuar", Toast.LENGTH_LONG).show();
+            Snackbar.make(view, "Preencha o título para continuar", Snackbar.LENGTH_LONG).show();
+            titleEdit.requestFocus();
             return false;
 
         } else if (body.isEmpty()){
-            Snackbar.make(view, "Faça sua anotação!", Toast.LENGTH_LONG).show();
+            Snackbar.make(view, "Faça sua anotação!", Snackbar.LENGTH_LONG).show();
+            bodyEdit.requestFocus();
             return false;
 
         } else {
