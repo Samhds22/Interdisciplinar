@@ -141,7 +141,11 @@ public class CalendarMainActivity extends AppCompatActivity {
                         editor.remove("classID");
                         editor.apply();
                         editor.commit();
-                        finish();
+
+                        Intent intentHome = new Intent(getApplicationContext(), HomeActivity.class);
+                        finishAffinity();
+                        startActivity(intentHome);
+
                     }
                 }
             });
@@ -155,10 +159,13 @@ public class CalendarMainActivity extends AppCompatActivity {
 
             teacherRef.child("Classes").child(classID).setValue(null)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
-                        finish();
+                        Intent intentHome = new Intent(getApplicationContext(), HomeActivity.class);
+                        finishAffinity();
+                        startActivity(intentHome);
                     }
                 }
             });
